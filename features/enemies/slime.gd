@@ -1,0 +1,61 @@
+class_name Slime
+extends CharacterBody2D
+
+enum State { PATROL, HURT, DEAD }
+@export var patrol_distance := 100.0
+@export var speed := 44.0
+@onready var sprite: AnimatedSprite2D = $Sprite
+@onready var health: HealthComponent = $Health
+@onready var contact: Hitbox = $Contact
+@onready var edge: RayCast2D = $Edge
+var state := State.PATROL
+var direction := -1.0
+var origin_x := 0.0
+var timer := 0.0
+var contact_timer := 0.0
+
+func _ready() -> void:
+	origin_x = position.x
+	health.damaged.connect(_on_damaged)
+	health.died.connect(_on_died)
+	contact.begin_swing()
+
+func _physics_process(delta: float) -> void:
+	if state == State.DEAD:
+		return
+	timer -= delta
+	contact_timer -= delta
+	if contact_timer <= 0:
+		contact_timer = 0.6
+		contact.begin_swing()
+	velocity.y += 1600 * delta
+	if state == State.HURT:
+		velocity.x = move_toward(velocity.x, 0, 700 * delta)
+		if timer <= 0:
+			state = State.PATROL
+			sprite.modulate = Color.WHITE
+	else:
+		edge.position.x = direction * 20
+		edge.force_raycast_update()
+		if is_on_floor() and (not edge.is_colliding() or is_on_wall() or absf(position.x - origin_x) > patrol_distance):
+			direction *= -1
+			position.x += direction
+		velocity.x = direction * speed
+		sprite.flip_h = direction > 0
+		sprite.play("idle")
+	move_and_slide()
+
+func _on_damaged(_amount: int, source: Vector2) -> void:
+	state = State.HURT
+	timer = 0.2
+	velocity = Vector2(150 * signf(global_position.x - source.x), -130)
+	sprite.modulate = Color("ffe4b0")
+
+func _on_died() -> void:
+	state = State.DEAD
+	contact.end_swing()
+	$Hurtbox.set_deferred("monitorable", false)
+	sprite.play("death")
+	Audio.play_sound("slime_death")
+	await sprite.animation_finished
+	queue_free()

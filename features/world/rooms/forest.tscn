@@ -1,0 +1,92 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" path="res://features/world/room.gd" id="1"]
+[ext_resource type="Script" path="res://features/world/backdrop.gd" id="2"]
+[ext_resource type="TileSet" path="res://features/world/forest_tileset.tres" id="3"]
+[ext_resource type="PackedScene" path="res://features/enemies/slime.tscn" id="4"]
+[ext_resource type="Script" path="res://features/world/interaction.gd" id="5"]
+[ext_resource type="Script" path="res://features/enemies/slime.gd" id="5_y6d5d"]
+[ext_resource type="SpriteFrames" path="res://features/world/checkpoint_frames.tres" id="6"]
+
+[sub_resource type="RectangleShape2D" id="Boundary"]
+size = Vector2(32, 640)
+
+[node name="Forest" type="Node2D" unique_id=601705271]
+script = ExtResource("1")
+
+[node name="Backdrop" type="Node2D" parent="." unique_id=1671505959]
+script = ExtResource("2")
+
+[node name="Terrain" type="TileMapLayer" parent="." unique_id=81977782]
+tile_map_data = PackedByteArray("AAAAAA8AAAAAAAAAAAABAA8AAAACAAAAAAACAA8AAAADAAAAAAADAA8AAAABAAAAAAAEAA8AAAACAAAAAAAFAA8AAAADAAAAAAAGAA8AAAABAAAAAAAHAA8AAAACAAAAAAAIAA8AAAADAAAAAAAJAA8AAAABAAAAAAAKAA8AAAACAAAAAAALAA8AAAADAAAAAAAMAA8AAAABAAAAAAANAA8AAAACAAAAAAAOAA8AAAADAAAAAAAPAA8AAAABAAAAAAAQAA8AAAACAAAAAAARAA8AAAADAAAAAAASAA8AAAABAAAAAAATAA8AAAACAAAAAAAUAA8AAAADAAAAAAAVAA8AAAABAAAAAAAWAA8AAAACAAAAAAAXAA8AAAADAAAAAAAYAA8AAAABAAAAAAAZAA8AAAACAAAAAAAaAA8AAAADAAAAAAAbAA8AAAABAAAAAAAcAA8AAAACAAAAAAAdAA8AAAADAAAAAAAeAA8AAAABAAAAAAAfAA8AAAACAAAAAAAgAA8AAAADAAAAAAAhAA8AAAABAAAAAAAiAA8AAAACAAAAAAAjAA8AAAADAAAAAAAkAA8AAAABAAAAAAAlAA8AAAACAAAAAAAmAA8AAAADAAAAAAAnAA8AAAAEAAAAAAAAABAAAAAAAAEAAAABABAAAAACAAEAAAACABAAAAADAAEAAAADABAAAAABAAEAAAAEABAAAAACAAEAAAAFABAAAAADAAEAAAAGABAAAAABAAEAAAAHABAAAAACAAEAAAAIABAAAAADAAEAAAAJABAAAAABAAEAAAAKABAAAAACAAEAAAALABAAAAADAAEAAAAMABAAAAABAAEAAAANABAAAAACAAEAAAAOABAAAAADAAEAAAAPABAAAAABAAEAAAAQABAAAAACAAEAAAARABAAAAADAAEAAAASABAAAAABAAEAAAATABAAAAACAAEAAAAUABAAAAADAAEAAAAVABAAAAABAAEAAAAWABAAAAACAAEAAAAXABAAAAADAAEAAAAYABAAAAABAAEAAAAZABAAAAACAAEAAAAaABAAAAADAAEAAAAbABAAAAABAAEAAAAcABAAAAACAAEAAAAdABAAAAADAAEAAAAeABAAAAABAAEAAAAfABAAAAACAAEAAAAgABAAAAADAAEAAAAhABAAAAABAAEAAAAiABAAAAACAAEAAAAjABAAAAADAAEAAAAkABAAAAABAAEAAAAlABAAAAACAAEAAAAmABAAAAADAAEAAAAnABAAAAAEAAEAAAAAABEAAAAAAAEAAAABABEAAAACAAEAAAACABEAAAADAAEAAAADABEAAAABAAEAAAAEABEAAAACAAEAAAAFABEAAAADAAEAAAAGABEAAAABAAEAAAAHABEAAAACAAEAAAAIABEAAAADAAEAAAAJABEAAAABAAEAAAAKABEAAAACAAEAAAALABEAAAADAAEAAAAMABEAAAABAAEAAAANABEAAAACAAEAAAAOABEAAAADAAEAAAAPABEAAAABAAEAAAAQABEAAAACAAEAAAARABEAAAADAAEAAAASABEAAAABAAEAAAATABEAAAACAAEAAAAUABEAAAADAAEAAAAVABEAAAABAAEAAAAWABEAAAACAAEAAAAXABEAAAADAAEAAAAYABEAAAABAAEAAAAZABEAAAACAAEAAAAaABEAAAADAAEAAAAbABEAAAABAAEAAAAcABEAAAACAAEAAAAdABEAAAADAAEAAAAeABEAAAABAAEAAAAfABEAAAACAAEAAAAgABEAAAADAAEAAAAhABEAAAABAAEAAAAiABEAAAACAAEAAAAjABEAAAADAAEAAAAkABEAAAABAAEAAAAlABEAAAACAAEAAAAmABEAAAADAAEAAAAnABEAAAAEAAEAAAAIAAwAAAAAAAAAAAAJAAwAAAABAAAAAAAKAAwAAAACAAAAAAALAAwAAAADAAAAAAAMAAwAAAABAAAAAAANAAwAAAACAAAAAAAOAAwAAAAEAAAAAAAIAA0AAAAAAAEAAAAJAA0AAAABAAEAAAAKAA0AAAACAAEAAAALAA0AAAADAAEAAAAMAA0AAAABAAEAAAANAA0AAAACAAEAAAAOAA0AAAAEAAEAAAALAAcAAAAAAAAAAAAMAAcAAAABAAAAAAANAAcAAAACAAAAAAAOAAcAAAADAAAAAAAPAAcAAAAEAAAAAAALAAgAAAAAAAEAAAAMAAgAAAABAAEAAAANAAgAAAACAAEAAAAOAAgAAAADAAEAAAAPAAgAAAAEAAEAAAAWAAwAAAAAAAAAAAAXAAwAAAADAAAAAAAYAAwAAAABAAAAAAAZAAwAAAAEAAAAAAAWAA0AAAAAAAEAAAAXAA0AAAADAAEAAAAYAA0AAAABAAEAAAAZAA0AAAAEAAEAAAA=")
+tile_set = ExtResource("3")
+
+[node name="Details" type="TileMapLayer" parent="." unique_id=40044950]
+tile_map_data = PackedByteArray("AAAGAA4AAAAOAAcAAAARAA4AAAAOAAcAAAAaAA4AAAAOAAcAAAAiAA4AAAAOAAcAAAA=")
+tile_set = ExtResource("3")
+collision_enabled = false
+
+[node name="Bounds" type="StaticBody2D" parent="." unique_id=1358145428]
+collision_mask = 0
+
+[node name="Left" type="CollisionShape2D" parent="Bounds" unique_id=706008918]
+position = Vector2(-16, 256)
+shape = SubResource("Boundary")
+
+[node name="Right" type="CollisionShape2D" parent="Bounds" unique_id=1364135426]
+position = Vector2(1296, 256)
+shape = SubResource("Boundary")
+
+[node name="Spawns" type="Node2D" parent="." unique_id=22093897]
+
+[node name="checkpoint" type="Marker2D" parent="Spawns" unique_id=1159067504]
+position = Vector2(160, 480)
+
+[node name="entry" type="Marker2D" parent="Spawns" unique_id=1593997806]
+position = Vector2(112, 480)
+
+[node name="east" type="Marker2D" parent="Spawns" unique_id=1923058647]
+position = Vector2(1130, 480)
+
+[node name="Enemies" type="Node2D" parent="." unique_id=1963065800]
+
+[node name="Slime0" type="CharacterBody2D" parent="Enemies" unique_id=1725957954 groups=["enemies"] instance=ExtResource("4")]
+position = Vector2(560, 480)
+collision_layer = 4
+script = ExtResource("5_y6d5d")
+patrol_distance = 65.0
+
+[node name="Slime1" type="CharacterBody2D" parent="Enemies" unique_id=76309572 groups=["enemies"] instance=ExtResource("4")]
+position = Vector2(850, 480)
+collision_layer = 4
+script = ExtResource("5_y6d5d")
+patrol_distance = 65.0
+
+[node name="Interactions" type="Node2D" parent="." unique_id=1839794500]
+
+[node name="Shrine" type="Node2D" parent="Interactions" unique_id=1167700793]
+position = Vector2(160, 480)
+script = ExtResource("5")
+stable_id = "checkpoint"
+
+[node name="Sprite" type="AnimatedSprite2D" parent="Interactions/Shrine" unique_id=158355342]
+position = Vector2(0, -20)
+scale = Vector2(0.5, 0.5)
+sprite_frames = ExtResource("6")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="EastDoor" type="Node2D" parent="Interactions" unique_id=506374882]
+position = Vector2(1200, 480)
+script = ExtResource("5")
+kind = "exit"
+target_room = "ruins"
+stable_id = "east_door"
+prompt = "E  /  ENTER THE ARCHIVE"
+
+[node name="HighShrine" type="Node2D" parent="Interactions" unique_id=341097377]
+position = Vector2(400, 224)
+script = ExtResource("5")
+kind = "goal"
+stable_id = "high_shrine"
+prompt = "E  /  RESTORE THE HOLLOW"

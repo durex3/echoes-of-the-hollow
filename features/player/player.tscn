@@ -1,0 +1,56 @@
+[gd_scene load_steps=12 format=3]
+[ext_resource type="Script" path="res://features/player/player.gd" id="1"]
+[ext_resource type="Resource" path="res://features/player/default_player.tres" id="2"]
+[ext_resource type="SpriteFrames" path="res://features/player/hero_frames.tres" id="3"]
+[ext_resource type="Script" path="res://features/combat/health.gd" id="4"]
+[ext_resource type="Script" path="res://features/combat/hurtbox.gd" id="5"]
+[ext_resource type="Script" path="res://features/combat/hitbox.gd" id="6"]
+[ext_resource type="Script" path="res://features/player/slash.gd" id="7"]
+[sub_resource type="CapsuleShape2D" id="Body"]
+radius = 10.0
+height = 42.0
+[sub_resource type="RectangleShape2D" id="Hurt"]
+size = Vector2(22, 40)
+[sub_resource type="RectangleShape2D" id="Attack"]
+size = Vector2(48, 44)
+
+[node name="Player" type="CharacterBody2D" groups=["player"]]
+process_mode = 1
+collision_layer = 2
+collision_mask = 1
+floor_snap_length = 6.0
+script = ExtResource("1")
+config = ExtResource("2")
+
+[node name="Collision" type="CollisionShape2D" parent="."]
+position = Vector2(0, -21)
+shape = SubResource("Body")
+[node name="Visual" type="Node2D" parent="."]
+[node name="Sprite" type="AnimatedSprite2D" parent="Visual"]
+position = Vector2(0, -40)
+sprite_frames = ExtResource("3")
+animation = &"idle"
+[node name="Slash" type="Node2D" parent="Visual"]
+visible = false
+script = ExtResource("7")
+[node name="Health" type="Node" parent="."]
+script = ExtResource("4")
+maximum = 5
+invulnerability_seconds = 0.8
+[node name="Hurtbox" type="Area2D" parent="." node_paths=PackedStringArray("health")]
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+script = ExtResource("5")
+health = NodePath("../Health")
+[node name="Shape" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0, -21)
+shape = SubResource("Hurt")
+[node name="AttackBox" type="Area2D" parent="."]
+position = Vector2(30, -23)
+collision_layer = 0
+collision_mask = 16
+monitorable = false
+script = ExtResource("6")
+[node name="Shape" type="CollisionShape2D" parent="AttackBox"]
+shape = SubResource("Attack")

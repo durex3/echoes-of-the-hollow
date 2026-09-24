@@ -1,0 +1,39 @@
+class_name WorldInteraction
+extends Node2D
+## The room emits interactions. It never writes saves or changes scenes itself.
+@export_enum("checkpoint", "exit", "ability", "goal") var kind := "checkpoint"
+@export var target_room := ""
+@export var target_spawn := "entry"
+@export var stable_id := ""
+@export var prompt := "E  /  REST & SAVE"
+var clock := 0.0
+
+func _process(delta: float) -> void:
+	clock += delta
+	queue_redraw()
+
+func _draw() -> void:
+	var mint := Color("94e4ce")
+	match kind:
+		"checkpoint":
+			draw_circle(Vector2(0, -19), 26 + sin(clock * 2) * 2, Color(0.35, 0.9, 0.75, 0.07))
+		"exit":
+			draw_style_box(_door_style(), Rect2(-21, -70, 42, 70))
+			draw_line(Vector2(-16, -66), Vector2(-16, -4), mint, 2)
+			draw_line(Vector2(16, -66), Vector2(16, -4), mint, 2)
+			draw_circle(Vector2(0, -34), 4, mint)
+		"ability", "goal":
+			var y := -26 + sin(clock * 2.4) * 4
+			var tint := Color("f1ce83") if kind == "goal" else mint
+			draw_circle(Vector2(0, y), 27, Color(tint, 0.06))
+			draw_colored_polygon(PackedVector2Array([Vector2(0, y-14), Vector2(9, y), Vector2(0, y+14), Vector2(-9, y)]), tint)
+			draw_arc(Vector2(0, y), 20, clock, clock + 4.2, 24, Color(tint, 0.45), 1)
+
+func _door_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color("122d35")
+	style.border_color = Color("456064")
+	style.set_border_width_all(3)
+	style.corner_radius_top_left = 18
+	style.corner_radius_top_right = 18
+	return style

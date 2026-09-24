@@ -1,0 +1,125 @@
+extends Node2D
+
+const PLAYER_SCENE := preload("res://features/player/player.tscn")
+const ROOMS := {
+	"forest": preload("res://features/world/rooms/forest.tscn"),
+	"ruins": preload("res://features/world/rooms/ruins.tscn")
+}
+const Repository := preload("res://core/save_repository.gd")
+@onready var room_host: Node2D = $RoomHost
+@onready var camera: Camera2D = $Camera
+@onready var ui: GameUI = $UI
+var player: Player
+var room: GameRoom
+var running := false
+var transition_pending := false
+
+func _ready() -> void:
+	ui.start_requested.connect(start_game)
+	ui.resume_requested.connect(resume)
+	ui.quit_requested.connect(func() -> void: get_tree().quit())
+	Session.progress_changed.connect(ui.update_progress)
+	ui.show_menu("title", not Repository.read(Session.save_path).is_empty())
+	if "--smoke" in OS.get_cmdline_user_args():
+		Session.save_path = "user://smoke_progress.json"
+		start_game(false)
+
+func start_game(load_save: bool) -> void:
+	Session.reset()
+	if load_save and not Session.restore():
+		ui.notify("Save unavailable. Starting a new journey.")
+	player = PLAYER_SCENE.instantiate() as Player
+	add_child(player)
+	player.health.changed.connect(ui.update_health)
+	player.died.connect(_on_player_died)
+	running = true
+	load_room(Session.checkpoint_room, Session.checkpoint_spawn)
+	ui.show_hud()
+	ui.update_health(player.health.current, player.health.maximum)
+	ui.update_progress()
+
+func load_room(room_id: String, spawn: String) -> void:
+	if not ROOMS.has(room_id):
+		push_error("Unknown room: " + room_id)
+		return
+	if is_instance_valid(room):
+		room_host.remove_child(room)
+		room.queue_free()
+	room = (ROOMS[room_id] as PackedScene).instantiate() as GameRoom
+	room_host.add_child(room)
+	room.player = player
+	room.interaction_requested.connect(_on_interaction)
+	room.prompt_changed.connect(func(message: String) -> void: ui.prompt.text = message)
+	room.update_progress()
+	player.global_position = room.spawn_position(spawn)
+	player.velocity = Vector2.ZERO
+	Session.visit(room_id)
+	camera.limit_left = int(room.bounds.position.x)
+	camera.limit_top = int(room.bounds.position.y)
+	camera.limit_right = int(room.bounds.end.x)
+	camera.limit_bottom = int(room.bounds.end.y)
+	camera.position = player.position - Vector2(0, 65)
+	camera.reset_smoothing()
+	ui.area_label.text = room.display_name
+	ui.prompt.text = ""
+	Audio.play_music(room.music_track)
+	transition_pending = false
+
+func _process(_delta: float) -> void:
+	if running and is_instance_valid(player):
+		camera.position = player.position + Vector2(player.facing * 45, -65)
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("mute"):
+		Audio.toggle_mute()
+	if event.is_action_pressed("pause") and running:
+		if get_tree().paused:
+			resume()
+		else:
+			get_tree().paused = true
+			ui.show_menu("pause")
+
+func resume() -> void:
+	get_tree().paused = false
+	ui.show_hud()
+
+func _on_interaction(point: WorldInteraction) -> void:
+	if transition_pending:
+		return
+	match point.kind:
+		"exit":
+			transition_pending = true
+			load_room.call_deferred(point.target_room, point.target_spawn)
+		"checkpoint":
+			Session.checkpoint_room = room.room_id
+			Session.checkpoint_spawn = "checkpoint"
+			player.health.restore_full()
+			_save("Restored & saved")
+		"ability":
+			Session.unlock(point.stable_id)
+			room.update_progress()
+			Audio.play_sound("ability_acquire")
+			_save("DOUBLE JUMP / Press SPACE again in the air")
+		"goal":
+			if not Session.abilities.has("double_jump"):
+				ui.notify("The shrine awaits an echo from the eastern ruins")
+				return
+			Session.completed = true
+			Session.progress_changed.emit()
+			room.update_progress()
+			_save("The grove remembers. Journey complete.")
+			get_tree().paused = true
+			ui.show_menu("win")
+
+func _save(message: String) -> void:
+	if Session.commit() == OK:
+		ui.notify(message)
+		Audio.play_sound("save")
+	else:
+		ui.notify("Save failed / Progress remains in this session")
+
+func _on_player_died() -> void:
+	ui.notify("Returning to the last shrine...")
+	await get_tree().create_timer(0.85, false).timeout
+	load_room(Session.checkpoint_room, Session.checkpoint_spawn)
+	player.revive(room.spawn_position(Session.checkpoint_spawn))

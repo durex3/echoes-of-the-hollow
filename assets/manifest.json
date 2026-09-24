@@ -1,0 +1,107 @@
+[
+  {
+    "file": "assets/characters/hero.png",
+    "source_pack": "Godot 4《类银河恶魔城锻造坊》资源目录(1)",
+    "source_relative_path": "ch_01_player_foundations/ch_01_player_foundations/hero.png",
+    "sha256": "5b67dae534d3a66a8070e66d7d6bd10192a6c956a08945777432532ea1ca09c5",
+    "license_status": "Not supplied in extracted chapter pack; verify before distribution."
+  },
+  {
+    "file": "assets/characters/slime.png",
+    "source_pack": "Godot 4《类银河恶魔城锻造坊》资源目录(1)",
+    "source_relative_path": "ch_05_enemies/ch_05_enemies/slime/slime.png",
+    "sha256": "fcc66a9605a5f33ff58df6be5a982deeaeb49f8416305d074b1481b7c18ab825",
+    "license_status": "Not supplied in extracted chapter pack; verify before distribution."
+  },
+  {
+    "file": "assets/environment/forest.png",
+    "source_pack": "Godot 4《类银河恶魔城锻造坊》资源目录(1)",
+    "source_relative_path": "ch_02_world_building_foundations/ch_02_world_building_foundations/forgotten_forest_example_tileset.png",
+    "sha256": "7363d4a410c257f88c38fe51e9b98e723b898169dce0329f62da2a55c1f5010f",
+    "license_status": "Not supplied in extracted chapter pack; verify before distribution."
+  },
+  {
+    "file": "assets/props/save_point.png",
+    "source_pack": "Godot 4《类银河恶魔城锻造坊》资源目录(1)",
+    "source_relative_path": "ch_03_game_systems/ch_03_game_systems/sprites/save_point.png",
+    "sha256": "308905fc838db958187e1d1ca0b03e94b900e6667a2c55ac3dfa4182fd5c3ed2",
+    "license_status": "Not supplied in extracted chapter pack; verify before distribution."
+  },
+  {
+    "file": "assets/props/abilities.png",
+    "source_pack": "Godot 4《类银河恶魔城锻造坊》资源目录(1)",
+    "source_relative_path": "ch_04_player_abilities/ch_04_player_abilities/sprites/abilities.png",
+    "sha256": "83bcf56b4220b03073b0036ee14095c44af2d2f4299dd30dfd2d8c0aeb769a2a",
+    "license_status": "Not supplied in extracted chapter pack; verify before distribution."
+  },
+  {
+    "file": "assets/effects/weapon_smears.png",
+    "source_pack": "Godot 4《类银河恶魔城锻造坊》资源目录(1)",
+    "source_relative_path": "ch_04_player_abilities/ch_04_player_abilities/sprites/weapon_smears.png",
+    "sha256": "b8aa00060267877c5997a22be8288dfa90910da296315093ce2d597855ce282c",
+    "license_status": "Not supplied in extracted chapter pack; verify before distribution."
+  },
+  {
+    "file": "assets/fonts/alagard.ttf",
+    "source_pack": "Godot 4《类银河恶魔城锻造坊》资源目录(1)",
+    "source_relative_path": "ch_03_game_systems/ch_03_game_systems/fonts/alagard.ttf",
+    "sha256": "12f1e58f79d18d2ef49d923d801baade892769289bfcb9444769b6a4f7847007",
+    "license_status": "Not supplied in extracted chapter pack; verify before distribution."
+  },
+  {
+    "file": "assets/audio/forest.ogg",
+    "source_pack": "Godot 4《类银河恶魔城锻造坊》资源目录(1)",
+    "source_relative_path": "ch_03_game_systems/ch_03_game_systems/music/forest_01.ogg",
+    "sha256": "ec85787f324c5df2eeed984380780fc82ac4758aa52c9ba67287fb0ee275db7f",
+    "license_status": "Not supplied in extracted chapter pack; verify before distribution."
+  },
+  {
+    "file": "assets/audio/dungeon.ogg",
+    "source_pack": "Godot 4《类银河恶魔城锻造坊》资源目录(1)",
+    "source_relative_path": "ch_03_game_systems/ch_03_game_systems/music/dungeon_01.ogg",
+    "sha256": "4c7fcec63157e075de9cde784328a101e6f0c6732c1ce5d31c42aa865c9bd37c",
+    "license_status": "Not supplied in extracted chapter pack; verify before distribution."
+  },
+  {
+    "file": "assets/audio/jump.wav",
+    "source_pack": "Godot 4《类银河恶魔城锻造坊》资源目录(1)",
+    "source_relative_path": "ch_04_player_abilities/ch_04_player_abilities/audio/jump.wav",
+    "sha256": "2b00a6af1f8ff1d860ef3f9b26c20055eef46c91101abc676f62301b301c5f28",
+    "license_status": "Not supplied in extracted chapter pack; verify before distribution."
+  },
+  {
+    "file": "assets/audio/attack.wav",
+    "source_pack": "Godot 4《类银河恶魔城锻造坊》资源目录(1)",
+    "source_relative_path": "ch_04_player_abilities/ch_04_player_abilities/audio/attack.wav",
+    "sha256": "1b131602ece365d70257d4124d6d0d3b5464f6fe0499be0dbe8259802e9b33ff",
+    "license_status": "Not supplied in extracted chapter pack; verify before distribution."
+  },
+  {
+    "file": "assets/audio/hit.wav",
+    "source_pack": "Godot 4《类银河恶魔城锻造坊》资源目录(1)",
+    "source_relative_path": "ch_04_player_abilities/ch_04_player_abilities/audio/hit.wav",
+    "sha256": "8ff158f580f065159c9be61e5919faef7b9d3aad6662c1789e7d2802015d3e42",
+    "license_status": "Not supplied in extracted chapter pack; verify before distribution."
+  },
+  {
+    "file": "assets/audio/slime_death.wav",
+    "source_pack": "Godot 4《类银河恶魔城锻造坊》资源目录(1)",
+    "source_relative_path": "ch_05_enemies/ch_05_enemies/slime/slime_death.wav",
+    "sha256": "c618e6e3f220b616e3f276809e49df2471cbce5d0a61ff016d1a855bf3a3f033",
+    "license_status": "Not supplied in extracted chapter pack; verify before distribution."
+  },
+  {
+    "file": "assets/audio/ability_acquire.wav",
+    "source_pack": "Godot 4《类银河恶魔城锻造坊》资源目录(1)",
+    "source_relative_path": "ch_04_player_abilities/ch_04_player_abilities/audio/ability_acquire.wav",
+    "sha256": "93bc27a44c2d6942a82d40a82ee071c7f157b9c7b3281685eadd613ae392a157",
+    "license_status": "Not supplied in extracted chapter pack; verify before distribution."
+  },
+  {
+    "file": "assets/audio/save.wav",
+    "source_pack": "Godot 4《类银河恶魔城锻造坊》资源目录(1)",
+    "source_relative_path": "ch_03_game_systems/ch_03_game_systems/audio/ui_success_audio.wav",
+    "sha256": "6c6f9c8e832749c724f2f464d8ab48bc152ce88cfa08b86ec5a89d10c935a1b5",
+    "license_status": "Not supplied in extracted chapter pack; verify before distribution."
+  }
+]
