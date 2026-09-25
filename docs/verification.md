@@ -1,5 +1,19 @@
 # 本机验证记录
 
+## 0.3.0 — 2026-09-25
+
+环境仍为用户 E 盘 Godot 4.7.2.stable.official.ed1daf0bf，Compatibility / OpenGL 3.3 / RTX 3060 Laptop GPU。
+
+- 已执行 `tools/check.ps1 -Visual`：静态 0 错误、18 个素材 SHA-256、引擎导入/解析通过；**122 项行为断言 0 失败，141 项图形检查 0 失败**（122 行为 + 19 张截图保存）。
+- 独立进程验证 scriptorium/rest、二段跳、探索完成和两个清场标记保存/恢复；旧 schema 1 回归及旧 schema 2 样本通过。
+- 真实输入验证普通跳登上 64px 掩体、在锁定预警后起跳躲弹；真实剑击打断施法、清除混合遭遇通过。
+- 高速扫掠测试验证 12000px/s 墨弹不会穿透 2px 薄墙，目标在墙前时正确先命中；初始重叠、无敌、暂停、寿命、死亡/换房清理通过。
+- 查看新增截图 14–19；修复较宽房间末端背景缺失和掩体底部空白，复查紫色预警、可见墨弹、文字和组合敌人。原玩家/铠甲参数未修改。
+- 用户已明确反馈 0.2.0“手感可以”“活铠甲敌人 可以的”，已记入前轮任务与路线图；不扩大为全设备验收。
+
+证据：artifacts/import.log、integration.log、visual.log、save_write.log、save_read.log 与 PNG。本机产物不提交。
+未完成：用户对 0.3.0 远程关卡的连续试玩及主观难度、音效听感、实体手柄、多比例/多设备、独立导出包与远程 CI。当前为可试玩开发版本，不标记正式发布。
+
 ## 0.2.0 — 2026-09-25
 
 引擎仍为用户 E 盘 Godot 4.7.2.stable.official.ed1daf0bf；Compatibility / OpenGL 3.3 / NVIDIA GeForce RTX 3060 Laptop GPU。

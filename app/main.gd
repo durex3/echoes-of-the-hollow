@@ -4,7 +4,8 @@ const PLAYER_SCENE := preload("res://features/player/player.tscn")
 const ROOMS := {
 	"forest": preload("res://features/world/rooms/forest.tscn"),
 	"ruins": preload("res://features/world/rooms/ruins.tscn"),
-	"training": preload("res://features/world/rooms/training.tscn")
+	"training": preload("res://features/world/rooms/training.tscn"),
+	"scriptorium": preload("res://features/world/rooms/scriptorium.tscn")
 }
 const Repository := preload("res://core/save_repository.gd")
 @onready var room_host: Node2D = $RoomHost
@@ -55,9 +56,12 @@ func load_room(room_id: String, spawn: String) -> void:
 	room_host.add_child(room)
 	room.player = player
 	room.interaction_requested.connect(_on_interaction)
+	room.projectile_impact.connect($Feedback.show_impact.bind(false))
 	room.prompt_changed.connect(func(message: String) -> void: ui.prompt.text = message)
 	room.update_progress()
 	for enemy: Node in room.get_node("Enemies").get_children():
+		if enemy is DoomScribe:
+			enemy.target = player
 		if enemy is LivingArmor:
 			enemy.target = player
 			# Player damage already owns its sound; the enemy event adds visuals.
@@ -102,7 +106,7 @@ func _on_interaction(point: WorldInteraction) -> void:
 	match point.kind:
 		"exit":
 			if not point.required_flag.is_empty() and point.required_flag not in Session.flags:
-				ui.notify("Clear the training hall and claim its seal first")
+				ui.notify("Clear this hall and claim its seal first")
 				return
 			transition_pending = true
 			load_room.call_deferred(point.target_room, point.target_spawn)
@@ -123,7 +127,7 @@ func _on_interaction(point: WorldInteraction) -> void:
 			Session.set_flag(point.stable_id)
 			player.health.restore_full()
 			room.update_progress()
-			_save("HALL CLEARED / Forest shortcut unlocked")
+			_save("INK SEAL / Archive route unlocked" if point.stable_id == "scriptorium_cleared" else "HALL CLEARED / Forest shortcut unlocked")
 		"goal":
 			if not Session.abilities.has("double_jump"):
 				ui.notify("The shrine awaits an echo from the eastern ruins")
@@ -143,6 +147,8 @@ func _save(message: String) -> void:
 		ui.notify("Save failed / Progress remains in this session")
 
 func _on_player_died() -> void:
+	room.enabled = false
+	room.clear_projectiles()
 	ui.notify("Returning to the last shrine...")
 	await get_tree().create_timer(0.85, false).timeout
 	load_room(Session.checkpoint_room, Session.checkpoint_spawn)

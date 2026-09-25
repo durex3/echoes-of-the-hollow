@@ -5,15 +5,15 @@
 | Skill | 工程中的落点 | 验收方式 |
 |---|---|---|
 | godot-gdscript | 类型标注、生命周期、export、物理帧 | 原生导入/解析 |
-| godot-nodes-scenes | Player/Slime/Room 可复用场景与入口接线 | 独立实例与切房 |
+| godot-nodes-scenes | Player/Enemy/InkBolt/Room 可复用场景与入口接线 | 独立实例、弹体归属和切房释放 |
 | godot-signals-groups | 血量、死亡、进度、交互事件 | HUD/复活/换房断言 |
-| godot-resources | PlayerConfig、AttackProfile、ArmorConfig | 跳跃实测、攻击阶段边界 |
+| godot-resources | PlayerConfig、AttackProfile、ArmorConfig、ScribeConfig | 跳跃实测、攻击阶段、独立弹体测试配置 |
 | godot-2d-movement / platformer | CharacterBody2D、缓冲、宽限、短跳、双跳 | 真实物理与关卡攀升 |
-| godot-physics | 命名碰撞层、Hitbox/Hurtbox、边缘射线 | 去重伤害、无敌、敌人释放 |
+| godot-physics | Hitbox/Hurtbox、边缘/视线射线、墨弹扫掠 | 去重、无敌、2px 薄墙、最近碰撞和释放 |
 | godot-animation | SpriteFrames 原生图集与状态动画 | 实际帧渲染检查 |
 | godot-tilemap | 原生 TileSet/TileMapLayer、可编辑持久场景 | 地面碰撞与地图数据检查 |
 | input-systems | 命名动作、键盘/手柄映射 | 模拟动作；手柄硬件待验收 |
-| level-design | 移动指标先行、能力获取先于门槛 | 正常跳/双跳实测 |
+| level-design | 移动指标先行、能力获取先于门槛、远程教学/掩体/休息/组合 | 正常跳/双跳、躲弹、休息区安全实测 |
 | save-systems | schema 1→2 迁移、临时文件、备份、世界标记、准确检查点 | 旧档/坏档/未知版本/跨进程 |
 | game-ai | 铠甲七状态 FSM、视线、锁向、前方边缘检测 | 预警/反击/隔墙/边缘回归；手感待试玩 |
 | camera-systems | Camera2D 平滑、前视、房间边界、重置 | 截图；动态手感待试玩 |

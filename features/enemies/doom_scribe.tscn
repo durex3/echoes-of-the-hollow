@@ -1,0 +1,38 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://features/enemies/doom_scribe.gd" id="1"]
+[ext_resource type="SpriteFrames" path="res://features/enemies/scribe_frames.tres" id="2"]
+[ext_resource type="Script" path="res://features/combat/health.gd" id="3"]
+[ext_resource type="Script" path="res://features/combat/hurtbox.gd" id="4"]
+[ext_resource type="Resource" path="res://features/enemies/scribe_config.tres" id="5"]
+[sub_resource type="RectangleShape2D" id="Body"]
+size = Vector2(20, 40)
+[sub_resource type="RectangleShape2D" id="Hurt"]
+size = Vector2(26, 42)
+
+[node name="DoomScribe" type="CharacterBody2D" groups=["enemies"]]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("1")
+config = ExtResource("5")
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -32)
+sprite_frames = ExtResource("2")
+animation = &"idle"
+autoplay = "idle"
+[node name="Body" type="CollisionShape2D" parent="."]
+position = Vector2(0, -20)
+shape = SubResource("Body")
+[node name="Health" type="Node" parent="."]
+script = ExtResource("3")
+maximum = 2
+invulnerability_seconds = 0.16
+[node name="Hurtbox" type="Area2D" parent="." node_paths=PackedStringArray("health")]
+collision_layer = 16
+collision_mask = 0
+monitoring = false
+script = ExtResource("4")
+health = NodePath("../Health")
+[node name="Shape" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0, -25)
+shape = SubResource("Hurt")

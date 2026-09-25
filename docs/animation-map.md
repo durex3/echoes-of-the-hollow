@@ -37,8 +37,25 @@
 原图面向左，因此 facing > 0 时 flip_h=true。视觉朝向独立于攻击区的 facing×34 偏移。
 使用固定亮度调制提高暗背景可读性；受击亮度只短暂改变，关闭闪烁时不触发。琥珀色感叹号和地面范围线独立标记准备阶段。
 
+## DoomScribe 与墨弹
+
+两个原图均为 384×320、64×64 单帧、6 列；已查看放大联系表并检查 Godot 实际渲染。
+
+| 资源/动作 | 原图索引 | 用法 |
+|---|---|---|
+| DoomScribe 待机 | 0–7 | 8 fps 循环 |
+| 举笔蓄力 | 8–11 | 4 帧按 0.8s 预警缩放；附紫色环与瞄准虚线 |
+| 释放 | 12–13 | 8 fps，释放段只持续 0.15s |
+| 受伤 | 14 | 单帧，不混入死亡段 |
+| 死亡 | 15–24 | 12 fps，结束后释放节点 |
+| AttackSheet 墨迹 | 8–13 | 12 fps 循环，0.45 倍作为墨弹尾迹；中心另绘高对比紫色核心 |
+
+DoomScribe 原图朝右，面向左时 flip_h=true。弹体视觉跟随 direction.angle，伤害半径独立于拖尾长度。
+初建工具 `tools/build_scribe_assets.py` 拒绝覆盖已有动画资源；维护时在编辑器直接调整 scribe_frames.tres / ink_bolt_frames.tres。
+
 ## 修改后检查
 
 修改原生 SpriteFrames 后执行 `tools/check.ps1 -Visual`，检查 `06_sword_active`、`08_armor_warning`、`09_counterattack`、`13_armor_strike`。
 更改动作帧数量时同步相应播放速度计算；更改阶段时长须复测命中、方向锁定和反击窗口。
 自动截图不覆盖每一帧的动态衔接；完整动作观感仍需人工试玩。
+远程动作另看 `16_scribe_warning`、`17_ink_dodge`、`19_mixed_encounter`；必须同时复测锁定瞄准、受击取消与飞行碰撞。

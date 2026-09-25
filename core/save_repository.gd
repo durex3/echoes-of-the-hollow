@@ -3,7 +3,7 @@ extends RefCounted
 ## Plain-data persistence. The caller decides when a checkpoint is committed.
 
 const VERSION := 2
-const ROOMS := ["forest", "ruins", "training"]
+const ROOMS := ["forest", "ruins", "training", "scriptorium"]
 
 static func validate(data: Variant) -> bool:
 	if not data is Dictionary:
@@ -12,7 +12,7 @@ static func validate(data: Variant) -> bool:
 		return false
 	if data.get("checkpoint_room") not in ROOMS:
 		return false
-	var allowed_spawns: Array = ["checkpoint", "rest"] if data.checkpoint_room == "training" else ["checkpoint"]
+	var allowed_spawns: Array = ["checkpoint", "rest"] if data.checkpoint_room in ["training", "scriptorium"] else ["checkpoint"]
 	if data.get("checkpoint_spawn") not in allowed_spawns:
 		return false
 	if not data.get("abilities") is Array or not data.get("visited") is Array:
@@ -22,7 +22,7 @@ static func validate(data: Variant) -> bool:
 	if not data.get("flags") is Array:
 		return false
 	for flag: Variant in data.flags:
-		if flag != "training_cleared":
+		if flag not in ["training_cleared", "scriptorium_cleared"]:
 			return false
 	for ability: Variant in data.abilities:
 		if ability != "double_jump":

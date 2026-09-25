@@ -1,0 +1,140 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" path="res://features/world/room.gd" id="1_twr4e"]
+[ext_resource type="Script" path="res://features/world/backdrop.gd" id="2_ampk2"]
+[ext_resource type="TileSet" path="res://features/world/forest_tileset.tres" id="3_w15yc"]
+[ext_resource type="PackedScene" path="res://features/enemies/doom_scribe.tscn" id="4_ywcra"]
+[ext_resource type="Script" path="res://features/enemies/doom_scribe.gd" id="5_l1wd1"]
+[ext_resource type="Resource" path="res://features/enemies/scribe_config.tres" id="6_sh06b"]
+[ext_resource type="PackedScene" path="res://features/enemies/living_armor.tscn" id="7_sfqgo"]
+[ext_resource type="Script" path="res://features/enemies/living_armor.gd" id="8_6erqr"]
+[ext_resource type="Resource" path="res://features/enemies/armor_config.tres" id="9_n7cck"]
+[ext_resource type="Script" path="res://features/world/interaction.gd" id="10_ux4g2"]
+[ext_resource type="SpriteFrames" path="res://features/world/checkpoint_frames.tres" id="11_gt5ba"]
+
+[sub_resource type="RectangleShape2D" id="Boundary"]
+size = Vector2(32, 640)
+
+[node name="Scriptorium" type="Node2D" unique_id=1979477213]
+script = ExtResource("1_twr4e")
+room_id = "scriptorium"
+display_name = "04 / THE INK SANCTUM"
+music_track = "dungeon"
+bounds = Rect2(0, 0, 1600, 576)
+
+[node name="Backdrop" type="Node2D" parent="." unique_id=1004495117]
+script = ExtResource("2_ampk2")
+ruins = true
+room_width = 1600.0
+
+[node name="Terrain" type="TileMapLayer" parent="." unique_id=2087314978]
+tile_map_data = PackedByteArray("AAAAAA8AAAABAAYAAAABAA8AAAACAAYAAAACAA8AAAADAAYAAAADAA8AAAABAAYAAAAEAA8AAAACAAYAAAAFAA8AAAADAAYAAAAGAA8AAAABAAYAAAAHAA8AAAACAAYAAAAIAA8AAAADAAYAAAAJAA8AAAABAAYAAAAKAA8AAAACAAYAAAALAA8AAAADAAYAAAAMAA8AAAABAAYAAAANAA8AAAACAAYAAAAOAA8AAAADAAYAAAAPAA8AAAABAAYAAAAQAA8AAAACAAYAAAARAA8AAAADAAYAAAASAA8AAAABAAYAAAATAA8AAAACAAYAAAAUAA8AAAADAAYAAAAVAA8AAAABAAYAAAAWAA8AAAACAAYAAAAXAA8AAAADAAYAAAAYAA8AAAABAAYAAAAZAA8AAAACAAYAAAAaAA8AAAADAAYAAAAbAA8AAAABAAYAAAAcAA8AAAACAAYAAAAdAA8AAAADAAYAAAAeAA8AAAABAAYAAAAfAA8AAAACAAYAAAAgAA8AAAADAAYAAAAhAA8AAAABAAYAAAAiAA8AAAACAAYAAAAjAA8AAAADAAYAAAAkAA8AAAABAAYAAAAlAA8AAAACAAYAAAAmAA8AAAADAAYAAAAnAA8AAAABAAYAAAAAABAAAAABAAcAAAABABAAAAACAAcAAAACABAAAAADAAcAAAADABAAAAABAAcAAAAEABAAAAACAAcAAAAFABAAAAADAAcAAAAGABAAAAABAAcAAAAHABAAAAACAAcAAAAIABAAAAADAAcAAAAJABAAAAABAAcAAAAKABAAAAACAAcAAAALABAAAAADAAcAAAAMABAAAAABAAcAAAANABAAAAACAAcAAAAOABAAAAADAAcAAAAPABAAAAABAAcAAAAQABAAAAACAAcAAAARABAAAAADAAcAAAASABAAAAABAAcAAAATABAAAAACAAcAAAAUABAAAAADAAcAAAAVABAAAAABAAcAAAAWABAAAAACAAcAAAAXABAAAAADAAcAAAAYABAAAAABAAcAAAAZABAAAAACAAcAAAAaABAAAAADAAcAAAAbABAAAAABAAcAAAAcABAAAAACAAcAAAAdABAAAAADAAcAAAAeABAAAAABAAcAAAAfABAAAAACAAcAAAAgABAAAAADAAcAAAAhABAAAAABAAcAAAAiABAAAAACAAcAAAAjABAAAAADAAcAAAAkABAAAAABAAcAAAAlABAAAAACAAcAAAAmABAAAAADAAcAAAAnABAAAAABAAcAAAAAABEAAAABAAcAAAABABEAAAACAAcAAAACABEAAAADAAcAAAADABEAAAABAAcAAAAEABEAAAACAAcAAAAFABEAAAADAAcAAAAGABEAAAABAAcAAAAHABEAAAACAAcAAAAIABEAAAADAAcAAAAJABEAAAABAAcAAAAKABEAAAACAAcAAAALABEAAAADAAcAAAAMABEAAAABAAcAAAANABEAAAACAAcAAAAOABEAAAADAAcAAAAPABEAAAABAAcAAAAQABEAAAACAAcAAAARABEAAAADAAcAAAASABEAAAABAAcAAAATABEAAAACAAcAAAAUABEAAAADAAcAAAAVABEAAAABAAcAAAAWABEAAAACAAcAAAAXABEAAAADAAcAAAAYABEAAAABAAcAAAAZABEAAAACAAcAAAAaABEAAAADAAcAAAAbABEAAAABAAcAAAAcABEAAAACAAcAAAAdABEAAAADAAcAAAAeABEAAAABAAcAAAAfABEAAAACAAcAAAAgABEAAAADAAcAAAAhABEAAAABAAcAAAAiABEAAAACAAcAAAAjABEAAAADAAcAAAAkABEAAAABAAcAAAAlABEAAAACAAcAAAAmABEAAAADAAcAAAAnABEAAAABAAcAAAAVAA0AAAABAAYAAAAWAA0AAAACAAYAAAAXAA0A//////////8YAA0A//////////8ZAA0AAAACAAYAAAAVAA4AAAABAAcAAAAWAA4AAAACAAcAAAAXAA4A//////////8YAA4A//////////8ZAA4AAAACAAcAAAAcAAsA//////////8dAAsA//////////8eAAsA//////////8fAAsA//////////8gAAsA//////////8cAAwA//////////8dAAwA//////////8eAAwA//////////8fAAwA//////////8gAAwA//////////8FAA0A//////////8GAA0A//////////8HAA0A//////////8IAA0A//////////8oAA8AAAACAAYAAAApAA8AAAADAAYAAAAqAA8AAAABAAYAAAArAA8AAAACAAYAAAAsAA8AAAADAAYAAAAtAA8AAAABAAYAAAAuAA8AAAACAAYAAAAvAA8AAAADAAYAAAAwAA8AAAABAAYAAAAxAA8AAAACAAYAAAAoABAAAAACAAcAAAApABAAAAADAAcAAAAqABAAAAABAAcAAAArABAAAAACAAcAAAAsABAAAAADAAcAAAAtABAAAAABAAcAAAAuABAAAAACAAcAAAAvABAAAAADAAcAAAAwABAAAAABAAcAAAAxABAAAAACAAcAAAAoABEAAAACAAcAAAApABEAAAADAAcAAAAqABEAAAABAAcAAAArABEAAAACAAcAAAAsABEAAAADAAcAAAAtABEAAAABAAcAAAAuABEAAAACAAcAAAAvABEAAAADAAcAAAAwABEAAAABAAcAAAAxABEAAAACAAcAAAAKAA0AAAACAAYAAAAKAA4AAAACAAcAAAALAA0AAAADAAYAAAALAA4AAAADAAcAAAAaAA0AAAADAAYAAAAaAA4AAAADAAcAAAA=")
+tile_set = ExtResource("3_w15yc")
+
+[node name="Details" type="TileMapLayer" parent="." unique_id=1793121506]
+tile_map_data = PackedByteArray("AAAGAA4A//////////8RAA4A//////////8aAA4AAAAMAAgAAAAiAA4A//////////8KAA4AAAAMAAgAAAALAA4AAAAMAAgAAAAVAA4AAAAMAAgAAAAWAA4AAAAMAAgAAAAZAA4AAAAMAAgAAAA=")
+tile_set = ExtResource("3_w15yc")
+collision_enabled = false
+
+[node name="Bounds" type="StaticBody2D" parent="." unique_id=1225418886]
+collision_mask = 0
+
+[node name="Left" type="CollisionShape2D" parent="Bounds" unique_id=1896418561]
+position = Vector2(-16, 256)
+shape = SubResource("Boundary")
+
+[node name="Right" type="CollisionShape2D" parent="Bounds" unique_id=1307065268]
+position = Vector2(1616, 256)
+shape = SubResource("Boundary")
+
+[node name="Spawns" type="Node2D" parent="." unique_id=543289851]
+
+[node name="entry" type="Marker2D" parent="Spawns" unique_id=769823841]
+position = Vector2(110, 480)
+
+[node name="checkpoint" type="Marker2D" parent="Spawns" unique_id=1226889758]
+position = Vector2(160, 480)
+
+[node name="rest" type="Marker2D" parent="Spawns" unique_id=679844418]
+position = Vector2(775, 480)
+
+[node name="east" type="Marker2D" parent="Spawns" unique_id=1868923898]
+position = Vector2(1450, 480)
+
+[node name="Enemies" type="Node2D" parent="." unique_id=1521030063]
+
+[node name="ScribeSolo" type="CharacterBody2D" parent="Enemies" unique_id=1880075217 groups=["enemies"] instance=ExtResource("4_ywcra")]
+position = Vector2(610, 480)
+collision_layer = 4
+script = ExtResource("5_l1wd1")
+config = ExtResource("6_sh06b")
+
+[node name="ArmorMixed" type="CharacterBody2D" parent="Enemies" unique_id=255651468 groups=["enemies"] instance=ExtResource("7_sfqgo")]
+position = Vector2(1100, 480)
+collision_layer = 4
+script = ExtResource("8_6erqr")
+config = ExtResource("9_n7cck")
+patrol_distance = 45.0
+
+[node name="ScribeMixed" type="CharacterBody2D" parent="Enemies" unique_id=1771909108 groups=["enemies"] instance=ExtResource("4_ywcra")]
+position = Vector2(1370, 480)
+collision_layer = 4
+script = ExtResource("5_l1wd1")
+config = ExtResource("6_sh06b")
+
+[node name="Interactions" type="Node2D" parent="." unique_id=1102944836]
+
+[node name="WestDoor" type="Node2D" parent="Interactions" unique_id=1942554708]
+position = Vector2(48, 480)
+script = ExtResource("10_ux4g2")
+kind = "exit"
+target_room = "training"
+target_spawn = "scribe_return"
+prompt = "E / RETURN TO WATCHERS HALL"
+
+[node name="Shrine" type="Node2D" parent="Interactions" unique_id=1834507434]
+position = Vector2(160, 480)
+script = ExtResource("10_ux4g2")
+prompt = "E / RECOVER & SAVE"
+
+[node name="Sprite" type="AnimatedSprite2D" parent="Interactions/Shrine" unique_id=1794691181]
+position = Vector2(0, -20)
+scale = Vector2(0.5, 0.5)
+sprite_frames = ExtResource("11_gt5ba")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="Lesson" type="Node2D" parent="Interactions" unique_id=394083203]
+position = Vector2(245, 480)
+script = ExtResource("10_ux4g2")
+kind = "sign"
+prompt = "Violet charge: jump the bolt. Cover blocks ink."
+
+[node name="Rest" type="Node2D" parent="Interactions" unique_id=1101953584]
+position = Vector2(775, 480)
+script = ExtResource("10_ux4g2")
+checkpoint_spawn = "rest"
+prompt = "E / RECOVER & SAVE"
+
+[node name="Sprite" type="AnimatedSprite2D" parent="Interactions/Rest" unique_id=1482375188]
+position = Vector2(0, -20)
+scale = Vector2(0.5, 0.5)
+sprite_frames = ExtResource("11_gt5ba")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="Seal" type="Node2D" parent="Interactions" unique_id=1962195182]
+position = Vector2(1470, 480)
+script = ExtResource("10_ux4g2")
+kind = "reward"
+stable_id = "scriptorium_cleared"
+prompt = "E / CLAIM THE INK SEAL"
+
+[node name="EastDoor" type="Node2D" parent="Interactions" unique_id=1329350228]
+position = Vector2(1540, 480)
+script = ExtResource("10_ux4g2")
+kind = "exit"
+required_flag = "scriptorium_cleared"
+target_room = "ruins"
+target_spawn = "training_return"
+prompt = "E / RETURN TO THE ARCHIVE"

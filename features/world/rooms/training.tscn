@@ -61,6 +61,9 @@ position = Vector2(1145, 480)
 [node name="rest" type="Marker2D" parent="Spawns"]
 position = Vector2(710, 480)
 
+[node name="scribe_return" type="Marker2D" parent="Spawns"]
+position = Vector2(1050, 480)
+
 [node name="Enemies" type="Node2D" parent="." unique_id=1521030063]
 
 [node name="ArmorSolo" type="CharacterBody2D" parent="Enemies" unique_id=38093671 groups=["enemies"] instance=ExtResource("4_1svbw")]
@@ -140,3 +143,12 @@ required_flag = "training_cleared"
 target_room = "forest"
 target_spawn = "east"
 prompt = "E / FOREST SHORTCUT"
+
+[node name="ScribeDoor" type="Node2D" parent="Interactions"]
+position = Vector2(1035, 480)
+script = ExtResource("9_yghw8")
+kind = "exit"
+required_flag = "training_cleared"
+target_room = "scriptorium"
+target_spawn = "entry"
+prompt = "E / ENTER THE INK SANCTUM"
