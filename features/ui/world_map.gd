@@ -8,9 +8,10 @@ const ROOMS := {
 	"forest": {"title":"FORGOTTEN GROVE", "at":Vector2(15,88)},
 	"ruins": {"title":"THE ARCHIVE", "at":Vector2(195,88)},
 	"training": {"title":"WATCHERS HALL", "at":Vector2(375,88)},
-	"scriptorium": {"title":"INK SANCTUM", "at":Vector2(375,168)}
+	"scriptorium": {"title":"INK SANCTUM", "at":Vector2(375,168)},
+	"atrium": {"title":"ECHO ANTECHAMBER", "at":Vector2(15,168)}
 }
-const LINKS := [["forest","sanctuary"],["sanctuary","wind_hall"],["wind_hall","belfry"],["forest","ruins"],["ruins","training"],["training","scriptorium"]]
+const LINKS := [["forest","sanctuary"],["sanctuary","wind_hall"],["wind_hall","belfry"],["forest","ruins"],["ruins","training"],["training","scriptorium"],["forest","atrium"]]
 var current_room := "forest"
 var visited: Array[String] = []
 var checkpoint_room := "forest"

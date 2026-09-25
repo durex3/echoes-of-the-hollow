@@ -247,6 +247,10 @@ func _run() -> void:
 	add_child(ui_suite)
 	await ui_suite.run(self,game)
 	ui_suite.queue_free()
+	var convergence := preload("res://tests/convergence_suite.gd").new()
+	add_child(convergence)
+	await convergence.run(self,game)
+	convergence.queue_free()
 	check(Repository.validate(Session.snapshot()), "Save schema validates")
 	check(Session.commit() == OK, "Second save safely replaces first")
 	var saved_room := Session.checkpoint_room

@@ -1,7 +1,7 @@
 # 空谷回响 / Echoes of the Hollow
 
 Godot 4.7.2 + GDScript 的 2D 类银河恶魔城工程基础，使用本机《类银河恶魔城锻造坊》素材。
-当前版本 **0.6.0：中英文切换与领奖反馈**。包含七个可编辑房间，这是继续开发的工程起点，不是完整商业游戏。
+当前版本 **0.7.0：三印汇合与回响前庭**。包含八个可编辑房间，这是继续开发的工程起点，不是完整商业游戏。
 当前优先完成游戏内容；Windows 打包与浏览器兼容放到内容完成后的发布阶段。每轮照常执行开发回归，不要求先制作试玩包或等待用户试玩才能继续。
 
 ## 立即运行
@@ -27,6 +27,8 @@ Godot 4.7.2 + GDScript 的 2D 类银河恶魔城工程基础，使用本机《�
 
 ## 当前玩法
 
+- 新主线：取得守望者封印、墨文封印并点亮风信标后，回到森林地面靠东侧的三印门（x=1000），按 E 进入回响前庭。门上槽位显示已有印记，缺少时提示对应地点；HUD 随进度给出下一目标，两条支路可按任意顺序完成。
+- 回响前庭提供安全存档、两级普通跳台阶和返回森林的门。内门留待后续 Boss 内容，目前不会启动 Boss 战；生命之花和高台祭坛事件仍可选，旧存档已有印记直接有效。
 - 主菜单或 ESC 暂停菜单点击 **Language / 语言**，切换 English / 简体中文，立即生效并记住选择。首次默认英文，旧进度不受影响。
 - 领取能力、生命之花、封印或风信标后显示独立奖励卡片：名称、效果、下一步操作和保存结果。显示 6 秒，暂停/地图期间保留阅读时间，不阻挡操作。
 - A/D 或方向键移动；空格跳跃，短按跳得低，长按跳得高。
@@ -77,7 +79,7 @@ artifacts/            本机检查日志和截图（不提交）
 7. [技能到工程的映射](docs/skill-map.md)：采用哪些 skill，如何落实。
 8. [技术决策](docs/decisions/0001-project-baseline.md)：为什么这样组织。
 9. [变更记录](CHANGELOG.md)、[贡献约定](CONTRIBUTING.md)、[任务模板](docs/templates/task.md)。
-10. [领奖与语言任务](docs/tasks/reward-language.md)、[冲刺风道任务](docs/tasks/dash-wind-path.md)、[探索地图任务](docs/tasks/exploration-map.md)、[远程敌人任务](docs/tasks/doom-scribe.md)、[活铠甲任务](docs/tasks/combat-training.md)、[动画帧映射](docs/animation-map.md)：实现范围、验收状态和美术维护依据。
+10. [主线汇合任务](docs/tasks/convergence-path.md)、[领奖与语言任务](docs/tasks/reward-language.md)、[冲刺风道任务](docs/tasks/dash-wind-path.md)、[探索地图任务](docs/tasks/exploration-map.md)、[远程敌人任务](docs/tasks/doom-scribe.md)、[活铠甲任务](docs/tasks/combat-training.md)、[动画帧映射](docs/animation-map.md)：实现范围、验收状态和美术维护依据。
 
 ## 素材与范围
 

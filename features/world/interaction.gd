@@ -4,12 +4,24 @@ extends Node2D
 @export_enum("checkpoint", "exit", "ability", "goal", "reward", "sign", "upgrade") var kind := "checkpoint"
 @export var required_flag := ""
 @export var required_ability := ""
+@export var required_flags: Array[String] = []
+@export var missing_flag_prompts: Array[String] = []
 @export var target_room := ""
 @export var target_spawn := "entry"
 @export var checkpoint_spawn := "checkpoint"
 @export var stable_id := ""
 @export var prompt := "E  /  REST & SAVE"
 var clock := 0.0
+
+func locked_message(abilities: Array[String], flags: Array[String]) -> String:
+	if not required_ability.is_empty() and required_ability not in abilities:
+		return "The high roots answer only to the sky echo"
+	if not required_flag.is_empty() and required_flag not in flags:
+		return "Clear this hall and claim its seal first"
+	for index: int in range(required_flags.size()):
+		if required_flags[index] not in flags:
+			return missing_flag_prompts[index] if index < missing_flag_prompts.size() else "Clear this hall and claim its seal first"
+	return ""
 
 func _process(delta: float) -> void:
 	clock += delta

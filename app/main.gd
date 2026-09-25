@@ -8,7 +8,8 @@ const ROOMS := {
 	"scriptorium": preload("res://features/world/rooms/scriptorium.tscn"),
 	"sanctuary": preload("res://features/world/rooms/sanctuary.tscn"),
 	"wind_hall": preload("res://features/world/rooms/wind_hall.tscn"),
-	"belfry": preload("res://features/world/rooms/belfry.tscn")
+	"belfry": preload("res://features/world/rooms/belfry.tscn"),
+	"atrium": preload("res://features/world/rooms/atrium.tscn")
 }
 const Repository := preload("res://core/save_repository.gd")
 @onready var room_host: Node2D = $RoomHost
@@ -138,11 +139,9 @@ func _on_interaction(point: WorldInteraction) -> void:
 		return
 	match point.kind:
 		"exit":
-			if not point.required_ability.is_empty() and point.required_ability not in Session.abilities:
-				ui.notify("The high roots answer only to the sky echo")
-				return
-			if not point.required_flag.is_empty() and point.required_flag not in Session.flags:
-				ui.notify("Clear this hall and claim its seal first")
+			var locked := point.locked_message(Session.abilities,Session.flags)
+			if not locked.is_empty():
+				ui.notify(locked)
 				return
 			transition_pending = true
 			load_room.call_deferred(point.target_room, point.target_spawn)
@@ -183,7 +182,7 @@ func _on_interaction(point: WorldInteraction) -> void:
 			Session.completed = true
 			Session.progress_changed.emit()
 			room.update_progress()
-			_save("The grove remembers. Journey complete.")
+			_save("The grove remembers. Seek the three marks.")
 			get_tree().paused = true
 			ui.show_menu("win")
 

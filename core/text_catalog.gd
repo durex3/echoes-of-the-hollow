@@ -2,6 +2,22 @@ class_name TextCatalog
 extends RefCounted
 ## Source English strings are stable translation keys; native Godot Translation backend.
 const ZH := {
+	"Find the sky echo / Eastern archive": "前往东侧档案馆，寻找天空回响",
+	"Claim the Watchers seal / East of the archive": "前往档案馆东侧，取得守望者封印",
+	"Claim the Ink seal / Through Watchers Hall": "穿过守望者训练厅，取得墨文封印",
+	"Find the wind echo / Above the grove": "沿林地高处树根前进，寻找风之回响",
+	"Light the wind beacon / Beyond Wind Gallery": "穿过风廊，在钟楼点亮风信标",
+	"Three marks gathered / Grove ground-level gate": "三印已齐 / 前往林地地面三印门",
+	"Antechamber reached / Rest before the sealed door": "已抵达回响前庭 / 在封闭内门前休整",
+	"The grove remembers. Seek the three marks.": "林地回响已唤醒，请继续寻找三枚印记。",
+	"ECHO ANTECHAMBER": "回响前庭",
+	"08 / ECHO ANTECHAMBER": "08 / 回响前庭",
+	"E / THREE-MARK GATE": "E / 三印门 · 通往回响前庭",
+	"Missing Watchers seal / Hall east of the archive": "缺少守望者封印 / 前往档案馆东侧训练厅",
+	"Missing Ink seal / Entrance inside Watchers Hall": "缺少墨文封印 / 入口位于守望者训练厅内",
+	"Missing wind beacon / Belfry beyond Wind Gallery": "尚未点亮风信标 / 穿过风廊前往钟楼",
+	"A quiet threshold. Rest here before going onward.": "这里没有敌人。前行之前，请在祭坛休息并保存。",
+	"Inner door sealed / The guardian awakens in a future chapter.": "内门尚未开启 / 守门者将在后续篇章登场。",
 	"ECHOES OF THE HOLLOW": "空谷回响",
 	"ECHO RESTORED": "回响已唤醒",
 	"PAUSED": "已暂停",

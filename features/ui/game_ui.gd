@@ -209,10 +209,7 @@ func update_health(current: int, maximum: int) -> void:
 	health_label.text = TextCatalog.text("VITALITY") + "  " + "| ".repeat(current) + ". ".repeat(maximum - current)
 
 func update_progress() -> void:
-	if "dash" in Session.abilities:
-		set_text(objective,"Wind route open / Explore freely" if "belfry_cleared" in Session.flags else "Dash through the wind / Reach the silent belfry")
-		return
-	set_text(objective,"Echo restored / Explore freely" if Session.completed else ("Double jump unlocked / Return to the high shrine" if Session.abilities.has("double_jump") else "Find the echo in the eastern ruins"))
+	set_text(objective,JourneyProgress.objective(Session.abilities,Session.flags,Session.visited))
 
 func notify(message: String) -> void:
 	set_text(toast,message)

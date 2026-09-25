@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://features/world/interaction.gd" id="5"]
 [ext_resource type="Script" path="res://features/enemies/slime.gd" id="5_y6d5d"]
 [ext_resource type="SpriteFrames" path="res://features/world/checkpoint_frames.tres" id="6"]
+[ext_resource type="Script" path="res://features/world/convergence_door.gd" id="7_convergence"]
 
 [sub_resource type="RectangleShape2D" id="Boundary"]
 size = Vector2(32, 640)
@@ -102,3 +103,15 @@ required_ability = "double_jump"
 target_room = "sanctuary"
 target_spawn = "entry"
 prompt = "E / FOLLOW THE HIGH ROOTS"
+
+[node name="atrium_return" type="Marker2D" parent="Spawns"]
+position = Vector2(950, 480)
+
+[node name="ConvergenceDoor" type="Node2D" parent="Interactions"]
+position = Vector2(1000, 480)
+script = ExtResource("7_convergence")
+kind = "exit"
+required_flags = Array[String](["training_cleared", "scriptorium_cleared", "belfry_cleared"])
+missing_flag_prompts = Array[String](["Missing Watchers seal / Hall east of the archive", "Missing Ink seal / Entrance inside Watchers Hall", "Missing wind beacon / Belfry beyond Wind Gallery"])
+target_room = "atrium"
+prompt = "E / THREE-MARK GATE"

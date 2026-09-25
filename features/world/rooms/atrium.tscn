@@ -1,0 +1,90 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" path="res://features/world/room.gd" id="1_efkh3"]
+[ext_resource type="Script" path="res://features/world/backdrop.gd" id="2_0b6du"]
+[ext_resource type="Script" path="res://features/world/atrium_landmarks.gd" id="3_cmrch"]
+[ext_resource type="TileSet" path="res://features/world/forest_tileset.tres" id="4_ftk0l"]
+[ext_resource type="Script" path="res://features/world/interaction.gd" id="5_887n2"]
+[ext_resource type="SpriteFrames" path="res://features/world/checkpoint_frames.tres" id="6_6q307"]
+
+[sub_resource type="RectangleShape2D" id="Boundary"]
+size = Vector2(32, 640)
+
+[node name="Atrium" type="Node2D" unique_id=601705271]
+script = ExtResource("1_efkh3")
+room_id = "atrium"
+display_name = "08 / ECHO ANTECHAMBER"
+music_track = "dungeon"
+bounds = Rect2(0, 0, 960, 576)
+
+[node name="Backdrop" type="Node2D" parent="." unique_id=1671505959]
+script = ExtResource("2_0b6du")
+ruins = true
+room_width = 960.0
+
+[node name="Landmarks" type="Node2D" parent="." unique_id=1792535262]
+script = ExtResource("3_cmrch")
+
+[node name="Terrain" type="TileMapLayer" parent="." unique_id=81977782]
+tile_map_data = PackedByteArray("AAAAAA8AAAABAAYAAAABAA8AAAACAAYAAAACAA8AAAADAAYAAAADAA8AAAABAAYAAAAEAA8AAAACAAYAAAAFAA8AAAADAAYAAAAGAA8AAAABAAYAAAAHAA8AAAACAAYAAAAIAA8AAAADAAYAAAAJAA8AAAABAAYAAAAKAA8AAAACAAYAAAALAA8AAAADAAYAAAAMAA8AAAABAAYAAAANAA8AAAACAAYAAAAOAA8AAAADAAYAAAAPAA8AAAABAAYAAAAQAA8AAAACAAYAAAARAA8AAAADAAYAAAASAA8AAAABAAYAAAATAA8AAAACAAYAAAAUAA8AAAADAAYAAAAVAA8AAAABAAYAAAAWAA8AAAACAAYAAAAXAA8AAAADAAYAAAAYAA8AAAABAAYAAAAZAA8AAAACAAYAAAAaAA8AAAADAAYAAAAbAA8AAAABAAYAAAAcAA8AAAACAAYAAAAdAA8AAAADAAYAAAAeAA8A//////////8fAA8A//////////8gAA8A//////////8hAA8A//////////8iAA8A//////////8jAA8A//////////8kAA8A//////////8lAA8A//////////8mAA8A//////////8nAA8A//////////8AABAAAAABAAcAAAABABAAAAACAAcAAAACABAAAAADAAcAAAADABAAAAABAAcAAAAEABAAAAACAAcAAAAFABAAAAADAAcAAAAGABAAAAABAAcAAAAHABAAAAACAAcAAAAIABAAAAADAAcAAAAJABAAAAABAAcAAAAKABAAAAACAAcAAAALABAAAAADAAcAAAAMABAAAAABAAcAAAANABAAAAACAAcAAAAOABAAAAADAAcAAAAPABAAAAABAAcAAAAQABAAAAACAAcAAAARABAAAAADAAcAAAASABAAAAABAAcAAAATABAAAAACAAcAAAAUABAAAAADAAcAAAAVABAAAAABAAcAAAAWABAAAAACAAcAAAAXABAAAAADAAcAAAAYABAAAAABAAcAAAAZABAAAAACAAcAAAAaABAAAAADAAcAAAAbABAAAAABAAcAAAAcABAAAAACAAcAAAAdABAAAAADAAcAAAAeABAA//////////8fABAA//////////8gABAA//////////8hABAA//////////8iABAA//////////8jABAA//////////8kABAA//////////8lABAA//////////8mABAA//////////8nABAA//////////8AABEAAAABAAcAAAABABEAAAACAAcAAAACABEAAAADAAcAAAADABEAAAABAAcAAAAEABEAAAACAAcAAAAFABEAAAADAAcAAAAGABEAAAABAAcAAAAHABEAAAACAAcAAAAIABEAAAADAAcAAAAJABEAAAABAAcAAAAKABEAAAACAAcAAAALABEAAAADAAcAAAAMABEAAAABAAcAAAANABEAAAACAAcAAAAOABEAAAADAAcAAAAPABEAAAABAAcAAAAQABEAAAACAAcAAAARABEAAAADAAcAAAASABEAAAABAAcAAAATABEAAAACAAcAAAAUABEAAAADAAcAAAAVABEAAAABAAcAAAAWABEAAAACAAcAAAAXABEAAAADAAcAAAAYABEAAAABAAcAAAAZABEAAAACAAcAAAAaABEAAAADAAcAAAAbABEAAAABAAcAAAAcABEAAAACAAcAAAAdABEAAAADAAcAAAAeABEA//////////8fABEA//////////8gABEA//////////8hABEA//////////8iABEA//////////8jABEA//////////8kABEA//////////8lABEA//////////8mABEA//////////8nABEA//////////8IAAwA//////////8JAAwA//////////8KAAwA//////////8LAAwA//////////8MAAwA//////////8NAAwA//////////8OAAwA//////////8IAA0A//////////8JAA0A//////////8KAA0A//////////8LAA0A//////////8MAA0A//////////8NAA0AAAACAAYAAAAOAA0AAAADAAYAAAALAAcA//////////8MAAcA//////////8NAAcA//////////8OAAcA//////////8PAAcA//////////8LAAgA//////////8MAAgA//////////8NAAgA//////////8OAAgA//////////8PAAgA//////////8WAAwA//////////8XAAwA//////////8YAAwA//////////8ZAAwA//////////8WAA0A//////////8XAA0A//////////8YAA0A//////////8ZAA0A//////////8PAA0AAAABAAYAAAASAAsAAAABAAYAAAATAAsAAAACAAYAAAAUAAsAAAADAAYAAAAVAAsAAAABAAYAAAAWAAsAAAACAAYAAAAXAAsAAAADAAYAAAAYAAsAAAABAAYAAAAZAAsAAAACAAYAAAAaAAsAAAADAAYAAAAbAAsAAAABAAYAAAA=")
+tile_set = ExtResource("4_ftk0l")
+
+[node name="Details" type="TileMapLayer" parent="." unique_id=40044950]
+tile_map_data = PackedByteArray("AAAGAA4A//////////8RAA4A//////////8aAA4A//////////8iAA4A//////////8=")
+tile_set = ExtResource("4_ftk0l")
+collision_enabled = false
+
+[node name="Bounds" type="StaticBody2D" parent="." unique_id=1358145428]
+collision_mask = 0
+
+[node name="Left" type="CollisionShape2D" parent="Bounds" unique_id=706008918]
+position = Vector2(-16, 256)
+shape = SubResource("Boundary")
+
+[node name="Right" type="CollisionShape2D" parent="Bounds" unique_id=1364135426]
+position = Vector2(976, 256)
+shape = SubResource("Boundary")
+
+[node name="Spawns" type="Node2D" parent="." unique_id=22093897]
+
+[node name="entry" type="Marker2D" parent="Spawns" unique_id=595770805]
+position = Vector2(110, 480)
+
+[node name="checkpoint" type="Marker2D" parent="Spawns" unique_id=1028646197]
+position = Vector2(240, 480)
+
+[node name="Enemies" type="Node2D" parent="." unique_id=1963065800]
+
+[node name="Interactions" type="Node2D" parent="." unique_id=1839794500]
+
+[node name="Return" type="Node2D" parent="Interactions" unique_id=1946598492]
+position = Vector2(48, 480)
+script = ExtResource("5_887n2")
+kind = "exit"
+target_room = "forest"
+target_spawn = "atrium_return"
+prompt = "E / RETURN TO THE GROVE"
+
+[node name="Shrine" type="Node2D" parent="Interactions" unique_id=538760616]
+position = Vector2(240, 480)
+script = ExtResource("5_887n2")
+prompt = "E / REST & SAVE"
+
+[node name="Sprite" type="AnimatedSprite2D" parent="Interactions/Shrine" unique_id=1996272980]
+position = Vector2(0, -20)
+scale = Vector2(0.5, 0.5)
+sprite_frames = ExtResource("6_6q307")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="RestHint" type="Node2D" parent="Interactions" unique_id=2121966002]
+position = Vector2(345, 480)
+script = ExtResource("5_887n2")
+kind = "sign"
+prompt = "A quiet threshold. Rest here before going onward."
+
+[node name="InnerDoor" type="Node2D" parent="Interactions" unique_id=1747091635]
+position = Vector2(816, 352)
+script = ExtResource("5_887n2")
+kind = "sign"
+prompt = "Inner door sealed / The guardian awakens in a future chapter."

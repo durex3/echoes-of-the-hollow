@@ -3,7 +3,7 @@ extends RefCounted
 ## Plain-data persistence. The caller decides when a checkpoint is committed.
 
 const VERSION := 2
-const ROOMS := ["forest", "ruins", "training", "scriptorium", "sanctuary", "wind_hall", "belfry"]
+const ROOMS := ["forest", "ruins", "training", "scriptorium", "sanctuary", "wind_hall", "belfry", "atrium"]
 
 static func validate(data: Variant) -> bool:
 	if not data is Dictionary:
