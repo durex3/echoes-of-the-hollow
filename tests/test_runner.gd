@@ -237,6 +237,10 @@ func _run() -> void:
 	add_child(exploration)
 	await exploration.run(self,game)
 	exploration.queue_free()
+	var dash_suite := preload("res://tests/dash_suite.gd").new()
+	add_child(dash_suite)
+	await dash_suite.run(self,game)
+	dash_suite.queue_free()
 	check(Repository.validate(Session.snapshot()), "Save schema validates")
 	check(Session.commit() == OK, "Second save safely replaces first")
 	var saved_room := Session.checkpoint_room

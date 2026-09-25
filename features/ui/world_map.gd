@@ -3,12 +3,14 @@ extends Control
 ## Schematic room graph; diagram coordinates are independent of world geometry.
 const ROOMS := {
 	"sanctuary": {"title":"ROOT SANCTUARY", "at":Vector2(15,8)},
+	"wind_hall": {"title":"WIND GALLERY", "at":Vector2(195,8)},
+	"belfry": {"title":"SILENT BELFRY", "at":Vector2(375,8)},
 	"forest": {"title":"FORGOTTEN GROVE", "at":Vector2(15,88)},
 	"ruins": {"title":"THE ARCHIVE", "at":Vector2(195,88)},
 	"training": {"title":"WATCHERS HALL", "at":Vector2(375,88)},
 	"scriptorium": {"title":"INK SANCTUM", "at":Vector2(375,168)}
 }
-const LINKS := [["forest","sanctuary"],["forest","ruins"],["ruins","training"],["training","scriptorium"]]
+const LINKS := [["forest","sanctuary"],["sanctuary","wind_hall"],["wind_hall","belfry"],["forest","ruins"],["ruins","training"],["training","scriptorium"]]
 var current_room := "forest"
 var visited: Array[String] = []
 var checkpoint_room := "forest"
@@ -46,6 +48,9 @@ func _draw() -> void:
 		var a: Vector2 = ROOMS[pair[0]].at + Vector2(75,26)
 		var b: Vector2 = ROOMS[pair[1]].at + Vector2(75,26)
 		draw_line(a,b,Color("526d64"),2)
+	if "belfry_cleared" in flags and "belfry" in visited and "forest" in visited:
+		draw_polyline(PackedVector2Array([Vector2(450,60),Vector2(450,74),Vector2(90,74),Vector2(90,88)]),Color("94e4ce"),1)
+		draw_colored_polygon(PackedVector2Array([Vector2(90,88),Vector2(86,82),Vector2(94,82)]),Color("94e4ce"))
 	if "training_cleared" in flags and "training" in visited and "forest" in visited:
 		draw_polyline(PackedVector2Array([Vector2(450,140),Vector2(450,153),Vector2(90,153),Vector2(90,140)]),Color("94e4ce"),1)
 		draw_colored_polygon(PackedVector2Array([Vector2(90,140),Vector2(86,146),Vector2(94,146)]),Color("94e4ce"))

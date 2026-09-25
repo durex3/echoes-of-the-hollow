@@ -6,7 +6,9 @@ const ROOMS := {
 	"ruins": preload("res://features/world/rooms/ruins.tscn"),
 	"training": preload("res://features/world/rooms/training.tscn"),
 	"scriptorium": preload("res://features/world/rooms/scriptorium.tscn"),
-	"sanctuary": preload("res://features/world/rooms/sanctuary.tscn")
+	"sanctuary": preload("res://features/world/rooms/sanctuary.tscn"),
+	"wind_hall": preload("res://features/world/rooms/wind_hall.tscn"),
+	"belfry": preload("res://features/world/rooms/belfry.tscn")
 }
 const Repository := preload("res://core/save_repository.gd")
 @onready var room_host: Node2D = $RoomHost
@@ -50,6 +52,7 @@ func load_room(room_id: String, spawn: String) -> void:
 		push_error("Unknown room: " + room_id)
 		return
 	$Feedback.clear()
+	player.cancel_dash()
 	player.cancel_attack()
 	if player.state == Player.State.ATTACK:
 		player.state = Player.State.MOVE
@@ -60,6 +63,7 @@ func load_room(room_id: String, spawn: String) -> void:
 	room_host.add_child(room)
 	room.player = player
 	room.interaction_requested.connect(_on_interaction)
+	room.gate_breached.connect(_on_gate_breached)
 	room.projectile_impact.connect($Feedback.show_impact.bind(false))
 	room.prompt_changed.connect(func(message: String) -> void: ui.prompt.text = message)
 	room.update_progress()
@@ -151,7 +155,7 @@ func _on_interaction(point: WorldInteraction) -> void:
 			Session.unlock(point.stable_id)
 			room.update_progress()
 			Audio.play_sound("ability_acquire")
-			_save("DOUBLE JUMP / Press SPACE again in the air")
+			_save("WIND DASH / K or right shoulder - no invincibility" if point.stable_id == "dash" else "DOUBLE JUMP / Press SPACE again in the air")
 		"upgrade":
 			if point.stable_id != "heart_bloom" or point.stable_id in Session.flags:
 				return
@@ -167,7 +171,12 @@ func _on_interaction(point: WorldInteraction) -> void:
 			Session.set_flag(point.stable_id)
 			player.health.restore_full()
 			room.update_progress()
-			_save("INK SEAL / Archive route unlocked" if point.stable_id == "scriptorium_cleared" else "HALL CLEARED / Forest shortcut unlocked")
+			var message := "HALL CLEARED / Forest shortcut unlocked"
+			if point.stable_id == "scriptorium_cleared":
+				message = "INK SEAL / Archive route unlocked"
+			elif point.stable_id == "belfry_cleared":
+				message = "WIND BEACON / Grove shortcut unlocked"
+			_save(message)
 		"goal":
 			if not Session.abilities.has("double_jump"):
 				ui.notify("The shrine awaits an echo from the eastern ruins")
@@ -185,6 +194,10 @@ func _save(message: String) -> void:
 		Audio.play_sound("save")
 	else:
 		ui.notify("Save failed / Progress remains in this session")
+
+func _on_gate_breached(stable_id: String) -> void:
+	Session.set_flag(stable_id)
+	_save("Wind barrier opened / Route saved")
 
 func _on_player_died() -> void:
 	room.enabled = false

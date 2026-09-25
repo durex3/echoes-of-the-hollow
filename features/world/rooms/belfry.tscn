@@ -1,0 +1,120 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" path="res://features/world/room.gd" id="1_oa1iq"]
+[ext_resource type="Script" path="res://features/world/backdrop.gd" id="2_0b2f1"]
+[ext_resource type="Script" path="res://features/world/wind_landmarks.gd" id="3_0b2f1"]
+[ext_resource type="TileSet" path="res://features/world/forest_tileset.tres" id="3_brken"]
+[ext_resource type="PackedScene" path="res://features/enemies/living_armor.tscn" id="4_pab1t"]
+[ext_resource type="Script" path="res://features/enemies/living_armor.gd" id="5_e2600"]
+[ext_resource type="Resource" path="res://features/enemies/armor_config.tres" id="6_thuje"]
+[ext_resource type="PackedScene" path="res://features/enemies/doom_scribe.tscn" id="7_qiwen"]
+[ext_resource type="Script" path="res://features/enemies/doom_scribe.gd" id="8_ivliq"]
+[ext_resource type="Resource" path="res://features/enemies/scribe_config.tres" id="9_1gf1f"]
+[ext_resource type="Script" path="res://features/world/interaction.gd" id="10_7angi"]
+[ext_resource type="SpriteFrames" path="res://features/world/checkpoint_frames.tres" id="11_10051"]
+
+[sub_resource type="RectangleShape2D" id="Boundary"]
+size = Vector2(32, 640)
+
+[node name="Belfry" type="Node2D" unique_id=601705271]
+script = ExtResource("1_oa1iq")
+room_id = "belfry"
+display_name = "07 / SILENT BELFRY"
+music_track = "dungeon"
+
+[node name="Backdrop" type="Node2D" parent="." unique_id=1671505959]
+script = ExtResource("2_0b2f1")
+ruins = true
+
+[node name="Landmarks" type="Node2D" parent="." unique_id=1925652166]
+script = ExtResource("3_0b2f1")
+belfry = true
+
+[node name="Terrain" type="TileMapLayer" parent="." unique_id=81977782]
+tile_map_data = PackedByteArray("AAAAAA8AAAABAAYAAAABAA8AAAACAAYAAAACAA8AAAADAAYAAAADAA8AAAABAAYAAAAEAA8AAAACAAYAAAAFAA8AAAADAAYAAAAGAA8AAAABAAYAAAAHAA8AAAACAAYAAAAIAA8AAAADAAYAAAAJAA8AAAABAAYAAAAKAA8AAAACAAYAAAALAA8AAAADAAYAAAAMAA8AAAABAAYAAAANAA8AAAACAAYAAAAOAA8AAAADAAYAAAAPAA8AAAABAAYAAAAQAA8AAAACAAYAAAARAA8AAAADAAYAAAASAA8AAAABAAYAAAATAA8AAAACAAYAAAAUAA8AAAADAAYAAAAVAA8AAAABAAYAAAAWAA8AAAACAAYAAAAXAA8AAAADAAYAAAAYAA8AAAABAAYAAAAZAA8AAAACAAYAAAAaAA8AAAADAAYAAAAbAA8AAAABAAYAAAAcAA8AAAACAAYAAAAdAA8AAAADAAYAAAAeAA8AAAABAAYAAAAfAA8AAAACAAYAAAAgAA8AAAADAAYAAAAhAA8AAAABAAYAAAAiAA8AAAACAAYAAAAjAA8AAAADAAYAAAAkAA8AAAABAAYAAAAlAA8AAAACAAYAAAAmAA8AAAADAAYAAAAnAA8AAAABAAYAAAAAABAAAAABAAcAAAABABAAAAACAAcAAAACABAAAAADAAcAAAADABAAAAABAAcAAAAEABAAAAACAAcAAAAFABAAAAADAAcAAAAGABAAAAABAAcAAAAHABAAAAACAAcAAAAIABAAAAADAAcAAAAJABAAAAABAAcAAAAKABAAAAACAAcAAAALABAAAAADAAcAAAAMABAAAAABAAcAAAANABAAAAACAAcAAAAOABAAAAADAAcAAAAPABAAAAABAAcAAAAQABAAAAACAAcAAAARABAAAAADAAcAAAASABAAAAABAAcAAAATABAAAAACAAcAAAAUABAAAAADAAcAAAAVABAAAAABAAcAAAAWABAAAAACAAcAAAAXABAAAAADAAcAAAAYABAAAAABAAcAAAAZABAAAAACAAcAAAAaABAAAAADAAcAAAAbABAAAAABAAcAAAAcABAAAAACAAcAAAAdABAAAAADAAcAAAAeABAAAAABAAcAAAAfABAAAAACAAcAAAAgABAAAAADAAcAAAAhABAAAAABAAcAAAAiABAAAAACAAcAAAAjABAAAAADAAcAAAAkABAAAAABAAcAAAAlABAAAAACAAcAAAAmABAAAAADAAcAAAAnABAAAAABAAcAAAAAABEAAAABAAcAAAABABEAAAACAAcAAAACABEAAAADAAcAAAADABEAAAABAAcAAAAEABEAAAACAAcAAAAFABEAAAADAAcAAAAGABEAAAABAAcAAAAHABEAAAACAAcAAAAIABEAAAADAAcAAAAJABEAAAABAAcAAAAKABEAAAACAAcAAAALABEAAAADAAcAAAAMABEAAAABAAcAAAANABEAAAACAAcAAAAOABEAAAADAAcAAAAPABEAAAABAAcAAAAQABEAAAACAAcAAAARABEAAAADAAcAAAASABEAAAABAAcAAAATABEAAAACAAcAAAAUABEAAAADAAcAAAAVABEAAAABAAcAAAAWABEAAAACAAcAAAAXABEAAAADAAcAAAAYABEAAAABAAcAAAAZABEAAAACAAcAAAAaABEAAAADAAcAAAAbABEAAAABAAcAAAAcABEAAAACAAcAAAAdABEAAAADAAcAAAAeABEAAAABAAcAAAAfABEAAAACAAcAAAAgABEAAAADAAcAAAAhABEAAAABAAcAAAAiABEAAAACAAcAAAAjABEAAAADAAcAAAAkABEAAAABAAcAAAAlABEAAAACAAcAAAAmABEAAAADAAcAAAAnABEAAAABAAcAAAAIAAwA//////////8JAAwA//////////8KAAwA//////////8LAAwA//////////8MAAwA//////////8NAAwA//////////8OAAwA//////////8IAA0A//////////8JAA0A//////////8KAA0AAAACAAYAAAALAA0AAAADAAYAAAAMAA0A//////////8NAA0A//////////8OAA0A//////////8LAAcA//////////8MAAcA//////////8NAAcA//////////8OAAcA//////////8PAAcA//////////8LAAgA//////////8MAAgA//////////8NAAgA//////////8OAAgA//////////8PAAgA//////////8WAAwA//////////8XAAwA//////////8YAAwA//////////8ZAAwA//////////8WAA0A//////////8XAA0A//////////8YAA0A//////////8ZAA0AAAACAAYAAAAOAAsA//////////8PAAsA//////////8QAAsA//////////8RAAsA//////////8UAAkA//////////8VAAkA//////////8WAAkA//////////8XAAkA//////////8KAA4AAAACAAcAAAALAA4AAAADAAcAAAAZAA4AAAACAAcAAAAaAA0AAAADAAYAAAAaAA4AAAADAAcAAAA=")
+tile_set = ExtResource("3_brken")
+
+[node name="Details" type="TileMapLayer" parent="." unique_id=40044950]
+tile_map_data = PackedByteArray("AAAGAA4A//////////8RAA4A//////////8aAA4A//////////8iAA4A//////////8=")
+tile_set = ExtResource("3_brken")
+collision_enabled = false
+
+[node name="Bounds" type="StaticBody2D" parent="." unique_id=1358145428]
+collision_mask = 0
+
+[node name="Left" type="CollisionShape2D" parent="Bounds" unique_id=706008918]
+position = Vector2(-16, 256)
+shape = SubResource("Boundary")
+
+[node name="Right" type="CollisionShape2D" parent="Bounds" unique_id=1364135426]
+position = Vector2(1296, 256)
+shape = SubResource("Boundary")
+
+[node name="Spawns" type="Node2D" parent="." unique_id=22093897]
+
+[node name="entry" type="Marker2D" parent="Spawns" unique_id=1991065252]
+position = Vector2(110, 480)
+
+[node name="checkpoint" type="Marker2D" parent="Spawns" unique_id=785466151]
+position = Vector2(165, 480)
+
+[node name="east" type="Marker2D" parent="Spawns" unique_id=1488890679]
+position = Vector2(1130, 480)
+
+[node name="Enemies" type="Node2D" parent="." unique_id=1963065800]
+
+[node name="LivingArmor" type="CharacterBody2D" parent="Enemies" unique_id=124053345 groups=["enemies"] instance=ExtResource("4_pab1t")]
+position = Vector2(650, 480)
+collision_layer = 4
+script = ExtResource("5_e2600")
+config = ExtResource("6_thuje")
+
+[node name="DoomScribe" type="CharacterBody2D" parent="Enemies" unique_id=1864778651 groups=["enemies"] instance=ExtResource("7_qiwen")]
+position = Vector2(995, 480)
+collision_layer = 4
+script = ExtResource("8_ivliq")
+config = ExtResource("9_1gf1f")
+
+[node name="Interactions" type="Node2D" parent="." unique_id=1839794500]
+
+[node name="Shrine" type="Node2D" parent="Interactions" unique_id=948029339]
+position = Vector2(165, 480)
+script = ExtResource("10_7angi")
+prompt = "E / REST & SAVE"
+
+[node name="Sprite" type="AnimatedSprite2D" parent="Interactions/Shrine" unique_id=1058500237]
+position = Vector2(0, -20)
+scale = Vector2(0.5, 0.5)
+sprite_frames = ExtResource("11_10051")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="WestDoor" type="Node2D" parent="Interactions" unique_id=1176807432]
+position = Vector2(48, 480)
+script = ExtResource("10_7angi")
+kind = "exit"
+target_room = "wind_hall"
+target_spawn = "east"
+prompt = "E / RETURN TO WIND GALLERY"
+
+[node name="Lesson" type="Node2D" parent="Interactions" unique_id=890690377]
+position = Vector2(245, 480)
+script = ExtResource("10_7angi")
+kind = "sign"
+prompt = "Dash to reposition. Strike after the warning."
+
+[node name="Beacon" type="Node2D" parent="Interactions" unique_id=1358902730]
+position = Vector2(1140, 480)
+script = ExtResource("10_7angi")
+kind = "reward"
+stable_id = "belfry_cleared"
+prompt = "E / LIGHT THE WIND BEACON"
+
+[node name="Shortcut" type="Node2D" parent="Interactions" unique_id=383398703]
+position = Vector2(1230, 480)
+script = ExtResource("10_7angi")
+kind = "exit"
+required_flag = "belfry_cleared"
+target_room = "forest"
+target_spawn = "sanctuary_return"
+prompt = "E / RETURN TO THE GROVE"

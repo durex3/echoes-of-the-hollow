@@ -8,12 +8,12 @@
 | godot-nodes-scenes | Player/Enemy/InkBolt/Room 可复用场景与入口接线 | 独立实例、弹体归属和切房释放 |
 | godot-signals-groups | 血量、死亡、进度、交互事件 | HUD/复活/换房断言 |
 | godot-resources | PlayerConfig、AttackProfile、ArmorConfig、ScribeConfig | 跳跃实测、攻击阶段、独立弹体测试配置 |
-| godot-2d-movement / platformer | CharacterBody2D、缓冲、宽限、短跳、双跳 | 真实物理与关卡攀升 |
+| godot-2d-movement / platformer | CharacterBody2D、缓冲、宽限、短跳、双跳、固定距离冲刺 | 真实物理与关卡攀升、111.6px 位移、空中次数/冷却/墙体 |
 | godot-physics | Hitbox/Hurtbox、边缘/视线射线、墨弹扫掠 | 去重、无敌、2px 薄墙、最近碰撞和释放 |
 | godot-animation | SpriteFrames 原生图集与状态动画 | 实际帧渲染检查 |
 | godot-tilemap | 原生 TileSet/TileMapLayer、可编辑持久场景 | 地面碰撞与地图数据检查 |
 | input-systems | 命名动作、键盘/手柄映射 | 模拟动作；手柄硬件待验收 |
-| level-design | 移动指标先行、能力获取先于门槛、远程教学/掩体/休息/组合 | 正常跳/双跳、躲弹、休息区安全实测 |
+| level-design | 移动指标先行、能力获取先于门槛、远程教学/掩体/休息/组合、无敌人风障教学后钟楼战斗 | 正常跳/双跳、躲弹、休息区安全、冲刺开门与返回实测 |
 | save-systems | schema 1→2 迁移、临时文件、备份、世界标记、准确检查点、由唯一奖励推导生命上限 | 旧档/坏档/未知版本/跨进程、奖励不重复、死亡/重建玩家恢复 |
 | game-ai | 铠甲七状态 FSM、视线、锁向、前方边缘检测 | 预警/反击/隔墙/边缘回归；手感待试玩 |
 | camera-systems | Camera2D 平滑、前视、房间边界、重置 | 截图；动态手感待试玩 |

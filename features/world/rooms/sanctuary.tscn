@@ -83,3 +83,14 @@ script = ExtResource("4_k6kvr")
 kind = "upgrade"
 stable_id = "heart_bloom"
 prompt = "E / CLAIM HEART BLOOM / +1 MAX VITALITY"
+
+[node name="wind_return" type="Marker2D" parent="Spawns"]
+position = Vector2(805, 480)
+
+[node name="WindDoor" type="Node2D" parent="Interactions"]
+position = Vector2(890, 480)
+script = ExtResource("4_k6kvr")
+kind = "exit"
+target_room = "wind_hall"
+target_spawn = "entry"
+prompt = "E / FOLLOW THE WIND"

@@ -1,0 +1,111 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" path="res://features/world/room.gd" id="1_i2hvo"]
+[ext_resource type="Script" path="res://features/world/backdrop.gd" id="2_tlcdw"]
+[ext_resource type="TileSet" path="res://features/world/forest_tileset.tres" id="3_21ghq"]
+[ext_resource type="Script" path="res://features/world/wind_landmarks.gd" id="3_tlcdw"]
+[ext_resource type="Script" path="res://features/world/interaction.gd" id="4_xqoui"]
+[ext_resource type="SpriteFrames" path="res://features/world/checkpoint_frames.tres" id="5_uqatw"]
+[ext_resource type="PackedScene" path="res://features/world/wind_gate.tscn" id="6_p8caq"]
+[ext_resource type="Script" path="res://features/world/wind_gate.gd" id="7_4io24"]
+
+[sub_resource type="RectangleShape2D" id="Boundary"]
+size = Vector2(32, 640)
+
+[node name="WindHall" type="Node2D" unique_id=601705271]
+script = ExtResource("1_i2hvo")
+room_id = "wind_hall"
+display_name = "06 / WIND GALLERY"
+music_track = "dungeon"
+bounds = Rect2(0, 0, 960, 576)
+
+[node name="Backdrop" type="Node2D" parent="." unique_id=1671505959]
+script = ExtResource("2_tlcdw")
+ruins = true
+room_width = 960.0
+
+[node name="Landmarks" type="Node2D" parent="." unique_id=346148976]
+script = ExtResource("3_tlcdw")
+
+[node name="Terrain" type="TileMapLayer" parent="." unique_id=81977782]
+tile_map_data = PackedByteArray("AAAAAA8AAAABAAYAAAABAA8AAAACAAYAAAACAA8AAAADAAYAAAADAA8AAAABAAYAAAAEAA8AAAACAAYAAAAFAA8AAAADAAYAAAAGAA8AAAABAAYAAAAHAA8AAAACAAYAAAAIAA8AAAADAAYAAAAJAA8AAAABAAYAAAAKAA8AAAACAAYAAAALAA8AAAADAAYAAAAMAA8AAAABAAYAAAANAA8AAAACAAYAAAAOAA8AAAADAAYAAAAPAA8AAAABAAYAAAAQAA8AAAACAAYAAAARAA8AAAADAAYAAAASAA8AAAABAAYAAAATAA8AAAACAAYAAAAUAA8AAAADAAYAAAAVAA8AAAABAAYAAAAWAA8AAAACAAYAAAAXAA8AAAADAAYAAAAYAA8AAAABAAYAAAAZAA8AAAACAAYAAAAaAA8AAAADAAYAAAAbAA8AAAABAAYAAAAcAA8AAAACAAYAAAAdAA8AAAADAAYAAAAeAA8A//////////8fAA8A//////////8gAA8A//////////8hAA8A//////////8iAA8A//////////8jAA8A//////////8kAA8A//////////8lAA8A//////////8mAA8A//////////8nAA8A//////////8AABAAAAABAAcAAAABABAAAAACAAcAAAACABAAAAADAAcAAAADABAAAAABAAcAAAAEABAAAAACAAcAAAAFABAAAAADAAcAAAAGABAAAAABAAcAAAAHABAAAAACAAcAAAAIABAAAAADAAcAAAAJABAAAAABAAcAAAAKABAAAAACAAcAAAALABAAAAADAAcAAAAMABAAAAABAAcAAAANABAAAAACAAcAAAAOABAAAAADAAcAAAAPABAAAAABAAcAAAAQABAAAAACAAcAAAARABAAAAADAAcAAAASABAAAAABAAcAAAATABAAAAACAAcAAAAUABAAAAADAAcAAAAVABAAAAABAAcAAAAWABAAAAACAAcAAAAXABAAAAADAAcAAAAYABAAAAABAAcAAAAZABAAAAACAAcAAAAaABAAAAADAAcAAAAbABAAAAABAAcAAAAcABAAAAACAAcAAAAdABAAAAADAAcAAAAeABAA//////////8fABAA//////////8gABAA//////////8hABAA//////////8iABAA//////////8jABAA//////////8kABAA//////////8lABAA//////////8mABAA//////////8nABAA//////////8AABEAAAABAAcAAAABABEAAAACAAcAAAACABEAAAADAAcAAAADABEAAAABAAcAAAAEABEAAAACAAcAAAAFABEAAAADAAcAAAAGABEAAAABAAcAAAAHABEAAAACAAcAAAAIABEAAAADAAcAAAAJABEAAAABAAcAAAAKABEAAAACAAcAAAALABEAAAADAAcAAAAMABEAAAABAAcAAAANABEAAAACAAcAAAAOABEAAAADAAcAAAAPABEAAAABAAcAAAAQABEAAAACAAcAAAARABEAAAADAAcAAAASABEAAAABAAcAAAATABEAAAACAAcAAAAUABEAAAADAAcAAAAVABEAAAABAAcAAAAWABEAAAACAAcAAAAXABEAAAADAAcAAAAYABEAAAABAAcAAAAZABEAAAACAAcAAAAaABEAAAADAAcAAAAbABEAAAABAAcAAAAcABEAAAACAAcAAAAdABEAAAADAAcAAAAeABEA//////////8fABEA//////////8gABEA//////////8hABEA//////////8iABEA//////////8jABEA//////////8kABEA//////////8lABEA//////////8mABEA//////////8nABEA//////////8IAAwA//////////8JAAwA//////////8KAAwA//////////8LAAwA//////////8MAAwA//////////8NAAwA//////////8OAAwA//////////8IAA0A//////////8JAA0A//////////8KAA0A//////////8LAA0A//////////8MAA0A//////////8NAA0A//////////8OAA0A//////////8LAAcA//////////8MAAcA//////////8NAAcA//////////8OAAcA//////////8PAAcA//////////8LAAgA//////////8MAAgA//////////8NAAgA//////////8OAAgA//////////8PAAgA//////////8WAAwA//////////8XAAwA//////////8YAAwA//////////8ZAAwA//////////8WAA0A//////////8XAA0A//////////8YAA0A//////////8ZAA0A//////////8OAAsA//////////8PAAsA//////////8QAAsA//////////8RAAsA//////////8UAAkA//////////8VAAkA//////////8WAAkA//////////8XAAkA//////////8=")
+tile_set = ExtResource("3_21ghq")
+
+[node name="Details" type="TileMapLayer" parent="." unique_id=40044950]
+tile_map_data = PackedByteArray("AAAGAA4A//////////8RAA4A//////////8aAA4A//////////8iAA4A//////////8=")
+tile_set = ExtResource("3_21ghq")
+collision_enabled = false
+
+[node name="Bounds" type="StaticBody2D" parent="." unique_id=1358145428]
+collision_mask = 0
+
+[node name="Left" type="CollisionShape2D" parent="Bounds" unique_id=706008918]
+position = Vector2(-16, 256)
+shape = SubResource("Boundary")
+
+[node name="Right" type="CollisionShape2D" parent="Bounds" unique_id=1364135426]
+position = Vector2(976, 256)
+shape = SubResource("Boundary")
+
+[node name="Spawns" type="Node2D" parent="." unique_id=22093897]
+
+[node name="entry" type="Marker2D" parent="Spawns" unique_id=1106199401]
+position = Vector2(110, 480)
+
+[node name="checkpoint" type="Marker2D" parent="Spawns" unique_id=430231877]
+position = Vector2(165, 480)
+
+[node name="east" type="Marker2D" parent="Spawns" unique_id=837782563]
+position = Vector2(810, 480)
+
+[node name="Enemies" type="Node2D" parent="." unique_id=1963065800]
+
+[node name="Interactions" type="Node2D" parent="." unique_id=1839794500]
+
+[node name="Shrine" type="Node2D" parent="Interactions" unique_id=807273291]
+position = Vector2(165, 480)
+script = ExtResource("4_xqoui")
+prompt = "E / REST & SAVE"
+
+[node name="Sprite" type="AnimatedSprite2D" parent="Interactions/Shrine" unique_id=679849370]
+position = Vector2(0, -20)
+scale = Vector2(0.5, 0.5)
+sprite_frames = ExtResource("5_uqatw")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="WestDoor" type="Node2D" parent="Interactions" unique_id=1518003850]
+position = Vector2(48, 480)
+script = ExtResource("4_xqoui")
+kind = "exit"
+target_room = "sanctuary"
+target_spawn = "wind_return"
+prompt = "E / RETURN TO THE ROOTS"
+
+[node name="WindEcho" type="Node2D" parent="Interactions" unique_id=1985661817]
+position = Vector2(320, 480)
+script = ExtResource("4_xqoui")
+kind = "ability"
+stable_id = "dash"
+prompt = "E / CLAIM THE WIND ECHO"
+
+[node name="Lesson" type="Node2D" parent="Interactions" unique_id=1336745793]
+position = Vector2(510, 480)
+script = ExtResource("4_xqoui")
+kind = "sign"
+prompt = "K: dash through wind. No invincibility."
+
+[node name="EastDoor" type="Node2D" parent="Interactions" unique_id=647794104]
+position = Vector2(880, 480)
+script = ExtResource("4_xqoui")
+kind = "exit"
+required_flag = "wind_passage_open"
+target_room = "belfry"
+prompt = "E / ENTER THE SILENT BELFRY"
+
+[node name="Gates" type="Node2D" parent="." unique_id=901935273]
+
+[node name="WindGate" type="StaticBody2D" parent="Gates" unique_id=431385922 instance=ExtResource("6_p8caq")]
+position = Vector2(608, 480)
+collision_mask = 0
+script = ExtResource("7_4io24")

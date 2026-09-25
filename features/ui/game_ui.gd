@@ -60,7 +60,7 @@ func _ready() -> void:
 	prompt = label("", 16, Color("94e4ce"))
 	prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	bottom.add_child(prompt)
-	var controls := label("A/D Move  SPACE Jump  J Attack  E Use  Q Map  ESC Pause  M Mute", 12, Color("9aafad"))
+	var controls := label("A/D Move  SPACE Jump  J Attack  K Dash  E Use  Q Map  ESC Pause  M Mute", 11, Color("9aafad"))
 	controls.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	bottom.add_child(controls)
 	modal = PanelContainer.new()
@@ -183,6 +183,9 @@ func update_health(current: int, maximum: int) -> void:
 	health_label.text = "VITALITY  " + "| ".repeat(current) + ". ".repeat(maximum - current)
 
 func update_progress() -> void:
+	if "dash" in Session.abilities:
+		objective.text = "Wind route open / Explore freely" if "belfry_cleared" in Session.flags else "Dash through the wind / Reach the silent belfry"
+		return
 	objective.text = "Echo restored / Explore freely" if Session.completed else ("Double jump unlocked / Return to the high shrine" if Session.abilities.has("double_jump") else "Find the echo in the eastern ruins")
 
 func notify(message: String) -> void:

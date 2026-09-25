@@ -4,6 +4,7 @@ extends Node2D
 signal interaction_requested(interaction: WorldInteraction)
 signal prompt_changed(text: String)
 signal projectile_impact(at: Vector2, defeated: bool)
+signal gate_breached(stable_id: String)
 const BOLT := preload("res://features/combat/ink_bolt.tscn")
 @export var room_id := "forest"
 @export var display_name := "01 / THE FORGOTTEN GROVE"
@@ -18,6 +19,11 @@ func _ready() -> void:
 	projectiles = Node2D.new()
 	projectiles.name = "Projectiles"
 	add_child(projectiles)
+	var gates := get_node_or_null("Gates")
+	if gates:
+		for gate: WindGate in gates.get_children():
+			gate.set_open(gate.stable_id in Session.flags)
+			gate.breached.connect(func(id: String) -> void: gate_breached.emit(id))
 	for enemy: Node in $Enemies.get_children():
 		if enemy is DoomScribe:
 			enemy.cast_requested.connect(_spawn_bolt.bind(enemy.get_instance_id()))
