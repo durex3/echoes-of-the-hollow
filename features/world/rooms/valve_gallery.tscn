@@ -1,0 +1,126 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" path="res://features/world/room.gd" id="1_g41s6"]
+[ext_resource type="Script" path="res://features/world/backdrop.gd" id="2_w2j7n"]
+[ext_resource type="Script" path="res://features/world/cistern_landmarks.gd" id="3_mcjqn"]
+[ext_resource type="TileSet" path="res://features/world/forest_tileset.tres" id="4_lkjg7"]
+[ext_resource type="PackedScene" path="res://features/enemies/slime.tscn" id="5_siahr"]
+[ext_resource type="Script" path="res://features/enemies/slime.gd" id="6_ho8lh"]
+[ext_resource type="Script" path="res://features/world/interaction.gd" id="7_ulj2d"]
+[ext_resource type="SpriteFrames" path="res://features/world/checkpoint_frames.tres" id="8_61d30"]
+[ext_resource type="PackedScene" path="res://features/world/steam_vent.tscn" id="9_k54v8"]
+[ext_resource type="Script" path="res://features/world/steam_vent.gd" id="10_vw7so"]
+[ext_resource type="Resource" path="res://features/world/steam_config.tres" id="11_b2qli"]
+
+[sub_resource type="RectangleShape2D" id="Boundary"]
+size = Vector2(32, 640)
+
+[node name="ValveGallery" type="Node2D" unique_id=601705271]
+script = ExtResource("1_g41s6")
+room_id = "valve_gallery"
+display_name = "11 / VALVE GALLERY"
+music_track = "dungeon"
+
+[node name="Backdrop" type="Node2D" parent="." unique_id=1671505959]
+script = ExtResource("2_w2j7n")
+ruins = true
+
+[node name="CisternLandmarks" type="Node2D" parent="." unique_id=2124279893]
+script = ExtResource("3_mcjqn")
+
+[node name="Terrain" type="TileMapLayer" parent="." unique_id=81977782]
+tile_map_data = PackedByteArray("AAAAAA8AAAABAAYAAAABAA8AAAACAAYAAAACAA8AAAADAAYAAAADAA8AAAABAAYAAAAEAA8AAAACAAYAAAAFAA8AAAADAAYAAAAGAA8AAAABAAYAAAAHAA8AAAACAAYAAAAIAA8AAAADAAYAAAAJAA8AAAABAAYAAAAKAA8AAAACAAYAAAALAA8AAAADAAYAAAAMAA8AAAABAAYAAAANAA8AAAACAAYAAAAOAA8AAAADAAYAAAAPAA8AAAABAAYAAAAQAA8AAAACAAYAAAARAA8AAAADAAYAAAASAA8AAAABAAYAAAATAA8AAAACAAYAAAAUAA8AAAADAAYAAAAVAA8AAAABAAYAAAAWAA8AAAACAAYAAAAXAA8AAAADAAYAAAAYAA8AAAABAAYAAAAZAA8AAAACAAYAAAAaAA8AAAADAAYAAAAbAA8AAAABAAYAAAAcAA8AAAACAAYAAAAdAA8AAAADAAYAAAAeAA8AAAABAAYAAAAfAA8AAAACAAYAAAAgAA8AAAADAAYAAAAhAA8AAAABAAYAAAAiAA8AAAACAAYAAAAjAA8AAAADAAYAAAAkAA8AAAABAAYAAAAlAA8AAAACAAYAAAAmAA8AAAADAAYAAAAnAA8AAAABAAYAAAAAABAAAAABAAcAAAABABAAAAACAAcAAAACABAAAAADAAcAAAADABAAAAABAAcAAAAEABAAAAACAAcAAAAFABAAAAADAAcAAAAGABAAAAABAAcAAAAHABAAAAACAAcAAAAIABAAAAADAAcAAAAJABAAAAABAAcAAAAKABAAAAACAAcAAAALABAAAAADAAcAAAAMABAAAAABAAcAAAANABAAAAACAAcAAAAOABAAAAADAAcAAAAPABAAAAABAAcAAAAQABAAAAACAAcAAAARABAAAAADAAcAAAASABAAAAABAAcAAAATABAAAAACAAcAAAAUABAAAAADAAcAAAAVABAAAAABAAcAAAAWABAAAAACAAcAAAAXABAAAAADAAcAAAAYABAAAAABAAcAAAAZABAAAAACAAcAAAAaABAAAAADAAcAAAAbABAAAAABAAcAAAAcABAAAAACAAcAAAAdABAAAAADAAcAAAAeABAAAAABAAcAAAAfABAAAAACAAcAAAAgABAAAAADAAcAAAAhABAAAAABAAcAAAAiABAAAAACAAcAAAAjABAAAAADAAcAAAAkABAAAAABAAcAAAAlABAAAAACAAcAAAAmABAAAAADAAcAAAAnABAAAAABAAcAAAAAABEAAAABAAcAAAABABEAAAACAAcAAAACABEAAAADAAcAAAADABEAAAABAAcAAAAEABEAAAACAAcAAAAFABEAAAADAAcAAAAGABEAAAABAAcAAAAHABEAAAACAAcAAAAIABEAAAADAAcAAAAJABEAAAABAAcAAAAKABEAAAACAAcAAAALABEAAAADAAcAAAAMABEAAAABAAcAAAANABEAAAACAAcAAAAOABEAAAADAAcAAAAPABEAAAABAAcAAAAQABEAAAACAAcAAAARABEAAAADAAcAAAASABEAAAABAAcAAAATABEAAAACAAcAAAAUABEAAAADAAcAAAAVABEAAAABAAcAAAAWABEAAAACAAcAAAAXABEAAAADAAcAAAAYABEAAAABAAcAAAAZABEAAAACAAcAAAAaABEAAAADAAcAAAAbABEAAAABAAcAAAAcABEAAAACAAcAAAAdABEAAAADAAcAAAAeABEAAAABAAcAAAAfABEAAAACAAcAAAAgABEAAAADAAcAAAAhABEAAAABAAcAAAAiABEAAAACAAcAAAAjABEAAAADAAcAAAAkABEAAAABAAcAAAAlABEAAAACAAcAAAAmABEAAAADAAcAAAAnABEAAAABAAcAAAAIAAwA//////////8JAAwA//////////8KAAwA//////////8LAAwA//////////8MAAwA//////////8NAAwA//////////8OAAwA//////////8IAA0A//////////8JAA0A//////////8KAA0A//////////8LAA0A//////////8MAA0A//////////8NAA0AAAACAAYAAAAOAA0AAAADAAYAAAALAAcA//////////8MAAcA//////////8NAAcA//////////8OAAcA//////////8PAAcA//////////8LAAgA//////////8MAAgA//////////8NAAgA//////////8OAAgA//////////8PAAgA//////////8WAAwAAAACAAcAAAAXAAwAAAADAAcAAAAYAAwAAAABAAcAAAAZAAwAAAACAAcAAAAWAA0AAAACAAcAAAAXAA0AAAADAAcAAAAYAA0AAAABAAcAAAAZAA0AAAACAAcAAAANAA4AAAACAAcAAAAOAA4AAAADAAcAAAAPAA0AAAABAAYAAAAPAA4AAAABAAcAAAATAAsAAAACAAYAAAATAAwAAAACAAcAAAATAA0AAAACAAcAAAATAA4AAAACAAcAAAAUAAsAAAADAAYAAAAUAAwAAAADAAcAAAAUAA0AAAADAAcAAAAUAA4AAAADAAcAAAAVAAsAAAABAAYAAAAVAAwAAAABAAcAAAAVAA0AAAABAAcAAAAVAA4AAAABAAcAAAAWAAsAAAACAAYAAAAWAA4AAAACAAcAAAAXAAsAAAADAAYAAAAXAA4AAAADAAcAAAAYAAsAAAABAAYAAAAYAA4AAAABAAcAAAAZAAsAAAACAAYAAAAZAA4AAAACAAcAAAAaAAsAAAADAAYAAAAaAAwAAAADAAcAAAAaAA0AAAADAAcAAAAaAA4AAAADAAcAAAAbAAsAAAABAAYAAAAbAAwAAAABAAcAAAAbAA0AAAABAAcAAAAbAA4AAAABAAcAAAAcAAsAAAACAAYAAAAcAAwAAAACAAcAAAAcAA0AAAACAAcAAAAcAA4AAAACAAcAAAAdAAsAAAADAAYAAAAdAAwAAAADAAcAAAAdAA0AAAADAAcAAAAdAA4AAAADAAcAAAAeAAsAAAABAAYAAAAeAAwAAAABAAcAAAAeAA0AAAABAAcAAAAeAA4AAAABAAcAAAAfAAsAAAACAAYAAAAfAAwAAAACAAcAAAAfAA0AAAACAAcAAAAfAA4AAAACAAcAAAAgAAsAAAADAAYAAAAgAAwAAAADAAcAAAAgAA0AAAADAAcAAAAgAA4AAAADAAcAAAAhAAsAAAABAAYAAAAhAAwAAAABAAcAAAAhAA0AAAABAAcAAAAhAA4AAAABAAcAAAAiAAsAAAACAAYAAAAiAAwAAAACAAcAAAAiAA0AAAACAAcAAAAiAA4AAAACAAcAAAAjAAsAAAADAAYAAAAjAAwAAAADAAcAAAAjAA0AAAADAAcAAAAjAA4AAAADAAcAAAAkAAsAAAABAAYAAAAkAAwAAAABAAcAAAAkAA0AAAABAAcAAAAkAA4AAAABAAcAAAAlAAsAAAACAAYAAAAlAAwAAAACAAcAAAAlAA0AAAACAAcAAAAlAA4AAAACAAcAAAAmAAsAAAADAAYAAAAmAAwAAAADAAcAAAAmAA0AAAADAAcAAAAmAA4AAAADAAcAAAAnAAsAAAABAAYAAAAnAAwAAAABAAcAAAAnAA0AAAABAAcAAAAnAA4AAAABAAcAAAA=")
+tile_set = ExtResource("4_lkjg7")
+
+[node name="Details" type="TileMapLayer" parent="." unique_id=40044950]
+tile_map_data = PackedByteArray("AAAGAA4A//////////8RAA4A//////////8aAA4A//////////8iAA4A//////////8=")
+tile_set = ExtResource("4_lkjg7")
+collision_enabled = false
+
+[node name="Bounds" type="StaticBody2D" parent="." unique_id=1358145428]
+collision_mask = 0
+
+[node name="Left" type="CollisionShape2D" parent="Bounds" unique_id=706008918]
+position = Vector2(-16, 256)
+shape = SubResource("Boundary")
+
+[node name="Right" type="CollisionShape2D" parent="Bounds" unique_id=1364135426]
+position = Vector2(1296, 256)
+shape = SubResource("Boundary")
+
+[node name="Spawns" type="Node2D" parent="." unique_id=22093897]
+
+[node name="entry" type="Marker2D" parent="Spawns" unique_id=911427588]
+position = Vector2(100, 480)
+
+[node name="checkpoint" type="Marker2D" parent="Spawns" unique_id=1930383567]
+position = Vector2(180, 480)
+
+[node name="Enemies" type="Node2D" parent="." unique_id=1963065800]
+
+[node name="Slime" type="CharacterBody2D" parent="Enemies" unique_id=1202595909 groups=["enemies"] instance=ExtResource("5_siahr")]
+position = Vector2(990, 352)
+collision_layer = 4
+script = ExtResource("6_ho8lh")
+
+[node name="Interactions" type="Node2D" parent="." unique_id=1839794500]
+
+[node name="Return" type="Node2D" parent="Interactions" unique_id=363092610]
+position = Vector2(48, 480)
+script = ExtResource("7_ulj2d")
+kind = "exit"
+target_room = "ember_quay"
+target_spawn = "flow_return"
+prompt = "E / RETURN TO EMBER QUAY"
+
+[node name="Shrine" type="Node2D" parent="Interactions" unique_id=266179106]
+position = Vector2(180, 480)
+script = ExtResource("7_ulj2d")
+prompt = "E / REST & SAVE"
+
+[node name="Sprite" type="AnimatedSprite2D" parent="Interactions/Shrine" unique_id=238772189]
+position = Vector2(0, -20)
+scale = Vector2(0.5, 0.5)
+sprite_frames = ExtResource("8_61d30")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="ClimbHint" type="Node2D" parent="Interactions" unique_id=1860172050]
+position = Vector2(460, 416)
+script = ExtResource("7_ulj2d")
+kind = "sign"
+prompt = "Climb the dry ledges. Wait for the steam to settle."
+
+[node name="Seal" type="Node2D" parent="Interactions" unique_id=1373235325]
+position = Vector2(1100, 352)
+script = ExtResource("7_ulj2d")
+kind = "reward"
+stable_id = "flow_seal"
+prompt = "E / CLAIM THE FLOW SEAL"
+
+[node name="Shortcut" type="Node2D" parent="Interactions" unique_id=1844504199]
+position = Vector2(1200, 352)
+script = ExtResource("7_ulj2d")
+kind = "exit"
+required_flag = "flow_seal"
+target_room = "ember_quay"
+target_spawn = "flow_return"
+prompt = "E / RETURN TO EMBER QUAY"
+
+[node name="Hazards" type="Node2D" parent="." unique_id=605703536]
+
+[node name="SteamVent" type="Area2D" parent="Hazards" unique_id=1874026363 instance=ExtResource("9_k54v8")]
+position = Vector2(320, 480)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("10_vw7so")
+config = ExtResource("11_b2qli")
+
+[node name="@Area2D@3" type="Area2D" parent="Hazards" unique_id=773261096 instance=ExtResource("9_k54v8")]
+position = Vector2(800, 352)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("10_vw7so")
+config = ExtResource("11_b2qli")

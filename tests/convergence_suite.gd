@@ -136,10 +136,14 @@ func check_route_graph(h: Node, game: Node) -> void:
 		var prior := visited.size()+abilities.size()+flags.size()
 		for id: String in visited.duplicate():
 			var room: GameRoom = rooms[id]
+			# Structural model assumes encounter victory, as it already does for seals.
+			# Actual boss/completion prerequisites are exercised by continuous routes.
+			if id == "heart_chamber" and "warden_defeated" not in flags:
+				flags.append("warden_defeated")
 			for point: WorldInteraction in room.get_node("Interactions").get_children():
 				if point.kind == "ability" and point.stable_id not in abilities:
 					abilities.append(point.stable_id)
-				elif point.kind == "reward" and point.stable_id not in flags:
+				elif point.kind in ["reward", "finale", "chapter_end"] and point.stable_id not in flags and point.locked_message(abilities,flags).is_empty():
 					flags.append(point.stable_id)
 				elif point.kind == "exit" and point.locked_message(abilities,flags).is_empty() and point.target_room not in visited:
 					visited.append(point.target_room)
@@ -150,7 +154,7 @@ func check_route_graph(h: Node, game: Node) -> void:
 						flags.append(gate.stable_id)
 		if visited.size()+abilities.size()+flags.size() == prior:
 			break
-	h.check(visited.size() == rooms.size() and "heart_chamber" in visited, "Room and prerequisite graph reaches all nine rooms from a fresh start")
+	h.check(visited.size() == rooms.size() and "furnace_core" in visited, "Room and prerequisite graph reaches all thirteen rooms from a fresh start")
 	h.check("heart_bloom" not in flags, "Main route graph requires neither optional health nor high-shrine completion")
 	for room: GameRoom in rooms.values():
 		room.free()

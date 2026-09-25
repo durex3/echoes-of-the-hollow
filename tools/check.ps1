@@ -31,8 +31,13 @@ Invoke-CheckedGodot -Name 'integration' -Arguments @('--headless','--fixed-fps',
 Invoke-CheckedGodot -Name 'chapter_route' -Arguments @('--headless','--fixed-fps','60','res://tests/chapter_route.tscn')
 $routeLog = Get-Content -LiteralPath (Join-Path $artifacts 'chapter_route.log') -Raw
 if ($routeLog -notmatch 'ROUTE_PASS: combat_first' -or $routeLog -notmatch 'ROUTE_PASS: wind_first') { throw 'Both continuous chapter routes must complete.' }
+Invoke-CheckedGodot -Name 'chapter_two_route' -Arguments @('--headless','--fixed-fps','60','res://tests/chapter_two_route.tscn')
+$secondRouteLog = Get-Content -LiteralPath (Join-Path $artifacts 'chapter_two_route.log') -Raw
+if ($secondRouteLog -notmatch 'CHAPTER_TWO_PASS: flow_first' -or $secondRouteLog -notmatch 'CHAPTER_TWO_PASS: pressure_first') { throw 'Both Chapter II branch orders must complete.' }
 Invoke-CheckedGodot -Name 'save_write' -Arguments @('--headless','--script','res://tests/save_process.gd','--','--write')
 Invoke-CheckedGodot -Name 'save_read' -Arguments @('--headless','--script','res://tests/save_process.gd','--','--read')
+Invoke-CheckedGodot -Name 'chapter_two_save_write' -Arguments @('--headless','--script','res://tests/chapter_two_save_process.gd','--','--write')
+Invoke-CheckedGodot -Name 'chapter_two_save_read' -Arguments @('--headless','--script','res://tests/chapter_two_save_process.gd','--','--read')
 Invoke-CheckedGodot -Name 'language_write' -Arguments @('--headless','--script','res://tests/settings_process.gd','--','--write')
 Invoke-CheckedGodot -Name 'language_read' -Arguments @('--headless','--script','res://tests/settings_process.gd','--','--read')
 if ($Visual) {

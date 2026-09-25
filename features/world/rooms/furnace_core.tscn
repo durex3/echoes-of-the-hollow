@@ -1,0 +1,115 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" path="res://features/world/room.gd" id="1_v5g1k"]
+[ext_resource type="Script" path="res://features/world/backdrop.gd" id="2_anesh"]
+[ext_resource type="Script" path="res://features/world/cistern_landmarks.gd" id="3_0sej4"]
+[ext_resource type="TileSet" path="res://features/world/forest_tileset.tres" id="4_g4d56"]
+[ext_resource type="PackedScene" path="res://features/enemies/living_armor.tscn" id="5_mdvhn"]
+[ext_resource type="Script" path="res://features/enemies/living_armor.gd" id="6_fk0ec"]
+[ext_resource type="Resource" path="res://features/enemies/armor_config.tres" id="7_y5jfy"]
+[ext_resource type="PackedScene" path="res://features/enemies/doom_scribe.tscn" id="8_7shy3"]
+[ext_resource type="Script" path="res://features/enemies/doom_scribe.gd" id="9_apvv4"]
+[ext_resource type="Resource" path="res://features/enemies/scribe_config.tres" id="10_uh2o3"]
+[ext_resource type="Script" path="res://features/world/interaction.gd" id="11_buwmc"]
+[ext_resource type="PackedScene" path="res://features/world/steam_vent.tscn" id="12_bwesx"]
+[ext_resource type="Script" path="res://features/world/steam_vent.gd" id="13_i0scw"]
+[ext_resource type="Resource" path="res://features/world/steam_config.tres" id="14_o6iuf"]
+
+[sub_resource type="RectangleShape2D" id="Boundary"]
+size = Vector2(32, 640)
+
+[node name="FurnaceCore" type="Node2D" unique_id=601705271]
+script = ExtResource("1_v5g1k")
+room_id = "furnace_core"
+display_name = "13 / FURNACE CORE"
+music_track = "dungeon"
+
+[node name="Backdrop" type="Node2D" parent="." unique_id=1671505959]
+script = ExtResource("2_anesh")
+ruins = true
+
+[node name="CisternLandmarks" type="Node2D" parent="." unique_id=1288193609]
+script = ExtResource("3_0sej4")
+
+[node name="Terrain" type="TileMapLayer" parent="." unique_id=81977782]
+tile_map_data = PackedByteArray("AAAAAA8AAAABAAYAAAABAA8AAAACAAYAAAACAA8AAAADAAYAAAADAA8AAAABAAYAAAAEAA8AAAACAAYAAAAFAA8AAAADAAYAAAAGAA8AAAABAAYAAAAHAA8AAAACAAYAAAAIAA8AAAADAAYAAAAJAA8AAAABAAYAAAAKAA8AAAACAAYAAAALAA8AAAADAAYAAAAMAA8AAAABAAYAAAANAA8AAAACAAYAAAAOAA8AAAADAAYAAAAPAA8AAAABAAYAAAAQAA8AAAACAAYAAAARAA8AAAADAAYAAAASAA8AAAABAAYAAAATAA8AAAACAAYAAAAUAA8AAAADAAYAAAAVAA8AAAABAAYAAAAWAA8AAAACAAYAAAAXAA8AAAADAAYAAAAYAA8AAAABAAYAAAAZAA8AAAACAAYAAAAaAA8AAAADAAYAAAAbAA8AAAABAAYAAAAcAA8AAAACAAYAAAAdAA8AAAADAAYAAAAeAA8AAAABAAYAAAAfAA8AAAACAAYAAAAgAA8AAAADAAYAAAAhAA8AAAABAAYAAAAiAA8AAAACAAYAAAAjAA8AAAADAAYAAAAkAA8AAAABAAYAAAAlAA8AAAACAAYAAAAmAA8AAAADAAYAAAAnAA8AAAABAAYAAAAAABAAAAABAAcAAAABABAAAAACAAcAAAACABAAAAADAAcAAAADABAAAAABAAcAAAAEABAAAAACAAcAAAAFABAAAAADAAcAAAAGABAAAAABAAcAAAAHABAAAAACAAcAAAAIABAAAAADAAcAAAAJABAAAAABAAcAAAAKABAAAAACAAcAAAALABAAAAADAAcAAAAMABAAAAABAAcAAAANABAAAAACAAcAAAAOABAAAAADAAcAAAAPABAAAAABAAcAAAAQABAAAAACAAcAAAARABAAAAADAAcAAAASABAAAAABAAcAAAATABAAAAACAAcAAAAUABAAAAADAAcAAAAVABAAAAABAAcAAAAWABAAAAACAAcAAAAXABAAAAADAAcAAAAYABAAAAABAAcAAAAZABAAAAACAAcAAAAaABAAAAADAAcAAAAbABAAAAABAAcAAAAcABAAAAACAAcAAAAdABAAAAADAAcAAAAeABAAAAABAAcAAAAfABAAAAACAAcAAAAgABAAAAADAAcAAAAhABAAAAABAAcAAAAiABAAAAACAAcAAAAjABAAAAADAAcAAAAkABAAAAABAAcAAAAlABAAAAACAAcAAAAmABAAAAADAAcAAAAnABAAAAABAAcAAAAAABEAAAABAAcAAAABABEAAAACAAcAAAACABEAAAADAAcAAAADABEAAAABAAcAAAAEABEAAAACAAcAAAAFABEAAAADAAcAAAAGABEAAAABAAcAAAAHABEAAAACAAcAAAAIABEAAAADAAcAAAAJABEAAAABAAcAAAAKABEAAAACAAcAAAALABEAAAADAAcAAAAMABEAAAABAAcAAAANABEAAAACAAcAAAAOABEAAAADAAcAAAAPABEAAAABAAcAAAAQABEAAAACAAcAAAARABEAAAADAAcAAAASABEAAAABAAcAAAATABEAAAACAAcAAAAUABEAAAADAAcAAAAVABEAAAABAAcAAAAWABEAAAACAAcAAAAXABEAAAADAAcAAAAYABEAAAABAAcAAAAZABEAAAACAAcAAAAaABEAAAADAAcAAAAbABEAAAABAAcAAAAcABEAAAACAAcAAAAdABEAAAADAAcAAAAeABEAAAABAAcAAAAfABEAAAACAAcAAAAgABEAAAADAAcAAAAhABEAAAABAAcAAAAiABEAAAACAAcAAAAjABEAAAADAAcAAAAkABEAAAABAAcAAAAlABEAAAACAAcAAAAmABEAAAADAAcAAAAnABEAAAABAAcAAAAIAAwA//////////8JAAwA//////////8KAAwA//////////8LAAwA//////////8MAAwA//////////8NAAwA//////////8OAAwA//////////8IAA0A//////////8JAA0A//////////8KAA0A//////////8LAA0A//////////8MAA0A//////////8NAA0A//////////8OAA0A//////////8LAAcA//////////8MAAcA//////////8NAAcA//////////8OAAcA//////////8PAAcA//////////8LAAgA//////////8MAAgA//////////8NAAgA//////////8OAAgA//////////8PAAgA//////////8WAAwA//////////8XAAwA//////////8YAAwA//////////8ZAAwA//////////8WAA0A//////////8XAA0A//////////8YAA0A//////////8ZAA0A//////////8=")
+tile_set = ExtResource("4_g4d56")
+
+[node name="Details" type="TileMapLayer" parent="." unique_id=40044950]
+tile_map_data = PackedByteArray("AAAGAA4A//////////8RAA4A//////////8aAA4A//////////8iAA4A//////////8=")
+tile_set = ExtResource("4_g4d56")
+collision_enabled = false
+
+[node name="Bounds" type="StaticBody2D" parent="." unique_id=1358145428]
+collision_mask = 0
+
+[node name="Left" type="CollisionShape2D" parent="Bounds" unique_id=706008918]
+position = Vector2(-16, 256)
+shape = SubResource("Boundary")
+
+[node name="Right" type="CollisionShape2D" parent="Bounds" unique_id=1364135426]
+position = Vector2(1296, 256)
+shape = SubResource("Boundary")
+
+[node name="Spawns" type="Node2D" parent="." unique_id=22093897]
+
+[node name="entry" type="Marker2D" parent="Spawns" unique_id=1960617491]
+position = Vector2(100, 480)
+
+[node name="checkpoint" type="Marker2D" parent="Spawns" unique_id=2147063028]
+position = Vector2(180, 480)
+
+[node name="Enemies" type="Node2D" parent="." unique_id=1963065800]
+
+[node name="LivingArmor" type="CharacterBody2D" parent="Enemies" unique_id=906295944 groups=["enemies"] instance=ExtResource("5_mdvhn")]
+position = Vector2(590, 480)
+collision_layer = 4
+script = ExtResource("6_fk0ec")
+config = ExtResource("7_y5jfy")
+
+[node name="DoomScribe" type="CharacterBody2D" parent="Enemies" unique_id=707569806 groups=["enemies"] instance=ExtResource("8_7shy3")]
+position = Vector2(1080, 480)
+collision_layer = 4
+script = ExtResource("9_apvv4")
+config = ExtResource("10_uh2o3")
+
+[node name="Interactions" type="Node2D" parent="." unique_id=1839794500]
+
+[node name="Return" type="Node2D" parent="Interactions" unique_id=148134834]
+position = Vector2(48, 480)
+script = ExtResource("11_buwmc")
+kind = "exit"
+target_room = "ember_quay"
+target_spawn = "core_return"
+prompt = "E / RETURN TO EMBER QUAY"
+
+[node name="Lesson" type="Node2D" parent="Interactions" unique_id=1571092593]
+position = Vector2(200, 480)
+script = ExtResource("11_buwmc")
+kind = "sign"
+prompt = "Draw guardians onto dry ground. Restore the core after battle."
+
+[node name="CoreEcho" type="Node2D" parent="Interactions" unique_id=1234373319]
+position = Vector2(1200, 480)
+script = ExtResource("11_buwmc")
+kind = "chapter_end"
+stable_id = "cistern_restored"
+prompt = "E / RESTORE THE CISTERN CORE"
+
+[node name="Hazards" type="Node2D" parent="." unique_id=539897674]
+
+[node name="SteamVent" type="Area2D" parent="Hazards" unique_id=1985850355 instance=ExtResource("12_bwesx")]
+position = Vector2(384, 480)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("13_i0scw")
+config = ExtResource("14_o6iuf")
+
+[node name="@Area2D@4" type="Area2D" parent="Hazards" unique_id=2051890873 instance=ExtResource("12_bwesx")]
+position = Vector2(832, 480)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("13_i0scw")
+config = ExtResource("14_o6iuf")

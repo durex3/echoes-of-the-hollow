@@ -10,7 +10,11 @@ const ROOMS := {
 	"wind_hall": preload("res://features/world/rooms/wind_hall.tscn"),
 	"belfry": preload("res://features/world/rooms/belfry.tscn"),
 	"atrium": preload("res://features/world/rooms/atrium.tscn"),
-	"heart_chamber": preload("res://features/world/rooms/heart_chamber.tscn")
+	"heart_chamber": preload("res://features/world/rooms/heart_chamber.tscn"),
+	"ember_quay": preload("res://features/world/rooms/ember_quay.tscn"),
+	"valve_gallery": preload("res://features/world/rooms/valve_gallery.tscn"),
+	"cistern_archive": preload("res://features/world/rooms/cistern_archive.tscn"),
+	"furnace_core": preload("res://features/world/rooms/furnace_core.tscn")
 }
 const Repository := preload("res://core/save_repository.gd")
 @onready var room_host: Node2D = $RoomHost
@@ -173,6 +177,11 @@ func _on_interaction(point: WorldInteraction) -> void:
 				Session.checkpoint_spawn = "checkpoint"
 				player.health.restore_full()
 				_save("Restored & saved")
+			if point.target_room == "furnace_core" and room.room_id == "ember_quay":
+				Session.checkpoint_room = "ember_quay"
+				Session.checkpoint_spawn = "checkpoint"
+				player.health.restore_full()
+				_save("Restored & saved")
 			transition_pending = true
 			load_room.call_deferred(point.target_room, point.target_spawn)
 		"checkpoint":
@@ -195,7 +204,7 @@ func _on_interaction(point: WorldInteraction) -> void:
 			player.health.restore_full()
 			room.update_progress()
 			_save_reward(point.stable_id)
-		"reward":
+		"reward", "chapter_end":
 			if point.stable_id in Session.flags:
 				return
 			if not room.is_cleared():
@@ -205,6 +214,11 @@ func _on_interaction(point: WorldInteraction) -> void:
 			player.health.restore_full()
 			room.update_progress()
 			_save_reward(point.stable_id)
+			if point.kind == "chapter_end":
+				player.reset_input()
+				get_tree().paused = true
+				ui.finale_saved = ui.reward_notice.save_succeeded
+				ui.show_menu("chapter_two")
 		"finale":
 			if "warden_defeated" not in Session.flags or "journey_restored" in Session.flags or not room.is_cleared():
 				return

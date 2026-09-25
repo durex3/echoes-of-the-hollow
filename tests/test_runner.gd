@@ -264,6 +264,10 @@ func _run() -> void:
 	add_child(polish)
 	await polish.run(self,game)
 	polish.queue_free()
+	var chapter_two := preload("res://tests/chapter_two_suite.gd").new()
+	add_child(chapter_two)
+	await chapter_two.run(self,game)
+	chapter_two.queue_free()
 	check(Repository.validate(Session.snapshot()), "Save schema validates")
 	check(Session.commit() == OK, "Second save safely replaces first")
 	var saved_room := Session.checkpoint_room

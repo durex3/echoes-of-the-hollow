@@ -13,6 +13,15 @@ const ROOMS := {
 	"heart_chamber": {"title":"HEART CHAMBER", "at":Vector2(195,168)}
 }
 const LINKS := [["forest","sanctuary"],["sanctuary","wind_hall"],["wind_hall","belfry"],["forest","ruins"],["ruins","training"],["training","scriptorium"],["forest","atrium"],["atrium","heart_chamber"]]
+const CHAPTER_TWO := {
+	"heart_chamber": {"title":"HEART CHAMBER", "at":Vector2(15,88)},
+	"ember_quay": {"title":"EMBER QUAY", "at":Vector2(195,88)},
+	"valve_gallery": {"title":"VALVE GALLERY", "at":Vector2(195,8)},
+	"cistern_archive": {"title":"CISTERN ARCHIVE", "at":Vector2(375,8)},
+	"furnace_core": {"title":"FURNACE CORE", "at":Vector2(375,168)}
+}
+const SECOND_LINKS := [["heart_chamber","ember_quay"],["ember_quay","valve_gallery"],["ember_quay","cistern_archive"],["ember_quay","furnace_core"]]
+var chapter := 1
 var current_room := "forest"
 var visited: Array[String] = []
 var checkpoint_room := "forest"
@@ -21,6 +30,7 @@ var abilities: Array[String] = []
 
 func configure(current: String, explored: Array[String], checkpoint: String, progress: Array[String], unlocked: Array[String]) -> void:
 	current_room = current
+	chapter = 2 if current in CHAPTER_TWO and current != "heart_chamber" else 1
 	visited.assign(explored)
 	checkpoint_room = checkpoint
 	flags.assign(progress)
@@ -32,23 +42,35 @@ func revealed(id: String) -> bool:
 		return true
 	if id == "sanctuary":
 		return "forest" in visited and "double_jump" in abilities
-	for pair: Array in LINKS:
+	if id in CHAPTER_TWO and id != "heart_chamber" and "journey_restored" not in flags:
+		return false
+	for pair: Array in LINKS + SECOND_LINKS:
 		if id in pair and (pair[0] in visited or pair[1] in visited):
 			return true
 	return false
 
 func room_label(id: String) -> String:
-	return TextCatalog.text(ROOMS[id].title if id in visited else "UNEXPLORED")
+	var data: Dictionary = ROOMS[id] if ROOMS.has(id) else CHAPTER_TWO[id]
+	return TextCatalog.text(data.title if id in visited else "UNEXPLORED")
 
 func mark_summary() -> String:
 	var parts: Array[String] = []
-	for item: Array in [["training_cleared", "Watchers seal"], ["scriptorium_cleared", "Ink seal"], ["belfry_cleared", "Wind beacon"]]:
+	var marks := [["training_cleared", "Watchers seal"], ["scriptorium_cleared", "Ink seal"], ["belfry_cleared", "Wind beacon"]] if chapter == 1 else [["flow_seal", "Flow seal"], ["pressure_seal", "Pressure seal"], ["cistern_restored", "Cistern core"]]
+	for item: Array in marks:
 		parts.append(("[+] " if item[0] in flags else "[ ] ") + TextCatalog.text(item[1]))
 	return "   ".join(parts)
 
 func target_room() -> String:
-	if "journey_restored" in flags:
+	if "cistern_restored" in flags:
 		return ""
+	if "journey_restored" in flags:
+		if "ember_quay" not in visited:
+			return "heart_chamber"
+		if "flow_seal" not in flags:
+			return "valve_gallery"
+		if "pressure_seal" not in flags:
+			return "cistern_archive"
+		return "furnace_core"
 	if "warden_defeated" in flags:
 		return "heart_chamber"
 	if "double_jump" not in abilities:
@@ -67,6 +89,10 @@ func gate_requirement(a: String, b: String) -> String:
 	# Requirements are only shown for exits whose source room is known.
 	if a not in visited:
 		return ""
+	if b == "ember_quay" and "journey_restored" not in flags:
+		return "Final echo"
+	if b == "furnace_core" and ("flow_seal" not in flags or "pressure_seal" not in flags):
+		return "Two valve seals"
 	if b == "sanctuary" and "double_jump" not in abilities:
 		return "Double jump"
 	if b == "scriptorium" and "training_cleared" not in flags:
@@ -80,32 +106,34 @@ func gate_requirement(a: String, b: String) -> String:
 	return ""
 
 func _draw() -> void:
+	var rooms := ROOMS if chapter == 1 else CHAPTER_TWO
+	var links := LINKS if chapter == 1 else SECOND_LINKS
 	var scale_factor := minf(size.x / 540.0, size.y / 242.0)
 	draw_set_transform(Vector2.ZERO,0,Vector2.ONE*scale_factor)
 	var font := get_theme_default_font()
-	for pair: Array in LINKS:
+	for pair: Array in links:
 		if not revealed(pair[0]) or not revealed(pair[1]):
 			continue
-		var a: Vector2 = ROOMS[pair[0]].at + Vector2(75,26)
-		var b: Vector2 = ROOMS[pair[1]].at + Vector2(75,26)
+		var a: Vector2 = rooms[pair[0]].at + Vector2(75,26)
+		var b: Vector2 = rooms[pair[1]].at + Vector2(75,26)
 		draw_line(a,b,Color("526d64"),2)
 		var requirement := gate_requirement(pair[0], pair[1])
 		if not requirement.is_empty():
 			var center := (a + b) / 2.0
 			draw_rect(Rect2(center - Vector2(4,4), Vector2(8,8)), Color("efce8e"))
-	if "belfry_cleared" in flags and "belfry" in visited and "forest" in visited:
+	if chapter == 1 and "belfry_cleared" in flags and "belfry" in visited and "forest" in visited:
 		draw_polyline(PackedVector2Array([Vector2(450,60),Vector2(450,74),Vector2(90,74),Vector2(90,88)]),Color("94e4ce"),1)
 		draw_colored_polygon(PackedVector2Array([Vector2(90,88),Vector2(86,82),Vector2(94,82)]),Color("94e4ce"))
-	if "training_cleared" in flags and "training" in visited and "forest" in visited:
+	if chapter == 1 and "training_cleared" in flags and "training" in visited and "forest" in visited:
 		draw_polyline(PackedVector2Array([Vector2(450,140),Vector2(450,153),Vector2(90,153),Vector2(90,140)]),Color("94e4ce"),1)
 		draw_colored_polygon(PackedVector2Array([Vector2(90,140),Vector2(86,146),Vector2(94,146)]),Color("94e4ce"))
-	if "scriptorium_cleared" in flags and "scriptorium" in visited and "ruins" in visited:
+	if chapter == 1 and "scriptorium_cleared" in flags and "scriptorium" in visited and "ruins" in visited:
 		draw_polyline(PackedVector2Array([Vector2(375,194),Vector2(360,194),Vector2(360,148),Vector2(270,148),Vector2(270,140)]),Color("94e4ce"),1)
 		draw_colored_polygon(PackedVector2Array([Vector2(270,140),Vector2(266,146),Vector2(274,146)]),Color("94e4ce"))
-	for id: String in ROOMS:
+	for id: String in rooms:
 		if not revealed(id):
 			continue
-		var at: Vector2 = ROOMS[id].at
+		var at: Vector2 = rooms[id].at
 		var tint := Color("94e4ce") if id == current_room or id == target_room() else Color("526d64")
 		draw_rect(Rect2(at,Vector2(150,52)),Color("10292c") if id in visited else Color("131f28"))
 		draw_rect(Rect2(at,Vector2(150,52)),tint,false,2 if id == current_room else 1)
@@ -120,7 +148,7 @@ func _draw() -> void:
 		_draw_label(font, at+Vector2(8,39), status, 136, 11, Color("94e4ce") if id == current_room or id == target_room() else Color("a4b9b2"), scale_factor)
 	# Compact legend gives actionable known requirements without naming hidden rooms.
 	var locked: Array[String] = []
-	for pair: Array in LINKS:
+	for pair: Array in links:
 		var requirement := gate_requirement(pair[0], pair[1])
 		if not requirement.is_empty() and revealed(pair[1]):
 			locked.append(TextCatalog.text(requirement))

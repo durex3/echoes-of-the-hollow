@@ -38,6 +38,7 @@ var map_progress: Label
 var map_objective: Label
 var boss_hint: Label
 var confirmation: ConfirmationDialog
+var chapter_button: Button
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -161,6 +162,13 @@ func _ready() -> void:
 	var map_title := label("PATHS OF THE HOLLOW",20,Color("efce8e"))
 	map_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	map_layout.add_child(map_title)
+	chapter_button = Button.new()
+	chapter_button.name = "ChapterPage"
+	chapter_button.pressed.connect(func() -> void:
+		world_map.chapter = 2 if world_map.chapter == 1 else 1
+		world_map.queue_redraw()
+		_refresh_map_page())
+	map_layout.add_child(chapter_button)
 	map_progress = label("", 12, Color("efce8e"))
 	map_progress.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	map_layout.add_child(map_progress)
@@ -195,11 +203,17 @@ func _ready() -> void:
 
 func show_map(room_id: String) -> void:
 	world_map.configure(room_id,Session.visited,Session.checkpoint_room,Session.flags,Session.abilities)
-	map_progress.text = world_map.mark_summary()
+	_refresh_map_page()
 	map_objective.text = TextCatalog.text(JourneyProgress.objective(Session.abilities,Session.flags,Session.visited))
 	modal.hide()
 	map_panel.show()
 	(map_panel.find_child("CloseMap",true,false) as Button).grab_focus()
+
+func _refresh_map_page() -> void:
+	chapter_button.visible = "journey_restored" in Session.flags
+	world_map.custom_minimum_size.y = 168 if chapter_button.visible else 202
+	chapter_button.text = TextCatalog.text("Chapter II / Show Chapter I" if world_map.chapter == 2 else "Chapter I / Show Chapter II")
+	map_progress.text = world_map.mark_summary()
 
 func hide_map() -> void:
 	map_panel.hide()
@@ -219,14 +233,18 @@ func show_menu(mode: String, can_continue := false) -> void:
 		child.queue_free()
 	modal.show()
 	var heading := "HOLLOW RESTORED" if mode == "finale" else ("ECHOES OF THE HOLLOW" if mode == "title" else ("ECHO RESTORED" if mode == "win" else "PAUSED"))
+	if mode == "chapter_two":
+		heading = "CISTERN RESTORED"
 	var title := label(heading, 24, Color("efce8e"))
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	menu.add_child(title)
 	var subtitle := label("The warden rests. The grove remembers your journey." if mode == "finale" else "A small journey through the forgotten grove", 12, Color("b4c6c2"))
+	if mode == "chapter_two":
+		set_text(subtitle,"Steam vents are now safe throughout Chapter II")
 	subtitle.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	menu.add_child(subtitle)
-	if mode == "finale":
+	if mode in ["finale", "chapter_two"]:
 		var saved_label := label("Progress saved" if finale_saved else "Save failed - visit a shrine to retry",12,Color("efce8e"))
 		saved_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		saved_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -238,7 +256,7 @@ func show_menu(mode: String, can_continue := false) -> void:
 		if can_continue:
 			menu.add_child(label("New journey replaces progress on the next save.", 12, Color("b4c6c2")))
 	else:
-		button("Continue exploring" if mode in ["win","finale"] else "Resume", func() -> void: resume_requested.emit())
+		button("Continue exploring" if mode in ["win","finale","chapter_two"] else "Resume", func() -> void: resume_requested.emit())
 	button("Settings", func() -> void:
 		modal.hide()
 		settings_panel.open())
@@ -329,6 +347,7 @@ func _refresh_language() -> void:
 	update_health(health_current,health_maximum)
 	update_progress()
 	world_map.queue_redraw()
+	_refresh_map_page()
 	reward_notice.refresh_language()
 	if modal.visible:
 		show_menu(menu_mode,menu_can_continue)

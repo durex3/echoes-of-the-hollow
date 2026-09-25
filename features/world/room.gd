@@ -59,7 +59,7 @@ func _physics_process(_delta: float) -> void:
 		if not point.visible:
 			continue
 		var current := player.global_position.distance_to(point.global_position)
-		if current < distance:
+		if current < minf(distance, point.interaction_radius):
 			distance = current
 			nearest = point
 	var message := nearest.prompt if nearest else ""
@@ -75,16 +75,23 @@ func spawn_position(spawn_id: String) -> Vector2:
 	return marker.global_position
 
 func update_progress() -> void:
+	var hazards := get_node_or_null("Hazards")
+	if hazards and "cistern_restored" in Session.flags:
+		for vent: SteamVent in hazards.get_children():
+			vent.deactivate()
 	for child: Node in $Interactions.get_children():
 		var point := child as WorldInteraction
+		point.visible = true
 		if point.kind == "ability":
 			point.visible = not Session.abilities.has(point.stable_id)
 		elif point.kind == "goal":
 			point.visible = not Session.completed
-		elif point.kind in ["reward", "upgrade"]:
+		elif point.kind in ["reward", "upgrade", "chapter_end"]:
 			point.visible = point.stable_id not in Session.flags
 		elif point.kind == "finale":
 			point.visible = "warden_defeated" in Session.flags and point.stable_id not in Session.flags
+		if not point.visible_after_flag.is_empty():
+			point.visible = point.visible and point.visible_after_flag in Session.flags
 
 func is_cleared() -> bool:
 	for enemy: Node in $Enemies.get_children():

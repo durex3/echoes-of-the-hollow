@@ -55,6 +55,9 @@ position = Vector2(96, 480)
 [node name="checkpoint" type="Marker2D" parent="Spawns" unique_id=131344887]
 position = Vector2(96, 480)
 
+[node name="chapter_return" type="Marker2D" parent="Spawns"]
+position = Vector2(560, 480)
+
 [node name="Enemies" type="Node2D" parent="." unique_id=1963065800]
 
 [node name="Warden" type="CharacterBody2D" parent="Enemies" unique_id=273080359 groups=["enemies"] instance=ExtResource("5_63gu3")]
@@ -86,3 +89,15 @@ kind = "finale"
 required_flag = "warden_defeated"
 stable_id = "journey_restored"
 prompt = "E / RESTORE THE FINAL ECHO"
+
+[node name="ChapterDoor" type="Node2D" parent="Interactions"]
+position = Vector2(604, 480)
+script = ExtResource("8_qpmqr")
+kind = "exit"
+visible_after_flag = "journey_restored"
+interaction_radius = 32.0
+required_flags = Array[String](["journey_restored"])
+missing_flag_prompts = Array[String](["Restore the final echo before entering Chapter II"])
+target_room = "ember_quay"
+target_spawn = "entry"
+prompt = "E / CHAPTER II - EMBER CISTERN"
