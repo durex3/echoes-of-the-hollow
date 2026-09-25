@@ -27,11 +27,20 @@ func run(h: Node, game: Node) -> void:
 	game._on_interaction(game.room.get_node("Interactions/FinalEcho"))
 	h.check("journey_restored" not in Session.flags, "Final echo cannot be claimed before boss defeat")
 	await h.frames(30)
+	h.check(boss.sprite.animation == "idle" and boss.sprite.is_playing() and boss.sprite.frame > 0, "Dormant boss uses a moving idle clip instead of a frozen recovery pose")
+	var opaque_frames := true
+	for clip: StringName in boss.sprite.sprite_frames.get_animation_names():
+		for index: int in range(boss.sprite.sprite_frames.get_frame_count(clip)):
+			var texture := boss.sprite.sprite_frames.get_frame_texture(clip,index) as AtlasTexture
+			opaque_frames = opaque_frames and not texture.atlas.get_image().get_region(Rect2i(texture.region)).is_invisible()
+	h.check(opaque_frames, "Every boss animation frame contains visible artwork including the complete death sequence")
 	await h.shot("46_warden_entry")
 	player.revive(Vector2(380,480))
 	await h.frames(2)
 	h.check(boss.state == HollowWarden.State.INTRO and game.ui.boss_panel.visible and game.ui.boss_bar.value == 12, "Crossing the arena starts a harmless introduction and full boss bar")
 	h.check(await wait_state(h,boss,HollowWarden.State.WINDUP), "Warden reaches a natural sweep windup")
+	var warning_texture := boss.sprite.sprite_frames.get_frame_texture("windup",0) as AtlasTexture
+	h.check(boss.sprite.animation == "windup" and warning_texture.region == Rect2(256,192,64,64), "Attack warning starts on the actual raised-sword sequence")
 	var hp := player.health.current
 	var direction := boss.facing
 	await h.frames(20)
@@ -43,10 +52,15 @@ func run(h: Node, game: Node) -> void:
 	player.revive(boss.position+Vector2(direction*60,0))
 	await h.frames(3)
 	h.check(await wait_state(h,boss,HollowWarden.State.STRIKE), "Sweep warning transitions into a real active hitbox")
+	var strike_texture := boss.sprite.sprite_frames.get_frame_texture("strike",0) as AtlasTexture
+	h.check(boss.sprite.animation == "strike" and strike_texture.region == Rect2(128,256,64,64), "Active damage uses the actual sword-sweep artwork rather than standing frames")
+	await h.shot("56_warden_sweep_active")
 	await h.frames(8)
 	h.check(player.health.current == hp-1, "Standing in the sweep takes exactly one point of damage")
 	await h.frames(8)
 	h.check(not boss.attack_box.active and player.health.current == hp-1, "Sweep recovery disables damage without a repeated hit")
+	var recovery_duration := boss.sprite.sprite_frames.get_frame_count("recover")/(boss.sprite.sprite_frames.get_animation_speed("recover")*boss.sprite.speed_scale)
+	h.check(boss.sprite.animation == "recover" and absf(recovery_duration-boss.config.sweep.recovery)<0.001, "Recovery animation lasts for the configured punish window")
 	# Rush starts after recovery and locks the current direction.
 	player.revive(boss.position+Vector2(-80,0))
 	h.check(await wait_state(h,boss,HollowWarden.State.WINDUP), "Second natural attack begins after its recovery")
@@ -92,6 +106,7 @@ func run(h: Node, game: Node) -> void:
 	await wait_state(h,boss,HollowWarden.State.WINDUP)
 	h.check(boss.rush_attack and boss.timer > 0.9, "Second phase retains the full rush warning duration")
 	await wait_state(h,boss,HollowWarden.State.STRIKE)
+	await h.shot("57_warden_right_strike")
 	await h.frames(12)
 	h.check(boss.position.x <= 568.1 and boss.state == HollowWarden.State.RECOVER and not boss.attack_box.active, "Rush stops at a two-pixel wall and immediately enters recovery")
 	h.check(player.health.current == player.health.maximum, "Boss attacks cannot damage through a world wall")
@@ -151,6 +166,7 @@ func run(h: Node, game: Node) -> void:
 	h.check("warden_defeated" in Session.flags and game.room.is_cleared(), "Real sword strikes defeat the warden and set its unique persistent mark")
 	h.check(not game.ui.boss_panel.visible and game.ui.reward_notice.save_succeeded and player.health.current == player.health.maximum, "Boss defeat hides bar heals and confirms successful save")
 	h.check(Session.restore() and "warden_defeated" in Session.flags, "Boss victory survives a saved-state restore")
+	h.check(is_instance_valid(boss) and boss.sprite.animation == "death" and not boss.sprite.sprite_frames.get_frame_texture("death",boss.sprite.frame).get_image().is_invisible(), "A defeated boss visibly collapses before its scene is released")
 	await h.shot("50_warden_defeated")
 	await h.frames(50)
 	h.check(game.room.get_node("Enemies").get_child_count() == 0, "Defeated boss releases its scene after the death animation")

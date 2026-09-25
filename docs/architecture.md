@@ -114,7 +114,8 @@ Main 注入 Player，接 awakened/health.changed/phase_changed 驱动原生首�
 进入 heart_chamber 前把 checkpoint 固定到 atrium/checkpoint 并尝试保存；保存失败显示原提示，会话检查点仍可重试。首领房仅 640px 宽，Main 固定 Camera2D 到 (320,396)，全场可见且跳跃不推动镜头；其他房间维持原跟随方式。西门允许主动撤退，返回前庭 boss_return。
 GameRoom 在装载时移除已有 warden_defeated 标记的首领；finale 交互仅在击败且尚无 journey_restored 时可见，Main 再检查前置和清场。结局按实际保存结果展示成功/失败，菜单支持继续探索、语言切换及地图往返。重复交互不重复播放；保存失败后可到祭坛重试。
 schema 2 不变，增加 heart_chamber 与 warden_defeated/journey_restored 白名单。completed 仍表示旧高台事件，绝不自动迁移成新结局；主线结局以 journey_restored 为准。不持久化首领半血或攻击阶段，未击败则重入满血。
-heart_chamber.tscn 是原生 640×576 房间，连续平地 y=480；tools/build_heart_chamber.tscn 只首次创建并拒绝覆盖。复用原铠甲帧图与图块，无新增 Autoload、外部素材或依赖。
+heart_chamber.tscn 是原生 640×576 房间，连续平地 y=480；tools/build_heart_chamber.tscn 只首次创建并拒绝覆盖。复用原铠甲PNG与图块，无新增 Autoload、外部素材或依赖。
+0.8.1守门者改用独立warden_frames.tres修正选帧，_play_clip按实际片段帧数/fps匹配阶段时间，每次显式从头播放。待机/入场/转阶段使用循环idle；2倍最近邻显示仅影响Sprite，脚底y=0，Body/Hurtbox/AttackBox与配置不改，普通铠甲共用资源不改。
 
 ### 主线汇合（0.7.0）
 

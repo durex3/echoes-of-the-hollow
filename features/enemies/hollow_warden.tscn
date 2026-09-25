@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://features/enemies/hollow_warden.gd" id="1"]
-[ext_resource type="SpriteFrames" path="res://features/enemies/armor_frames.tres" id="2"]
+[ext_resource type="SpriteFrames" path="res://features/enemies/warden_frames.tres" id="2"]
 [ext_resource type="Script" path="res://features/combat/health.gd" id="3"]
 [ext_resource type="Script" path="res://features/combat/hurtbox.gd" id="4"]
 [ext_resource type="Script" path="res://features/combat/hitbox.gd" id="5"]
@@ -20,11 +20,12 @@ collision_mask = 1
 script = ExtResource("1")
 config = ExtResource("6")
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
-position = Vector2(0, -48)
-scale = Vector2(1.5, 1.5)
+position = Vector2(0, -64)
+scale = Vector2(2, 2)
+texture_filter = 1
 sprite_frames = ExtResource("2")
-animation = &"recover"
-autoplay = "recover"
+animation = &"idle"
+autoplay = "idle"
 [node name="Body" type="CollisionShape2D" parent="."]
 position = Vector2(0, -34)
 shape = SubResource("Body")

@@ -26,7 +26,7 @@ func _ready() -> void:
 	health.damaged.connect(_on_damage)
 	health.died.connect(_on_death)
 	attack_box.impact.connect(func(at: Vector2, killed: bool) -> void: impact.emit(at,killed))
-	sprite.play("recover")
+	_play_clip("idle")
 
 func _physics_process(delta: float) -> void:
 	if state == State.DEAD:
@@ -86,32 +86,37 @@ func _enter(next: State) -> void:
 	state = next
 	attack_box.end_swing()
 	velocity.x = 0
-	sprite.speed_scale = 1
 	match state:
 		State.INTRO, State.TRANSITION:
 			timer = config.intro_seconds if state == State.INTRO else config.transition_seconds
-			sprite.play("windup")
+			_play_clip("idle")
 		State.CHASE:
-			sprite.play("walk")
+			_play_clip("walk")
 		State.WINDUP:
 			timer = active_profile.windup
 			attack_box.position.x = facing*44
 			attack_box.damage = active_profile.damage
 			attack_box.begin_swing()
-			sprite.play("windup")
-			sprite.speed_scale = 8.0/(12.0*timer)
+			_play_clip("windup",timer)
 		State.STRIKE:
 			timer = active_profile.active_seconds
 			attack_box.active = true
-			sprite.play("strike")
-			sprite.speed_scale = 3.0/(12.0*timer)
+			_play_clip("strike",timer)
 			Audio.play_sound("attack")
 		State.RECOVER:
 			timer = active_profile.recovery*(config.phase_two_recovery_scale if phase == 2 else 1.0)
-			sprite.play("recover")
+			_play_clip("recover",timer)
 		State.DEAD:
 			velocity = Vector2.ZERO
-			sprite.play("death")
+			_play_clip("death")
+
+func _play_clip(animation: StringName, duration := 0.0) -> void:
+	sprite.stop()
+	sprite.speed_scale = 1.0
+	if duration > 0:
+		var frames := sprite.sprite_frames
+		sprite.speed_scale = frames.get_frame_count(animation)/(frames.get_animation_speed(animation)*duration)
+	sprite.play(animation)
 
 func _on_damage(_amount: int, _at: Vector2) -> void:
 	flash_left = 0.08
@@ -131,7 +136,6 @@ func _on_death() -> void:
 func _draw() -> void:
 	if state == State.DEAD:
 		return
-	draw_colored_polygon(PackedVector2Array([Vector2(-15,-80),Vector2(-10,-91),Vector2(0,-83),Vector2(10,-91),Vector2(15,-80)]),Color("d6ba7e"))
 	if state in [State.INTRO,State.TRANSITION]:
 		draw_arc(Vector2(0,-42),50,PI,TAU,32,Color("94e4ce"),2)
 	if state == State.WINDUP:
