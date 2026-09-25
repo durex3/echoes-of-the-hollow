@@ -65,7 +65,7 @@ func load_room(room_id: String, spawn: String) -> void:
 	room.interaction_requested.connect(_on_interaction)
 	room.gate_breached.connect(_on_gate_breached)
 	room.projectile_impact.connect($Feedback.show_impact.bind(false))
-	room.prompt_changed.connect(func(message: String) -> void: ui.prompt.text = message)
+	room.prompt_changed.connect(func(message: String) -> void: ui.set_text(ui.prompt,message))
 	room.update_progress()
 	for enemy: Node in room.get_node("Enemies").get_children():
 		if enemy is DoomScribe:
@@ -83,8 +83,8 @@ func load_room(room_id: String, spawn: String) -> void:
 	camera.limit_bottom = int(room.bounds.end.y)
 	camera.position = player.position - Vector2(0, 65)
 	camera.reset_smoothing()
-	ui.area_label.text = room.display_name
-	ui.prompt.text = ""
+	ui.set_text(ui.area_label,room.display_name)
+	ui.set_text(ui.prompt,"")
 	Audio.play_music(room.music_track)
 	transition_pending = false
 
@@ -152,10 +152,12 @@ func _on_interaction(point: WorldInteraction) -> void:
 			player.health.restore_full()
 			_save("Restored & saved")
 		"ability":
+			if point.stable_id in Session.abilities:
+				return
 			Session.unlock(point.stable_id)
 			room.update_progress()
 			Audio.play_sound("ability_acquire")
-			_save("WIND DASH / K or right shoulder - no invincibility" if point.stable_id == "dash" else "DOUBLE JUMP / Press SPACE again in the air")
+			_save_reward(point.stable_id)
 		"upgrade":
 			if point.stable_id != "heart_bloom" or point.stable_id in Session.flags:
 				return
@@ -163,20 +165,17 @@ func _on_interaction(point: WorldInteraction) -> void:
 			player.health.maximum = Session.maximum_health()
 			player.health.restore_full()
 			room.update_progress()
-			_save("HEART BLOOM / Maximum vitality increased")
+			_save_reward(point.stable_id)
 		"reward":
+			if point.stable_id in Session.flags:
+				return
 			if not room.is_cleared():
 				ui.notify("Defeat the hall guardians to release the seal")
 				return
 			Session.set_flag(point.stable_id)
 			player.health.restore_full()
 			room.update_progress()
-			var message := "HALL CLEARED / Forest shortcut unlocked"
-			if point.stable_id == "scriptorium_cleared":
-				message = "INK SEAL / Archive route unlocked"
-			elif point.stable_id == "belfry_cleared":
-				message = "WIND BEACON / Grove shortcut unlocked"
-			_save(message)
+			_save_reward(point.stable_id)
 		"goal":
 			if not Session.abilities.has("double_jump"):
 				ui.notify("The shrine awaits an echo from the eastern ruins")
@@ -194,6 +193,14 @@ func _save(message: String) -> void:
 		Audio.play_sound("save")
 	else:
 		ui.notify("Save failed / Progress remains in this session")
+
+func _save_reward(stable_id: String) -> void:
+	var saved := Session.commit() == OK
+	ui.reward_notice.present(stable_id,saved)
+	ui.set_text(ui.toast,"")
+	ui.toast_left = 0
+	if saved:
+		Audio.play_sound("save")
 
 func _on_gate_breached(stable_id: String) -> void:
 	Session.set_flag(stable_id)

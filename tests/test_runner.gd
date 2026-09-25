@@ -11,6 +11,8 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	visual = "--visual" in OS.get_cmdline_user_args()
 	Session.save_path = "user://test_%s.json" % OS.get_process_id()
+	Session.settings_path = "user://test_ui_settings_%s.cfg" % OS.get_process_id()
+	Session.set_language("en")
 	get_tree().create_timer(150.0, true, false, true).timeout.connect(func() -> void:
 		push_error("Integration test timeout")
 		get_tree().quit(1))
@@ -241,6 +243,10 @@ func _run() -> void:
 	add_child(dash_suite)
 	await dash_suite.run(self,game)
 	dash_suite.queue_free()
+	var ui_suite := preload("res://tests/reward_language_suite.gd").new()
+	add_child(ui_suite)
+	await ui_suite.run(self,game)
+	ui_suite.queue_free()
 	check(Repository.validate(Session.snapshot()), "Save schema validates")
 	check(Session.commit() == OK, "Second save safely replaces first")
 	var saved_room := Session.checkpoint_room
@@ -262,6 +268,8 @@ func _run() -> void:
 		if FileAccess.file_exists(Session.save_path + suffix):
 			DirAccess.remove_absolute(Session.save_path + suffix)
 	game.queue_free()
+	if FileAccess.file_exists(Session.settings_path):
+		DirAccess.remove_absolute(Session.settings_path)
 	Audio.stop_all()
 	await frames(4)
 	if visual:

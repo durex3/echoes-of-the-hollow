@@ -1,7 +1,7 @@
 # 空谷回响 / Echoes of the Hollow
 
 Godot 4.7.2 + GDScript 的 2D 类银河恶魔城工程基础，使用本机《类银河恶魔城锻造坊》素材。
-当前版本 **0.5.0：风之冲刺与寂静钟楼**。包含七个可编辑房间，这是继续开发的工程起点，不是完整商业游戏。
+当前版本 **0.6.0：中英文切换与领奖反馈**。包含七个可编辑房间，这是继续开发的工程起点，不是完整商业游戏。
 当前优先完成游戏内容；Windows 打包与浏览器兼容放到内容完成后的发布阶段。每轮照常执行开发回归，不要求先制作试玩包或等待用户试玩才能继续。
 
 ## 立即运行
@@ -27,6 +27,8 @@ Godot 4.7.2 + GDScript 的 2D 类银河恶魔城工程基础，使用本机《�
 
 ## 当前玩法
 
+- 主菜单或 ESC 暂停菜单点击 **Language / 语言**，切换 English / 简体中文，立即生效并记住选择。首次默认英文，旧进度不受影响。
+- 领取能力、生命之花、封印或风信标后显示独立奖励卡片：名称、效果、下一步操作和保存结果。显示 6 秒，暂停/地图期间保留阅读时间，不阻挡操作。
 - A/D 或方向键移动；空格跳跃，短按跳得低，长按跳得高。
 - J 挥剑；E 与附近存档点、门、能力和终点交互。
 - 解锁后 K / 手柄右肩水平冲刺：0.18 秒约 112px，冷却从启动计 0.45 秒；每次落地前最多一次空中冲刺。没有无敌，不穿普通墙，不取消剑击收招。
@@ -75,10 +77,11 @@ artifacts/            本机检查日志和截图（不提交）
 7. [技能到工程的映射](docs/skill-map.md)：采用哪些 skill，如何落实。
 8. [技术决策](docs/decisions/0001-project-baseline.md)：为什么这样组织。
 9. [变更记录](CHANGELOG.md)、[贡献约定](CONTRIBUTING.md)、[任务模板](docs/templates/task.md)。
-10. [冲刺风道任务](docs/tasks/dash-wind-path.md)、[探索地图任务](docs/tasks/exploration-map.md)、[远程敌人任务](docs/tasks/doom-scribe.md)、[活铠甲任务](docs/tasks/combat-training.md)、[动画帧映射](docs/animation-map.md)：实现范围、验收状态和美术维护依据。
+10. [领奖与语言任务](docs/tasks/reward-language.md)、[冲刺风道任务](docs/tasks/dash-wind-path.md)、[探索地图任务](docs/tasks/exploration-map.md)、[远程敌人任务](docs/tasks/doom-scribe.md)、[活铠甲任务](docs/tasks/combat-training.md)、[动画帧映射](docs/animation-map.md)：实现范围、验收状态和美术维护依据。
 
 ## 素材与范围
 
 原始桌面素材保持不变；复制文件的源路径与 SHA-256 在 `assets/manifest.json`。
 解压章节未附完整授权文本，因此来源已记录、授权状态标为待核对，尚未公开发布工程或素材。
-本版已有房间关系地图和冲刺探索路线，未实现 Boss、正式结局、按键重绑、中文游戏界面及正式发布包；详见路线图。
+本版已有中英文界面、房间关系地图和冲刺探索路线，未实现 Boss、正式结局、按键重绑及正式发布包；详见路线图。
+中文使用随工程携带的 Noto Sans CJK SC，字体授权和来源见 assets/fonts/noto_sans_sc_license.txt 与 assets/manifest.json；这不改变原课程素材的待核对状态。

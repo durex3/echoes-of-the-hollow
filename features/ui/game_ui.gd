@@ -17,15 +17,27 @@ var hud: Control
 var map_panel: PanelContainer
 var world_map: WorldMap
 var menu_mode := "title"
+var reward_notice: RewardNotice
+var root_control: Control
+var ui_theme: Theme
+var english_font: Font
+const CHINESE_FONT := preload("res://assets/fonts/noto_sans_sc.otf")
+var health_current := 5
+var health_maximum := 5
+var menu_can_continue := false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	var root := Control.new()
+	root_control = root
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
 	var theme := Theme.new()
-	theme.default_font = preload("res://assets/fonts/alagard.ttf")
+	ui_theme = theme
+	english_font = preload("res://assets/fonts/alagard.ttf").duplicate() as Font
+	english_font.fallbacks = [CHINESE_FONT]
+	theme.default_font = CHINESE_FONT if Session.language == "zh_CN" else english_font
 	theme.default_font_size = 14
 	root.theme = theme
 	hud = Control.new()
@@ -51,7 +63,7 @@ func _ready() -> void:
 	bottom.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	bottom.offset_left = 20
 	bottom.offset_right = -20
-	bottom.offset_top = -68
+	bottom.offset_top = -86
 	bottom.offset_bottom = -12
 	hud.add_child(bottom)
 	toast = label("", 14, Color("efce8e"))
@@ -63,6 +75,8 @@ func _ready() -> void:
 	var controls := label("A/D Move  SPACE Jump  J Attack  K Dash  E Use  Q Map  ESC Pause  M Mute", 11, Color("9aafad"))
 	controls.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	bottom.add_child(controls)
+	reward_notice = RewardNotice.new()
+	hud.add_child(reward_notice)
 	modal = PanelContainer.new()
 	modal.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	modal.offset_left = -210
@@ -75,12 +89,12 @@ func _ready() -> void:
 	style.set_border_width_all(1)
 	style.content_margin_left = 28
 	style.content_margin_right = 28
-	style.content_margin_top = 24
-	style.content_margin_bottom = 24
+	style.content_margin_top = 16
+	style.content_margin_bottom = 16
 	modal.add_theme_stylebox_override("panel", style)
 	root.add_child(modal)
 	menu = VBoxContainer.new()
-	menu.add_theme_constant_override("separation", 12)
+	menu.add_theme_constant_override("separation", 8)
 	modal.add_child(menu)
 	hud.hide()
 	modal.hide()
@@ -109,9 +123,12 @@ func _ready() -> void:
 	var close := Button.new()
 	close.name = "CloseMap"
 	close.text = "Return / Q or ESC"
+	close.set_meta("source_text",close.text)
+	close.text = TextCatalog.text(close.text)
 	close.pressed.connect(func() -> void: map_closed.emit())
 	map_layout.add_child(close)
 	map_panel.hide()
+	Session.language_changed.connect(_refresh_language)
 
 func show_map(room_id: String) -> void:
 	world_map.configure(room_id,Session.visited,Session.checkpoint_room,Session.flags,Session.abilities)
@@ -124,13 +141,14 @@ func hide_map() -> void:
 
 func label(text: String, font_size: int, color: Color) -> Label:
 	var node := Label.new()
-	node.text = text
+	set_text(node,text)
 	node.add_theme_font_size_override("font_size", font_size)
 	node.add_theme_color_override("font_color", color)
 	return node
 
 func show_menu(mode: String, can_continue := false) -> void:
 	menu_mode = mode
+	menu_can_continue = can_continue
 	for child: Node in menu.get_children():
 		menu.remove_child(child)
 		child.queue_free()
@@ -153,6 +171,12 @@ func show_menu(mode: String, can_continue := false) -> void:
 			setting_toggle("Reduce screen shake", Session.reduce_shake, "reduce_shake")
 			setting_toggle("Reduce hit flashes", Session.reduce_flashes, "reduce_flashes")
 	button("Quit", func() -> void: quit_requested.emit())
+	var language_button := Button.new()
+	language_button.name = "LanguageButton"
+	language_button.text = "语言 / Language: 简体中文" if Session.language == "zh_CN" else "Language / 语言: English"
+	language_button.custom_minimum_size.y = 29
+	language_button.pressed.connect(_toggle_language)
+	menu.add_child(language_button)
 	for child: Node in menu.get_children():
 		if child is Button:
 			child.grab_focus()
@@ -160,14 +184,14 @@ func show_menu(mode: String, can_continue := false) -> void:
 
 func button(text: String, action: Callable) -> void:
 	var node := Button.new()
-	node.text = text
+	node.text = TextCatalog.text(text)
 	node.custom_minimum_size.y = 29
 	node.pressed.connect(action)
 	menu.add_child(node)
 
 func setting_toggle(text: String, value: bool, property: String) -> void:
 	var toggle := CheckButton.new()
-	toggle.text = text
+	toggle.text = TextCatalog.text(text)
 	toggle.button_pressed = value
 	toggle.toggled.connect(func(enabled: bool) -> void:
 		Session.set(property, enabled)
@@ -180,20 +204,48 @@ func show_hud() -> void:
 	modal.hide()
 
 func update_health(current: int, maximum: int) -> void:
-	health_label.text = "VITALITY  " + "| ".repeat(current) + ". ".repeat(maximum - current)
+	health_current = current
+	health_maximum = maximum
+	health_label.text = TextCatalog.text("VITALITY") + "  " + "| ".repeat(current) + ". ".repeat(maximum - current)
 
 func update_progress() -> void:
 	if "dash" in Session.abilities:
-		objective.text = "Wind route open / Explore freely" if "belfry_cleared" in Session.flags else "Dash through the wind / Reach the silent belfry"
+		set_text(objective,"Wind route open / Explore freely" if "belfry_cleared" in Session.flags else "Dash through the wind / Reach the silent belfry")
 		return
-	objective.text = "Echo restored / Explore freely" if Session.completed else ("Double jump unlocked / Return to the high shrine" if Session.abilities.has("double_jump") else "Find the echo in the eastern ruins")
+	set_text(objective,"Echo restored / Explore freely" if Session.completed else ("Double jump unlocked / Return to the high shrine" if Session.abilities.has("double_jump") else "Find the echo in the eastern ruins"))
 
 func notify(message: String) -> void:
-	toast.text = message
+	set_text(toast,message)
 	toast_left = 3.0
 
 func _process(delta: float) -> void:
+	reward_notice.advance(delta,get_tree().paused or modal.visible or map_panel.visible)
 	if toast_left > 0:
 		toast_left -= delta
 		if toast_left <= 0:
-			toast.text = ""
+			set_text(toast,"")
+
+func set_text(node: Label, source: String) -> void:
+	node.set_meta("source_text",source)
+	node.text = TextCatalog.text(source)
+
+func _refresh_text(node: Node) -> void:
+	if node.has_meta("source_text"):
+		node.set("text",TextCatalog.text(str(node.get_meta("source_text"))))
+	for child: Node in node.get_children():
+		_refresh_text(child)
+
+func _refresh_language() -> void:
+	ui_theme.default_font = CHINESE_FONT if Session.language == "zh_CN" else english_font
+	_refresh_text(root_control)
+	update_health(health_current,health_maximum)
+	update_progress()
+	world_map.queue_redraw()
+	reward_notice.refresh_language()
+	if modal.visible:
+		show_menu(menu_mode,menu_can_continue)
+
+func _toggle_language() -> void:
+	if Session.set_language("en" if Session.language == "zh_CN" else "zh_CN") != OK:
+		notify("Settings could not be saved")
+	(menu.get_node("LanguageButton") as Button).grab_focus()

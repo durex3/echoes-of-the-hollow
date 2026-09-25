@@ -30,6 +30,8 @@ Invoke-CheckedGodot -Name 'import' -Arguments @('--headless','--editor','--impor
 Invoke-CheckedGodot -Name 'integration' -Arguments @('--headless','--fixed-fps','60','res://tests/test_runner.tscn')
 Invoke-CheckedGodot -Name 'save_write' -Arguments @('--headless','--script','res://tests/save_process.gd','--','--write')
 Invoke-CheckedGodot -Name 'save_read' -Arguments @('--headless','--script','res://tests/save_process.gd','--','--read')
+Invoke-CheckedGodot -Name 'language_write' -Arguments @('--headless','--script','res://tests/settings_process.gd','--','--write')
+Invoke-CheckedGodot -Name 'language_read' -Arguments @('--headless','--script','res://tests/settings_process.gd','--','--read')
 if ($Visual) {
     Invoke-CheckedGodot -Name 'visual' -Arguments @('--fixed-fps','60','--max-fps','60','res://tests/test_runner.tscn','--','--visual')
 }

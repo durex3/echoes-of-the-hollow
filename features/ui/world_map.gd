@@ -36,7 +36,7 @@ func revealed(id: String) -> bool:
 	return false
 
 func room_label(id: String) -> String:
-	return ROOMS[id].title if id in visited else "UNEXPLORED"
+	return TextCatalog.text(ROOMS[id].title if id in visited else "UNEXPLORED")
 
 func _draw() -> void:
 	var scale_factor := minf(size.x / 540.0, size.y / 226.0)
@@ -65,9 +65,9 @@ func _draw() -> void:
 		draw_rect(Rect2(at,Vector2(150,52)),Color("10292c") if id in visited else Color("131f28"))
 		draw_rect(Rect2(at,Vector2(150,52)),tint,false,2 if id == current_room else 1)
 		draw_string(font,at+Vector2(8,19),room_label(id),HORIZONTAL_ALIGNMENT_LEFT,136,12,Color("e9d4a3"))
-		var status := "HERE" if id == current_room else ("VISITED" if id in visited else "?")
+		var status := TextCatalog.text("HERE" if id == current_room else ("VISITED" if id in visited else "?"))
 		if id == checkpoint_room:
-			status += " / SAVE"
+			status += " / " + TextCatalog.text("SAVE")
 		if id == "sanctuary" and "heart_bloom" in flags:
-			status += " / +HP"
+			status += " / " + TextCatalog.text("+HP")
 		draw_string(font,at+Vector2(8,39),status,HORIZONTAL_ALIGNMENT_LEFT,136,11,tint)

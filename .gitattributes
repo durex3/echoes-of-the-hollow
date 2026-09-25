@@ -3,3 +3,5 @@
 *.wav binary
 *.ogg binary
 *.ttf binary
+*.otf binary
+assets/fonts/noto_sans_sc_license.txt -text

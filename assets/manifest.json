@@ -124,5 +124,21 @@
     "source_relative_path": "ch_03_game_systems/ch_03_game_systems/audio/ui_success_audio.wav",
     "sha256": "6c6f9c8e832749c724f2f464d8ab48bc152ce88cfa08b86ec5a89d10c935a1b5",
     "license_status": "Not supplied in extracted chapter pack; verify before distribution."
+  },
+  {
+    "file": "assets/fonts/noto_sans_sc.otf",
+    "source_pack": "Noto CJK / notofonts/noto-cjk",
+    "source_relative_path": "Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf",
+    "source_url": "https://github.com/notofonts/noto-cjk",
+    "retrieved": "2026-09-25",
+    "sha256": "2c76254f6fc379fddfce0a7e84fb5385bb135d3e399294f6eeb6680d0365b74b",
+    "license_status": "SIL Open Font License 1.1; see assets/fonts/noto_sans_sc_license.txt"
+  },
+  {
+    "file": "assets/fonts/noto_sans_sc_license.txt",
+    "source_pack": "Noto CJK / notofonts/noto-cjk",
+    "source_relative_path": "Sans/LICENSE",
+    "sha256": "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2",
+    "license_status": "Original SIL Open Font License 1.1 text"
   }
 ]

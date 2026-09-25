@@ -2,6 +2,7 @@ extends Node
 ## Session state uses stable IDs, never node paths or live node references.
 
 signal progress_changed
+signal language_changed
 const Repository := preload("res://core/save_repository.gd")
 var save_path := "user://progress_v1.json"
 var checkpoint_room := "forest"
@@ -13,8 +14,10 @@ var flags: Array[String] = []
 var reduce_shake := false
 var reduce_flashes := false
 var settings_path := "user://settings.cfg"
+var language := "en"
 
 func _ready() -> void:
+	TextCatalog.install()
 	load_settings()
 
 func snapshot() -> Dictionary:
@@ -70,9 +73,22 @@ func load_settings() -> void:
 	if config.load(settings_path) == OK:
 		reduce_shake = bool(config.get_value("accessibility", "reduce_shake", false))
 		reduce_flashes = bool(config.get_value("accessibility", "reduce_flashes", false))
+		var saved_language := str(config.get_value("interface", "language", "en"))
+		language = saved_language if saved_language in ["en", "zh_CN"] else "en"
+	TranslationServer.set_locale(language)
+	language_changed.emit()
+
+func set_language(value: String) -> Error:
+	if value not in ["en", "zh_CN"]:
+		return ERR_INVALID_PARAMETER
+	language = value
+	TranslationServer.set_locale(language)
+	language_changed.emit()
+	return save_settings()
 
 func save_settings() -> Error:
 	var config := ConfigFile.new()
 	config.set_value("accessibility", "reduce_shake", reduce_shake)
 	config.set_value("accessibility", "reduce_flashes", reduce_flashes)
+	config.set_value("interface", "language", language)
 	return config.save(settings_path)
