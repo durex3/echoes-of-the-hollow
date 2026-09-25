@@ -9,6 +9,7 @@ SOURCE = ROOT.parent / 'Godot 4《类银河恶魔城锻造坊》资源目录(1)'
 FILES = {
     'hero.png': 'characters/hero.png',
     'slime.png': 'characters/slime.png',
+    'Metroidvania_Forge_Living_Armor.png': 'characters/living_armor.png',
     'forgotten_forest_example_tileset.png': 'environment/forest.png',
     'save_point.png': 'props/save_point.png',
     'abilities.png': 'props/abilities.png',

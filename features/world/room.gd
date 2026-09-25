@@ -43,3 +43,12 @@ func update_progress() -> void:
 			point.visible = not Session.abilities.has(point.stable_id)
 		elif point.kind == "goal":
 			point.visible = not Session.completed
+		elif point.kind == "reward":
+			point.visible = point.stable_id not in Session.flags
+
+func is_cleared() -> bool:
+	for enemy: Node in $Enemies.get_children():
+		var health := enemy.get_node_or_null("Health") as HealthComponent
+		if health and health.current > 0:
+			return false
+	return true

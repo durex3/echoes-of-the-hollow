@@ -19,6 +19,7 @@ func _ready() -> void:
 	health.damaged.connect(_on_damaged)
 	health.died.connect(_on_died)
 	contact.begin_swing()
+	contact.active = true
 
 func _physics_process(delta: float) -> void:
 	if state == State.DEAD:
@@ -28,6 +29,7 @@ func _physics_process(delta: float) -> void:
 	if contact_timer <= 0:
 		contact_timer = 0.6
 		contact.begin_swing()
+		contact.active = true
 	velocity.y += 1600 * delta
 	if state == State.HURT:
 		velocity.x = move_toward(velocity.x, 0, 700 * delta)
@@ -49,13 +51,12 @@ func _on_damaged(_amount: int, source: Vector2) -> void:
 	state = State.HURT
 	timer = 0.2
 	velocity = Vector2(150 * signf(global_position.x - source.x), -130)
-	sprite.modulate = Color("ffe4b0")
+	sprite.modulate = Color.WHITE if Session.reduce_flashes else Color(2, 2, 2)
 
 func _on_died() -> void:
 	state = State.DEAD
 	contact.end_swing()
 	$Hurtbox.set_deferred("monitorable", false)
 	sprite.play("death")
-	Audio.play_sound("slime_death")
 	await sprite.animation_finished
 	queue_free()

@@ -2,6 +2,7 @@ class_name Player
 extends CharacterBody2D
 
 signal died
+signal impact(at: Vector2, defeated: bool)
 enum State { MOVE, ATTACK, HURT, DEAD }
 @export var config: PlayerConfig
 @onready var sprite: AnimatedSprite2D = $Visual/Sprite
@@ -15,25 +16,44 @@ var coyote_left := 0.0
 var buffer_left := 0.0
 var state_left := 0.0
 var air_jump_used := false
+var attack_elapsed := 0.0
+var attack_phase := AttackProfile.Phase.FINISHED
+var input_armed := true
+var attack_held := false
+var jump_held := false
 
 func _ready() -> void:
 	health.damaged.connect(_on_damaged)
 	health.died.connect(_on_died)
-	attack_box.landed.connect(func() -> void: Audio.play_sound("hit"))
+	attack_box.impact.connect(func(at: Vector2, defeated: bool) -> void: impact.emit(at, defeated))
 
 func _physics_process(delta: float) -> void:
 	if state == State.DEAD:
 		return
+	# Discrete actions require a fresh press after menus, even if held during resume.
+	if not input_armed:
+		input_armed = not Input.is_action_pressed("jump") and not Input.is_action_pressed("attack")
+	var jump_pressed := input_armed and Input.is_action_pressed("jump") and not jump_held
+	var attack_pressed := input_armed and Input.is_action_pressed("attack") and not attack_held
+	var jump_released := jump_held and not Input.is_action_pressed("jump")
+	jump_held = Input.is_action_pressed("jump")
+	attack_held = Input.is_action_pressed("attack")
 	state_left = maxf(0.0, state_left - delta)
 	buffer_left = maxf(0.0, buffer_left - delta)
 	coyote_left = config.coyote_seconds if is_on_floor() else maxf(0, coyote_left - delta)
 	if is_on_floor():
 		air_jump_used = false
-	if Input.is_action_just_pressed("jump"):
+	if jump_pressed:
 		buffer_left = config.buffer_seconds
 	var direction := Input.get_axis("move_left", "move_right")
-	if state in [State.ATTACK, State.HURT] and state_left <= 0:
+	if state == State.HURT and state_left <= 0:
 		state = State.MOVE
+	if state == State.ATTACK:
+		attack_elapsed += delta
+		attack_phase = config.attack.phase_at(attack_elapsed)
+		if attack_phase == AttackProfile.Phase.FINISHED:
+			cancel_attack()
+			state = State.MOVE
 	if state != State.HURT:
 		if state == State.MOVE and direction != 0:
 			facing = signf(direction)
@@ -44,16 +64,18 @@ func _physics_process(delta: float) -> void:
 				_jump(false)
 			elif Session.abilities.has("double_jump") and not air_jump_used:
 				_jump(true)
-		if Input.is_action_just_released("jump") and velocity.y < 0:
+		if jump_released and velocity.y < 0:
 			velocity.y *= 0.45
-		if state == State.MOVE and Input.is_action_just_pressed("attack"):
+		if state == State.MOVE and attack_pressed:
 			state = State.ATTACK
-			state_left = config.attack_duration
+			attack_elapsed = 0.0
+			attack_phase = AttackProfile.Phase.WINDUP
+			attack_box.damage = config.attack.damage
 			attack_box.begin_swing()
 			Audio.play_sound("attack")
 	velocity.y = minf(velocity.y + config.gravity() * (config.fall_multiplier if velocity.y > 0 else 1.0) * delta, 950)
 	attack_box.position.x = facing * 30
-	attack_box.active = state == State.ATTACK and state_left < 0.25 and state_left > 0.08
+	attack_box.active = state == State.ATTACK and attack_phase == AttackProfile.Phase.ACTIVE
 	move_and_slide()
 	_update_animation()
 	if global_position.y > 850:
@@ -71,10 +93,17 @@ func _update_animation() -> void:
 	visual.scale.x = facing
 	slash.visible = attack_box.active
 	if slash.visible:
-		slash.rotation = (0.25 - state_left) * 6.0 - 0.6
-	visual.modulate.a = 0.45 if health.invulnerability_left > 0 and int(health.invulnerability_left * 18) % 2 else 1.0
+		slash.rotation = config.attack.phase_progress(attack_elapsed) * 1.2 - 0.6
+	visual.modulate.a = 0.45 if not Session.reduce_flashes and health.invulnerability_left > 0 and int(health.invulnerability_left * 18) % 2 else 1.0
 	match state:
-		State.ATTACK: sprite.play("attack")
+		State.ATTACK:
+			# Poses and hit window share phase boundaries, including custom timings.
+			sprite.play("attack")
+			sprite.pause()
+			match attack_phase:
+				AttackProfile.Phase.WINDUP: sprite.frame = 0
+				AttackProfile.Phase.ACTIVE: sprite.frame = 1 + mini(2, int(config.attack.phase_progress(attack_elapsed) * 3))
+				_: sprite.frame = 4 + mini(1, int(config.attack.phase_progress(attack_elapsed) * 2))
 		State.HURT: sprite.play("hurt")
 		_:
 			if not is_on_floor():
@@ -85,13 +114,13 @@ func _update_animation() -> void:
 func _on_damaged(_amount: int, origin: Vector2) -> void:
 	state = State.HURT
 	state_left = 0.24
-	attack_box.end_swing()
+	cancel_attack()
 	velocity = Vector2(180 * (-1 if origin.x > global_position.x else 1), -180)
 	Audio.play_sound("hit")
 
 func _on_died() -> void:
 	state = State.DEAD
-	attack_box.end_swing()
+	cancel_attack()
 	slash.hide()
 	sprite.play("death")
 	died.emit()
@@ -101,8 +130,20 @@ func revive(at: Vector2) -> void:
 	velocity = Vector2.ZERO
 	state = State.MOVE
 	state_left = 0
+	cancel_attack()
 	coyote_left = 0
 	buffer_left = 0
 	air_jump_used = false
 	health.restore_full()
 	visual.modulate = Color.WHITE
+
+func cancel_attack() -> void:
+	attack_box.end_swing()
+	attack_phase = AttackProfile.Phase.FINISHED
+	slash.hide()
+
+func reset_input() -> void:
+	buffer_left = 0
+	input_armed = false
+	jump_held = Input.is_action_pressed("jump")
+	attack_held = Input.is_action_pressed("attack")

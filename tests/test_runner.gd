@@ -11,7 +11,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	visual = "--visual" in OS.get_cmdline_user_args()
 	Session.save_path = "user://test_%s.json" % OS.get_process_id()
-	get_tree().create_timer(45.0, true, false, true).timeout.connect(func() -> void:
+	get_tree().create_timer(90.0, true, false, true).timeout.connect(func() -> void:
 		push_error("Integration test timeout")
 		get_tree().quit(1))
 	_run.call_deferred()
@@ -225,6 +225,10 @@ func _run() -> void:
 	await shot("05_complete")
 	game.resume()
 	# Save repository round trip, recovery, version guard, and write failure reporting.
+	var suite := preload("res://tests/combat_suite.gd").new()
+	add_child(suite)
+	await suite.run(self,game)
+	suite.queue_free()
 	check(Repository.validate(Session.snapshot()), "Save schema validates")
 	check(Session.commit() == OK, "Second save safely replaces first")
 	var saved_room := Session.checkpoint_room

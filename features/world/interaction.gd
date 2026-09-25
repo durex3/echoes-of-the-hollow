@@ -1,9 +1,11 @@
 class_name WorldInteraction
 extends Node2D
 ## The room emits interactions. It never writes saves or changes scenes itself.
-@export_enum("checkpoint", "exit", "ability", "goal") var kind := "checkpoint"
+@export_enum("checkpoint", "exit", "ability", "goal", "reward", "sign") var kind := "checkpoint"
+@export var required_flag := ""
 @export var target_room := ""
 @export var target_spawn := "entry"
+@export var checkpoint_spawn := "checkpoint"
 @export var stable_id := ""
 @export var prompt := "E  /  REST & SAVE"
 var clock := 0.0
@@ -22,7 +24,11 @@ func _draw() -> void:
 			draw_line(Vector2(-16, -66), Vector2(-16, -4), mint, 2)
 			draw_line(Vector2(16, -66), Vector2(16, -4), mint, 2)
 			draw_circle(Vector2(0, -34), 4, mint)
-		"ability", "goal":
+		"sign":
+			draw_line(Vector2(0,0), Vector2(0,-38), Color("7b827b"), 3)
+			draw_rect(Rect2(-15,-40,30,18), Color("304e52"))
+			draw_line(Vector2(-9,-32), Vector2(9,-32), mint, 2)
+		"ability", "goal", "reward":
 			var y := -26 + sin(clock * 2.4) * 4
 			var tint := Color("f1ce83") if kind == "goal" else mint
 			draw_circle(Vector2(0, y), 27, Color(tint, 0.06))

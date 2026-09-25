@@ -3,7 +3,8 @@ extends Node2D
 const PLAYER_SCENE := preload("res://features/player/player.tscn")
 const ROOMS := {
 	"forest": preload("res://features/world/rooms/forest.tscn"),
-	"ruins": preload("res://features/world/rooms/ruins.tscn")
+	"ruins": preload("res://features/world/rooms/ruins.tscn"),
+	"training": preload("res://features/world/rooms/training.tscn")
 }
 const Repository := preload("res://core/save_repository.gd")
 @onready var room_host: Node2D = $RoomHost
@@ -32,6 +33,7 @@ func start_game(load_save: bool) -> void:
 	add_child(player)
 	player.health.changed.connect(ui.update_health)
 	player.died.connect(_on_player_died)
+	player.impact.connect($Feedback.show_impact)
 	running = true
 	load_room(Session.checkpoint_room, Session.checkpoint_spawn)
 	ui.show_hud()
@@ -42,6 +44,10 @@ func load_room(room_id: String, spawn: String) -> void:
 	if not ROOMS.has(room_id):
 		push_error("Unknown room: " + room_id)
 		return
+	$Feedback.clear()
+	player.cancel_attack()
+	if player.state == Player.State.ATTACK:
+		player.state = Player.State.MOVE
 	if is_instance_valid(room):
 		room_host.remove_child(room)
 		room.queue_free()
@@ -51,6 +57,11 @@ func load_room(room_id: String, spawn: String) -> void:
 	room.interaction_requested.connect(_on_interaction)
 	room.prompt_changed.connect(func(message: String) -> void: ui.prompt.text = message)
 	room.update_progress()
+	for enemy: Node in room.get_node("Enemies").get_children():
+		if enemy is LivingArmor:
+			enemy.target = player
+			# Player damage already owns its sound; the enemy event adds visuals.
+			enemy.impact.connect($Feedback.show_impact.bind(false))
 	player.global_position = room.spawn_position(spawn)
 	player.velocity = Vector2.ZERO
 	Session.visit(room_id)
@@ -76,10 +87,12 @@ func _input(event: InputEvent) -> void:
 		if get_tree().paused:
 			resume()
 		else:
+			player.reset_input()
 			get_tree().paused = true
 			ui.show_menu("pause")
 
 func resume() -> void:
+	player.reset_input()
 	get_tree().paused = false
 	ui.show_hud()
 
@@ -88,11 +101,14 @@ func _on_interaction(point: WorldInteraction) -> void:
 		return
 	match point.kind:
 		"exit":
+			if not point.required_flag.is_empty() and point.required_flag not in Session.flags:
+				ui.notify("Clear the training hall and claim its seal first")
+				return
 			transition_pending = true
 			load_room.call_deferred(point.target_room, point.target_spawn)
 		"checkpoint":
 			Session.checkpoint_room = room.room_id
-			Session.checkpoint_spawn = "checkpoint"
+			Session.checkpoint_spawn = point.checkpoint_spawn
 			player.health.restore_full()
 			_save("Restored & saved")
 		"ability":
@@ -100,6 +116,14 @@ func _on_interaction(point: WorldInteraction) -> void:
 			room.update_progress()
 			Audio.play_sound("ability_acquire")
 			_save("DOUBLE JUMP / Press SPACE again in the air")
+		"reward":
+			if not room.is_cleared():
+				ui.notify("Defeat the hall guardians to release the seal")
+				return
+			Session.set_flag(point.stable_id)
+			player.health.restore_full()
+			room.update_progress()
+			_save("HALL CLEARED / Forest shortcut unlocked")
 		"goal":
 			if not Session.abilities.has("double_jump"):
 				ui.notify("The shrine awaits an echo from the eastern ruins")

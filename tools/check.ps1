@@ -21,8 +21,8 @@ function Invoke-CheckedGodot {
     if ($contents -match '(?m)^(SCRIPT ERROR:|ERROR:|FAIL:)') {
         throw "$Name reported an engine/test error; see $log"
     }
-    if ($Name -eq 'integration' -and $contents -notmatch 'TEST_RESULT: \d+ checks, 0 failures') {
-        throw 'Integration runner did not finish.'
+    if ($Name -in @('integration','visual') -and $contents -notmatch 'TEST_RESULT: \d+ checks, 0 failures') {
+        throw "$Name runner did not finish."
     }
 }
 

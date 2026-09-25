@@ -101,3 +101,15 @@ script = ExtResource("5")
 kind = "ability"
 stable_id = "double_jump"
 prompt = "E  /  CLAIM THE SKY ECHO"
+
+[node name="training_return" type="Marker2D" parent="Spawns"]
+position = Vector2(1145, 480)
+
+[node name="TrainingDoor" type="Node2D" parent="Interactions"]
+position = Vector2(1220, 480)
+script = ExtResource("5")
+kind = "exit"
+target_room = "training"
+target_spawn = "entry"
+stable_id = "training_door"
+prompt = "E / ENTER THE WATCHERS HALL"

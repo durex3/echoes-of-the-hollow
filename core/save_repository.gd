@@ -2,8 +2,8 @@ class_name SaveRepository
 extends RefCounted
 ## Plain-data persistence. The caller decides when a checkpoint is committed.
 
-const VERSION := 1
-const ROOMS := ["forest", "ruins"]
+const VERSION := 2
+const ROOMS := ["forest", "ruins", "training"]
 
 static func validate(data: Variant) -> bool:
 	if not data is Dictionary:
@@ -12,12 +12,18 @@ static func validate(data: Variant) -> bool:
 		return false
 	if data.get("checkpoint_room") not in ROOMS:
 		return false
-	if data.get("checkpoint_spawn") != "checkpoint":
+	var allowed_spawns: Array = ["checkpoint", "rest"] if data.checkpoint_room == "training" else ["checkpoint"]
+	if data.get("checkpoint_spawn") not in allowed_spawns:
 		return false
 	if not data.get("abilities") is Array or not data.get("visited") is Array:
 		return false
 	if not data.get("completed") is bool:
 		return false
+	if not data.get("flags") is Array:
+		return false
+	for flag: Variant in data.flags:
+		if flag != "training_cleared":
+			return false
 	for ability: Variant in data.abilities:
 		if ability != "double_jump":
 			return false
@@ -30,7 +36,7 @@ static func read(path: String) -> Dictionary:
 	for candidate: String in [path, path + ".bak"]:
 		if not FileAccess.file_exists(candidate):
 			continue
-		var data: Variant = _parse(candidate)
+		var data: Variant = migrate(_parse(candidate))
 		if validate(data):
 			return data
 	return {}
@@ -49,12 +55,21 @@ static func write(path: String, data: Dictionary) -> Error:
 		return result
 	# Keep the last valid save; a corrupt primary must never replace a good backup.
 	if FileAccess.file_exists(path):
-		var previous: Variant = _parse(path)
+		var previous: Variant = migrate(_parse(path))
 		if validate(previous):
 			result = DirAccess.copy_absolute(path, path + ".bak")
 			if result != OK:
 				return result
 	return DirAccess.rename_absolute(path + ".tmp", path)
+
+static func migrate(data: Variant) -> Variant:
+	if not data is Dictionary:
+		return data
+	var migrated: Dictionary = data.duplicate(true)
+	if migrated.get("version") == 1:
+		migrated.version = VERSION
+		migrated.flags = []
+	return migrated
 
 static func _parse(path: String) -> Variant:
 	var parser := JSON.new()

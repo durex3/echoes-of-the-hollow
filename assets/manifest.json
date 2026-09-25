@@ -103,5 +103,12 @@
     "source_relative_path": "ch_03_game_systems/ch_03_game_systems/audio/ui_success_audio.wav",
     "sha256": "6c6f9c8e832749c724f2f464d8ab48bc152ce88cfa08b86ec5a89d10c935a1b5",
     "license_status": "Not supplied in extracted chapter pack; verify before distribution."
+  },
+  {
+    "file": "assets/characters/living_armor.png",
+    "source_pack": "Godot 4《类银河恶魔城锻造坊》资源目录(1)",
+    "source_relative_path": "其他敌人资源/Metroidvania_Forge_Living_Armor.png",
+    "sha256": "4cfa669c712a7877a88fa279bbfc814f16119301b7f0ac3c4ef19a623a72079b",
+    "license_status": "Not supplied in extracted pack; verify before distribution."
   }
 ]

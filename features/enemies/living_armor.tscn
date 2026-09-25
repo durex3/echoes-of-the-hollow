@@ -1,0 +1,51 @@
+[gd_scene load_steps=11 format=3]
+[ext_resource type="Script" path="res://features/enemies/living_armor.gd" id="1"]
+[ext_resource type="SpriteFrames" path="res://features/enemies/armor_frames.tres" id="2"]
+[ext_resource type="Script" path="res://features/combat/health.gd" id="3"]
+[ext_resource type="Script" path="res://features/combat/hurtbox.gd" id="4"]
+[ext_resource type="Script" path="res://features/combat/hitbox.gd" id="5"]
+[ext_resource type="Resource" path="res://features/enemies/armor_config.tres" id="6"]
+[sub_resource type="RectangleShape2D" id="Body"]
+size = Vector2(22, 46)
+[sub_resource type="RectangleShape2D" id="Hurt"]
+size = Vector2(24, 46)
+[sub_resource type="RectangleShape2D" id="Contact"]
+size = Vector2(52, 42)
+[node name="LivingArmor" type="CharacterBody2D" groups=["enemies"]]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("1")
+config = ExtResource("6")
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -32)
+sprite_frames = ExtResource("2")
+animation = &"walk"
+autoplay = "walk"
+[node name="Body" type="CollisionShape2D" parent="."]
+position = Vector2(0, -23)
+shape = SubResource("Body")
+[node name="Health" type="Node" parent="."]
+script = ExtResource("3")
+maximum = 2
+invulnerability_seconds = 0.16
+[node name="Hurtbox" type="Area2D" parent="." node_paths=PackedStringArray("health")]
+collision_layer = 16
+collision_mask = 0
+monitoring = false
+script = ExtResource("4")
+health = NodePath("../Health")
+[node name="Shape" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0, -23)
+shape = SubResource("Hurt")
+[node name="AttackBox" type="Area2D" parent="."]
+position = Vector2(34, -24)
+collision_layer = 0
+collision_mask = 8
+monitorable = false
+script = ExtResource("5")
+[node name="Shape" type="CollisionShape2D" parent="AttackBox"]
+shape = SubResource("Contact")
+[node name="Edge" type="RayCast2D" parent="."]
+position = Vector2(-20, -10)
+target_position = Vector2(0, 28)
+collision_mask = 1

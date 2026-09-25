@@ -1,0 +1,142 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" path="res://features/world/room.gd" id="1_pp4gs"]
+[ext_resource type="Script" path="res://features/world/backdrop.gd" id="2_lp0cw"]
+[ext_resource type="TileSet" path="res://features/world/forest_tileset.tres" id="3_vtu6m"]
+[ext_resource type="PackedScene" path="res://features/enemies/living_armor.tscn" id="4_1svbw"]
+[ext_resource type="Script" path="res://features/enemies/living_armor.gd" id="5_u6eo4"]
+[ext_resource type="Resource" path="res://features/enemies/armor_config.tres" id="6_e2v2w"]
+[ext_resource type="PackedScene" path="res://features/enemies/slime.tscn" id="7_haamd"]
+[ext_resource type="Script" path="res://features/enemies/slime.gd" id="8_lob0x"]
+[ext_resource type="Script" path="res://features/world/interaction.gd" id="9_yghw8"]
+[ext_resource type="SpriteFrames" path="res://features/world/checkpoint_frames.tres" id="10_ww3f7"]
+
+[sub_resource type="RectangleShape2D" id="Boundary"]
+size = Vector2(32, 640)
+
+[node name="Training" type="Node2D" unique_id=1979477213]
+script = ExtResource("1_pp4gs")
+room_id = "training"
+display_name = "03 / THE WATCHERS HALL"
+music_track = "dungeon"
+
+[node name="Backdrop" type="Node2D" parent="." unique_id=1004495117]
+script = ExtResource("2_lp0cw")
+ruins = true
+
+[node name="Terrain" type="TileMapLayer" parent="." unique_id=2087314978]
+tile_map_data = PackedByteArray("AAAAAA8AAAABAAYAAAABAA8AAAACAAYAAAACAA8AAAADAAYAAAADAA8AAAABAAYAAAAEAA8AAAACAAYAAAAFAA8AAAADAAYAAAAGAA8AAAABAAYAAAAHAA8AAAACAAYAAAAIAA8AAAADAAYAAAAJAA8AAAABAAYAAAAKAA8AAAACAAYAAAALAA8AAAADAAYAAAAMAA8AAAABAAYAAAANAA8AAAACAAYAAAAOAA8AAAADAAYAAAAPAA8AAAABAAYAAAAQAA8AAAACAAYAAAARAA8AAAADAAYAAAASAA8AAAABAAYAAAATAA8AAAACAAYAAAAUAA8AAAADAAYAAAAVAA8AAAABAAYAAAAWAA8AAAACAAYAAAAXAA8AAAADAAYAAAAYAA8AAAABAAYAAAAZAA8AAAACAAYAAAAaAA8AAAADAAYAAAAbAA8AAAABAAYAAAAcAA8AAAACAAYAAAAdAA8AAAADAAYAAAAeAA8AAAABAAYAAAAfAA8AAAACAAYAAAAgAA8AAAADAAYAAAAhAA8AAAABAAYAAAAiAA8AAAACAAYAAAAjAA8AAAADAAYAAAAkAA8AAAABAAYAAAAlAA8AAAACAAYAAAAmAA8AAAADAAYAAAAnAA8AAAABAAYAAAAAABAAAAABAAcAAAABABAAAAACAAcAAAACABAAAAADAAcAAAADABAAAAABAAcAAAAEABAAAAACAAcAAAAFABAAAAADAAcAAAAGABAAAAABAAcAAAAHABAAAAACAAcAAAAIABAAAAADAAcAAAAJABAAAAABAAcAAAAKABAAAAACAAcAAAALABAAAAADAAcAAAAMABAAAAABAAcAAAANABAAAAACAAcAAAAOABAAAAADAAcAAAAPABAAAAABAAcAAAAQABAAAAACAAcAAAARABAAAAADAAcAAAASABAAAAABAAcAAAATABAAAAACAAcAAAAUABAAAAADAAcAAAAVABAAAAABAAcAAAAWABAAAAACAAcAAAAXABAAAAADAAcAAAAYABAAAAABAAcAAAAZABAAAAACAAcAAAAaABAAAAADAAcAAAAbABAAAAABAAcAAAAcABAAAAACAAcAAAAdABAAAAADAAcAAAAeABAAAAABAAcAAAAfABAAAAACAAcAAAAgABAAAAADAAcAAAAhABAAAAABAAcAAAAiABAAAAACAAcAAAAjABAAAAADAAcAAAAkABAAAAABAAcAAAAlABAAAAACAAcAAAAmABAAAAADAAcAAAAnABAAAAABAAcAAAAAABEAAAABAAcAAAABABEAAAACAAcAAAACABEAAAADAAcAAAADABEAAAABAAcAAAAEABEAAAACAAcAAAAFABEAAAADAAcAAAAGABEAAAABAAcAAAAHABEAAAACAAcAAAAIABEAAAADAAcAAAAJABEAAAABAAcAAAAKABEAAAACAAcAAAALABEAAAADAAcAAAAMABEAAAABAAcAAAANABEAAAACAAcAAAAOABEAAAADAAcAAAAPABEAAAABAAcAAAAQABEAAAACAAcAAAARABEAAAADAAcAAAASABEAAAABAAcAAAATABEAAAACAAcAAAAUABEAAAADAAcAAAAVABEAAAABAAcAAAAWABEAAAACAAcAAAAXABEAAAADAAcAAAAYABEAAAABAAcAAAAZABEAAAACAAcAAAAaABEAAAADAAcAAAAbABEAAAABAAcAAAAcABEAAAACAAcAAAAdABEAAAADAAcAAAAeABEAAAABAAcAAAAfABEAAAACAAcAAAAgABEAAAADAAcAAAAhABEAAAABAAcAAAAiABEAAAACAAcAAAAjABEAAAADAAcAAAAkABEAAAABAAcAAAAlABEAAAACAAcAAAAmABEAAAADAAcAAAAnABEAAAABAAcAAAAVAA0A//////////8WAA0A//////////8XAA0A//////////8YAA0A//////////8ZAA0A//////////8VAA4A//////////8WAA4A//////////8XAA4A//////////8YAA4A//////////8ZAA4A//////////8cAAsA//////////8dAAsA//////////8eAAsA//////////8fAAsA//////////8gAAsA//////////8cAAwA//////////8dAAwA//////////8eAAwA//////////8fAAwA//////////8gAAwA//////////8FAA0AAAADAAYAAAAGAA0AAAABAAYAAAAHAA0AAAACAAYAAAAIAA0AAAADAAYAAAA=")
+tile_set = ExtResource("3_vtu6m")
+
+[node name="Details" type="TileMapLayer" parent="." unique_id=1793121506]
+tile_map_data = PackedByteArray("AAAGAA4AAAAOAAcAAAARAA4AAAAOAAcAAAAaAA4AAAAOAAcAAAAiAA4AAAAOAAcAAAA=")
+tile_set = ExtResource("3_vtu6m")
+collision_enabled = false
+
+[node name="Bounds" type="StaticBody2D" parent="." unique_id=1225418886]
+collision_mask = 0
+
+[node name="Left" type="CollisionShape2D" parent="Bounds" unique_id=1896418561]
+position = Vector2(-16, 256)
+shape = SubResource("Boundary")
+
+[node name="Right" type="CollisionShape2D" parent="Bounds" unique_id=1307065268]
+position = Vector2(1296, 256)
+shape = SubResource("Boundary")
+
+[node name="Spawns" type="Node2D" parent="." unique_id=543289851]
+
+[node name="checkpoint" type="Marker2D" parent="Spawns" unique_id=1418428733]
+position = Vector2(160, 480)
+
+[node name="entry" type="Marker2D" parent="Spawns" unique_id=1877122071]
+position = Vector2(112, 480)
+
+[node name="east" type="Marker2D" parent="Spawns" unique_id=1202828403]
+position = Vector2(1130, 480)
+
+[node name="training_return" type="Marker2D" parent="Spawns" unique_id=314534831]
+position = Vector2(1145, 480)
+
+[node name="rest" type="Marker2D" parent="Spawns"]
+position = Vector2(710, 480)
+
+[node name="Enemies" type="Node2D" parent="." unique_id=1521030063]
+
+[node name="ArmorSolo" type="CharacterBody2D" parent="Enemies" unique_id=38093671 groups=["enemies"] instance=ExtResource("4_1svbw")]
+position = Vector2(490, 480)
+collision_layer = 4
+script = ExtResource("5_u6eo4")
+config = ExtResource("6_e2v2w")
+patrol_distance = 45.0
+
+[node name="ArmorMixed" type="CharacterBody2D" parent="Enemies" unique_id=724898748 groups=["enemies"] instance=ExtResource("4_1svbw")]
+position = Vector2(920, 480)
+collision_layer = 4
+script = ExtResource("5_u6eo4")
+config = ExtResource("6_e2v2w")
+patrol_distance = 45.0
+
+[node name="SlimeMixed" type="CharacterBody2D" parent="Enemies" unique_id=1714843233 groups=["enemies"] instance=ExtResource("7_haamd")]
+position = Vector2(1060, 480)
+collision_layer = 4
+script = ExtResource("8_lob0x")
+patrol_distance = 38.0
+
+[node name="Interactions" type="Node2D" parent="." unique_id=1102944836]
+
+[node name="Shrine" type="Node2D" parent="Interactions" unique_id=533780819]
+position = Vector2(160, 480)
+script = ExtResource("9_yghw8")
+stable_id = "checkpoint"
+
+[node name="Sprite" type="AnimatedSprite2D" parent="Interactions/Shrine" unique_id=1200906466]
+position = Vector2(0, -20)
+scale = Vector2(0.5, 0.5)
+sprite_frames = ExtResource("10_ww3f7")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="WestDoor" type="Node2D" parent="Interactions" unique_id=1475818110]
+position = Vector2(48, 480)
+script = ExtResource("9_yghw8")
+kind = "exit"
+target_room = "ruins"
+target_spawn = "training_return"
+stable_id = "west_door"
+prompt = "E / RETURN TO THE ARCHIVE"
+
+[node name="Observe" type="Node2D" parent="Interactions" unique_id=1815151512]
+position = Vector2(220, 416)
+script = ExtResource("9_yghw8")
+kind = "sign"
+prompt = "Watch the amber warning. Step back, then strike."
+
+[node name="Rest" type="Node2D" parent="Interactions" unique_id=1078346113]
+position = Vector2(710, 480)
+script = ExtResource("9_yghw8")
+checkpoint_spawn = "rest"
+prompt = "E / RECOVER & SAVE"
+
+[node name="Sprite" type="AnimatedSprite2D" parent="Interactions/Rest" unique_id=80385812]
+position = Vector2(0, -20)
+scale = Vector2(0.5, 0.5)
+sprite_frames = ExtResource("10_ww3f7")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="Seal" type="Node2D" parent="Interactions" unique_id=436278805]
+position = Vector2(1130, 480)
+script = ExtResource("9_yghw8")
+kind = "reward"
+stable_id = "training_cleared"
+prompt = "E / CLAIM THE HALL SEAL"
+
+[node name="Shortcut" type="Node2D" parent="Interactions" unique_id=1803976225]
+position = Vector2(1220, 480)
+script = ExtResource("9_yghw8")
+kind = "exit"
+required_flag = "training_cleared"
+target_room = "forest"
+target_spawn = "east"
+prompt = "E / FOREST SHORTCUT"

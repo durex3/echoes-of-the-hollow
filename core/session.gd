@@ -9,11 +9,18 @@ var checkpoint_spawn := "checkpoint"
 var abilities: Array[String] = []
 var visited: Array[String] = []
 var completed := false
+var flags: Array[String] = []
+var reduce_shake := false
+var reduce_flashes := false
+var settings_path := "user://settings.cfg"
+
+func _ready() -> void:
+	load_settings()
 
 func snapshot() -> Dictionary:
-	return {"version": 1, "checkpoint_room": checkpoint_room,
+	return {"version": Repository.VERSION, "checkpoint_room": checkpoint_room,
 		"checkpoint_spawn": checkpoint_spawn, "abilities": abilities.duplicate(),
-		"visited": visited.duplicate(), "completed": completed}
+		"visited": visited.duplicate(), "completed": completed, "flags": flags.duplicate()}
 
 func reset() -> void:
 	checkpoint_room = "forest"
@@ -21,6 +28,7 @@ func reset() -> void:
 	abilities.clear()
 	visited.clear()
 	completed = false
+	flags.clear()
 	progress_changed.emit()
 
 func restore() -> bool:
@@ -32,6 +40,7 @@ func restore() -> bool:
 	abilities.assign(data.abilities)
 	visited.assign(data.visited)
 	completed = data.completed
+	flags.assign(data.flags)
 	progress_changed.emit()
 	return true
 
@@ -47,3 +56,20 @@ func visit(room_id: String) -> void:
 	if room_id not in visited:
 		visited.append(room_id)
 		progress_changed.emit()
+
+func set_flag(flag: String) -> void:
+	if flag not in flags:
+		flags.append(flag)
+		progress_changed.emit()
+
+func load_settings() -> void:
+	var config := ConfigFile.new()
+	if config.load(settings_path) == OK:
+		reduce_shake = bool(config.get_value("accessibility", "reduce_shake", false))
+		reduce_flashes = bool(config.get_value("accessibility", "reduce_flashes", false))
+
+func save_settings() -> Error:
+	var config := ConfigFile.new()
+	config.set_value("accessibility", "reduce_shake", reduce_shake)
+	config.set_value("accessibility", "reduce_flashes", reduce_flashes)
+	return config.save(settings_path)

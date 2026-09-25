@@ -107,6 +107,9 @@ func show_menu(mode: String, can_continue := false) -> void:
 			menu.add_child(label("New journey replaces progress on the next save.", 12, Color("b4c6c2")))
 	else:
 		button("Continue exploring" if mode == "win" else "Resume", func() -> void: resume_requested.emit())
+		if mode == "pause":
+			setting_toggle("Reduce screen shake", Session.reduce_shake, "reduce_shake")
+			setting_toggle("Reduce hit flashes", Session.reduce_flashes, "reduce_flashes")
 	button("Quit", func() -> void: quit_requested.emit())
 	for child: Node in menu.get_children():
 		if child is Button:
@@ -119,6 +122,16 @@ func button(text: String, action: Callable) -> void:
 	node.custom_minimum_size.y = 29
 	node.pressed.connect(action)
 	menu.add_child(node)
+
+func setting_toggle(text: String, value: bool, property: String) -> void:
+	var toggle := CheckButton.new()
+	toggle.text = text
+	toggle.button_pressed = value
+	toggle.toggled.connect(func(enabled: bool) -> void:
+		Session.set(property, enabled)
+		if Session.save_settings() != OK:
+			notify("Settings could not be saved"))
+	menu.add_child(toggle)
 
 func show_hud() -> void:
 	hud.show()
