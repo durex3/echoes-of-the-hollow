@@ -58,7 +58,7 @@ func commit() -> Error:
 	return Repository.write(save_path, snapshot())
 
 func maximum_health() -> int:
-	return 6 if "heart_bloom" in flags else 5
+	return 5 + int("heart_bloom" in flags) + int("cistern_heart" in flags)
 
 func unlock(ability: String) -> void:
 	if ability not in abilities:

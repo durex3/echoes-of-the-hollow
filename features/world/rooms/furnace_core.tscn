@@ -4,12 +4,12 @@
 [ext_resource type="Texture2D" path="res://assets/environment/forest.png" id="2_anesh"]
 [ext_resource type="TileSet" path="res://features/world/cistern_tileset.tres" id="3_anesh"]
 [ext_resource type="TileSet" path="res://features/world/forest_tileset.tres" id="4_g4d56"]
-[ext_resource type="PackedScene" path="res://features/enemies/living_armor.tscn" id="5_mdvhn"]
-[ext_resource type="Script" path="res://features/enemies/living_armor.gd" id="6_fk0ec"]
-[ext_resource type="Resource" path="res://features/enemies/armor_config.tres" id="7_y5jfy"]
-[ext_resource type="PackedScene" path="res://features/enemies/doom_scribe.tscn" id="8_7shy3"]
-[ext_resource type="Script" path="res://features/enemies/doom_scribe.gd" id="9_apvv4"]
-[ext_resource type="Resource" path="res://features/enemies/scribe_config.tres" id="10_uh2o3"]
+[ext_resource type="PackedScene" path="res://features/enemies/rose_sentinel.tscn" id="5_mdvhn"]
+[ext_resource type="Script" path="res://features/enemies/rose_sentinel.gd" id="6_fk0ec"]
+[ext_resource type="Resource" path="res://features/enemies/rose_config.tres" id="7_y5jfy"]
+[ext_resource type="PackedScene" path="res://features/enemies/winged_chest.tscn" id="8_7shy3"]
+[ext_resource type="Script" path="res://features/enemies/winged_chest.gd" id="9_apvv4"]
+[ext_resource type="Resource" path="res://features/enemies/chest_config.tres" id="10_uh2o3"]
 [ext_resource type="Script" path="res://features/world/interaction.gd" id="11_buwmc"]
 [ext_resource type="Texture2D" path="res://assets/props/door_and_switch.png" id="11_g4d56"]
 [ext_resource type="PackedScene" path="res://features/world/steam_vent.tscn" id="12_bwesx"]
@@ -1210,14 +1210,14 @@ position = Vector2(180, 480)
 
 [node name="Enemies" type="Node2D" parent="." unique_id=1963065800]
 
-[node name="LivingArmor" type="CharacterBody2D" parent="Enemies" unique_id=906295944 groups=["enemies"] instance=ExtResource("5_mdvhn")]
+[node name="RoseSentinel" type="CharacterBody2D" parent="Enemies" unique_id=906295944 groups=["enemies"] instance=ExtResource("5_mdvhn")]
 position = Vector2(590, 480)
 collision_layer = 4
 script = ExtResource("6_fk0ec")
 config = ExtResource("7_y5jfy")
 
-[node name="DoomScribe" type="CharacterBody2D" parent="Enemies" unique_id=707569806 groups=["enemies"] instance=ExtResource("8_7shy3")]
-position = Vector2(1080, 480)
+[node name="WingedChest" type="CharacterBody2D" parent="Enemies" unique_id=707569806 groups=["enemies"] instance=ExtResource("8_7shy3")]
+position = Vector2(720, 480)
 collision_layer = 4
 script = ExtResource("9_apvv4")
 config = ExtResource("10_uh2o3")
@@ -1243,7 +1243,7 @@ region_rect = Rect2(0, 0, 32, 32)
 position = Vector2(200, 480)
 script = ExtResource("11_buwmc")
 kind = "sign"
-prompt = "Draw guardians onto dry ground. Restore the core after battle."
+prompt = "Chest bites, pink flame slashes. Use dry ground between steam jets."
 
 [node name="CoreEcho" type="Node2D" parent="Interactions" unique_id=1234373319]
 position = Vector2(1200, 480)
@@ -1269,3 +1269,5 @@ collision_mask = 2
 monitorable = false
 script = ExtResource("13_i0scw")
 config = ExtResource("14_o6iuf")
+
+[node name="ExpansionMarker" type="Node" parent="."]

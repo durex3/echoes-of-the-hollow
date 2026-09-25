@@ -14,7 +14,10 @@ const ROOMS := {
 	"ember_quay": preload("res://features/world/rooms/ember_quay.tscn"),
 	"valve_gallery": preload("res://features/world/rooms/valve_gallery.tscn"),
 	"cistern_archive": preload("res://features/world/rooms/cistern_archive.tscn"),
-	"furnace_core": preload("res://features/world/rooms/furnace_core.tscn")
+	"furnace_core": preload("res://features/world/rooms/furnace_core.tscn"),
+	"sluice_shaft": preload("res://features/world/rooms/sluice_shaft.tscn"),
+	"pump_chamber": preload("res://features/world/rooms/pump_chamber.tscn"),
+	"echo_vault": preload("res://features/world/rooms/echo_vault.tscn")
 }
 const Repository := preload("res://core/save_repository.gd")
 @onready var room_host: Node2D = $RoomHost
@@ -78,7 +81,7 @@ func load_room(room_id: String, spawn: String) -> void:
 	room.prompt_changed.connect(func(message: String) -> void: ui.set_text(ui.prompt,message))
 	room.update_progress()
 	for enemy: Node in room.get_node("Enemies").get_children():
-		if enemy is WingedChest:
+		if enemy is WingedChest or enemy is RoseSentinel:
 			enemy.target = player
 			enemy.impact.connect($Feedback.show_impact.bind(false))
 		if enemy is HollowWarden:
@@ -200,7 +203,7 @@ func _on_interaction(point: WorldInteraction) -> void:
 			Audio.play_sound("ability_acquire")
 			_save_reward(point.stable_id)
 		"upgrade":
-			if point.stable_id != "heart_bloom" or point.stable_id in Session.flags:
+			if point.stable_id not in ["heart_bloom","cistern_heart"] or point.stable_id in Session.flags:
 				return
 			Session.set_flag(point.stable_id)
 			player.health.maximum = Session.maximum_health()

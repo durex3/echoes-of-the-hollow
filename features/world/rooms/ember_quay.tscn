@@ -1457,7 +1457,7 @@ region_rect = Rect2(0, 0, 32, 32)
 position = Vector2(980, 480)
 script = ExtResource("5_of04d")
 kind = "sign"
-prompt = "Two branches, two valve seals. Return here to open the core."
+prompt = "Explore beyond the gallery and archive. Valves open return routes."
 
 [node name="CoreDoor" type="Node2D" parent="Interactions" unique_id=266682489]
 position = Vector2(1160, 480)
@@ -1484,3 +1484,24 @@ collision_mask = 2
 monitorable = false
 script = ExtResource("8_88lo6")
 config = ExtResource("9_ajkhe")
+
+[node name="PumpShortcut" type="Node2D" parent="Interactions"]
+position = Vector2(925, 480)
+script = ExtResource("5_of04d")
+kind = "exit"
+target_room = "pump_chamber"
+target_spawn = "quay_return"
+prompt = "E / TAKE THE LOWER PUMP SHORTCUT"
+required_flag = "pressure_seal"
+
+[node name="ForgeDoor" type="Sprite2D" parent="Interactions/PumpShortcut"]
+position = Vector2(0, -32)
+scale = Vector2(2, 2)
+texture = ExtResource("6_jpr8r")
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 32)
+
+[node name="pump_return" type="Marker2D" parent="Spawns"]
+position = Vector2(925, 480)
+
+[node name="ExpansionMarker" type="Node" parent="."]

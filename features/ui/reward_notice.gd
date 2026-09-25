@@ -2,8 +2,9 @@ class_name RewardNotice
 extends PanelContainer
 ## Informational overlay: never captures input or pauses gameplay.
 const REWARDS := {
-	"flow_seal": ["FLOW SEAL ACQUIRED", "One of two furnace valves restored", "All vitality restored. Return to Ember Quay."],
-	"pressure_seal": ["PRESSURE SEAL ACQUIRED", "One of two furnace valves restored", "All vitality restored. Return to Ember Quay."],
+	"flow_seal": ["FLOW SEAL ACQUIRED", "Archive service passage opened", "All vitality restored. Explore the high alcove or the passage below."],
+	"pressure_seal": ["PRESSURE SEAL ACQUIRED", "Quay maintenance shortcut opened", "All vitality restored. The east door returns directly to the quay."],
+	"cistern_heart": ["CISTERN HEART ACQUIRED", "Maximum vitality +1 permanently", "All vitality restored."],
 	"cistern_restored": ["CISTERN RESTORED", "Steam vents are now safe throughout Chapter II", "Both chapters remain open to explore."],
 	"warden_defeated": ["HOLLOW WARDEN DEFEATED", "The final echo is now within reach", "All vitality restored. Claim the echo on your right."],
 	"double_jump": ["SKY ECHO ACQUIRED", "Double jump unlocked", "Press SPACE again in the air."],

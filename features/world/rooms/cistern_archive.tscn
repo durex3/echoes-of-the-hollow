@@ -4,12 +4,12 @@
 [ext_resource type="Texture2D" path="res://assets/environment/forest.png" id="2_5im2d"]
 [ext_resource type="Texture2D" path="res://assets/props/props_destructible.png" id="3_7hvy6"]
 [ext_resource type="TileSet" path="res://features/world/forest_tileset.tres" id="4_7hvy6"]
-[ext_resource type="PackedScene" path="res://features/enemies/living_armor.tscn" id="5_s7gw8"]
-[ext_resource type="Script" path="res://features/enemies/living_armor.gd" id="6_y5ei6"]
-[ext_resource type="Resource" path="res://features/enemies/armor_config.tres" id="7_6pui7"]
-[ext_resource type="PackedScene" path="res://features/enemies/doom_scribe.tscn" id="8_nutqf"]
-[ext_resource type="Script" path="res://features/enemies/doom_scribe.gd" id="9_c2p5d"]
-[ext_resource type="Resource" path="res://features/enemies/scribe_config.tres" id="10_u5wtj"]
+[ext_resource type="PackedScene" path="res://features/enemies/rose_sentinel.tscn" id="5_s7gw8"]
+[ext_resource type="Script" path="res://features/enemies/rose_sentinel.gd" id="6_y5ei6"]
+[ext_resource type="Resource" path="res://features/enemies/rose_config.tres" id="7_6pui7"]
+[ext_resource type="PackedScene" path="res://features/enemies/winged_chest.tscn" id="8_nutqf"]
+[ext_resource type="Script" path="res://features/enemies/winged_chest.gd" id="9_c2p5d"]
+[ext_resource type="Resource" path="res://features/enemies/chest_config.tres" id="10_u5wtj"]
 [ext_resource type="Script" path="res://features/world/interaction.gd" id="11_ulqu0"]
 [ext_resource type="SpriteFrames" path="res://features/world/checkpoint_frames.tres" id="12_ww0dr"]
 [ext_resource type="Texture2D" path="res://assets/props/door_and_switch.png" id="12_y5ei6"]
@@ -1236,13 +1236,13 @@ position = Vector2(180, 480)
 
 [node name="Enemies" type="Node2D" parent="." unique_id=1963065800]
 
-[node name="LivingArmor" type="CharacterBody2D" parent="Enemies" unique_id=250519094 groups=["enemies"] instance=ExtResource("5_s7gw8")]
+[node name="RoseSentinel" type="CharacterBody2D" parent="Enemies" unique_id=250519094 groups=["enemies"] instance=ExtResource("5_s7gw8")]
 position = Vector2(660, 480)
 collision_layer = 4
 script = ExtResource("6_y5ei6")
 config = ExtResource("7_6pui7")
 
-[node name="DoomScribe" type="CharacterBody2D" parent="Enemies" unique_id=1835386501 groups=["enemies"] instance=ExtResource("8_nutqf")]
+[node name="WingedChest" type="CharacterBody2D" parent="Enemies" unique_id=1835386501 groups=["enemies"] instance=ExtResource("8_nutqf")]
 position = Vector2(1060, 480)
 collision_layer = 4
 script = ExtResource("9_c2p5d")
@@ -1278,17 +1278,10 @@ animation = &"idle"
 autoplay = "idle"
 
 [node name="CoverHint" type="Node2D" parent="Interactions" unique_id=1398499782]
-position = Vector2(770, 480)
+position = Vector2(480, 480)
 script = ExtResource("11_ulqu0")
 kind = "sign"
-prompt = "Dry stone blocks ink. Fight away from the steam."
-
-[node name="Seal" type="Node2D" parent="Interactions" unique_id=25412649]
-position = Vector2(1160, 480)
-script = ExtResource("11_ulqu0")
-kind = "reward"
-stable_id = "pressure_seal"
-prompt = "E / CLAIM THE PRESSURE SEAL"
+prompt = "Pink flame steps back, then slashes. Jump or interrupt it."
 
 [node name="Shortcut" type="Node2D" parent="Interactions" unique_id=1354880224]
 position = Vector2(1240, 480)
@@ -1315,3 +1308,42 @@ collision_mask = 2
 monitorable = false
 script = ExtResource("14_h7gxk")
 config = ExtResource("15_wl2bg")
+
+[node name="PumpDoor" type="Node2D" parent="Interactions"]
+position = Vector2(1150, 480)
+script = ExtResource("11_ulqu0")
+kind = "exit"
+target_room = "pump_chamber"
+target_spawn = "entry"
+prompt = "E / DESCEND INTO THE LOWER PUMP"
+
+[node name="ForgeDoor" type="Sprite2D" parent="Interactions/PumpDoor"]
+position = Vector2(0, -32)
+scale = Vector2(2, 2)
+texture = ExtResource("12_y5ei6")
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 32)
+
+[node name="ShaftDoor" type="Node2D" parent="Interactions"]
+position = Vector2(862, 416)
+script = ExtResource("11_ulqu0")
+kind = "exit"
+target_room = "sluice_shaft"
+target_spawn = "archive_return"
+prompt = "E / TAKE THE SLUICE SERVICE PASSAGE"
+required_flag = "flow_seal"
+
+[node name="ForgeDoor" type="Sprite2D" parent="Interactions/ShaftDoor"]
+position = Vector2(0, -32)
+scale = Vector2(2, 2)
+texture = ExtResource("12_y5ei6")
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 32)
+
+[node name="pump_return" type="Marker2D" parent="Spawns"]
+position = Vector2(1100, 480)
+
+[node name="shaft_return" type="Marker2D" parent="Spawns"]
+position = Vector2(854, 416)
+
+[node name="ExpansionMarker" type="Node" parent="."]

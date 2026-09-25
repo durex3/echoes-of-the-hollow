@@ -2,6 +2,8 @@
 
 ## 基线
 
+0.12.0新增三个持久化原生房间sluice_shaft/pump_chamber/echo_vault，第二关共七区。SaveRepository仅扩展房间与cistern_heart白名单，schema仍为2；生命上限=5+第一关生命花+水道之心。实例状态不写配置，桌面源素材不修改。原四房间Terrain原样保留，现有交互按节点定点修改；新增图层与场景一次创建后编辑原文件，工具拒绝覆盖。第二关敌人集合与第一关不重叠，由回归自动检查。
+
 - Godot 4.7.2 标准版 / GDScript / Compatibility / 60 Hz 物理。
 - 640×360 基准视口、1280×720 初始窗口；像素纹理使用最近邻。
 - 场景与脚本按功能放在一起；配置 `.tres` 与原生 `.tscn` 可在编辑器修改。
@@ -41,6 +43,7 @@ flowchart TD
 | HollowWarden / WardenConfig | 九状态首领 FSM、交替攻击、半血阶段、独立数值 | 保存进度、打开结局、控制镜头 |
 | DoomScribe / ScribeConfig | 六状态 FSM、视线、锁定瞄准、可打断施法、数值 | 管理弹体生命周期 |
 | WingedChest / ChestConfig | 五状态FSM、视线、方向锁定、短距扑咬、墙/边缘保护 | 全局进度、奖励或存档 |
+| RoseSentinel / RoseConfig | 七状态FSM、接近/后撤/锁向突斩/收招、墙与边缘保护 | 复用第一关敌人行为、保存进度 |
 | InkBolt | 半径 5px ShapeCast2D 扫掠、一次命中、寿命、释放 | 追踪玩家、保存自己 |
 | CombatFeedback / ImpactEffect | 命中信号驱动短暂粒子、镜头偏移和声音 | 改变物理位置、全局时间 |
 | GameRoom | 房间元数据、出生点、附近交互、原生地图 | 直接持久化 |

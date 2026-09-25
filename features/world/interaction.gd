@@ -19,6 +19,10 @@ func locked_message(abilities: Array[String], flags: Array[String]) -> String:
 	if not required_ability.is_empty() and required_ability not in abilities:
 		return "The high roots answer only to the sky echo"
 	if not required_flag.is_empty() and required_flag not in flags:
+		if required_flag == "flow_seal":
+			return "Flow valve locked / Climb the Sluice Shaft"
+		if required_flag == "pressure_seal":
+			return "Pressure valve locked / Explore the Lower Pump"
 		return "Clear this hall and claim its seal first"
 	for index: int in range(required_flags.size()):
 		if required_flags[index] not in flags:

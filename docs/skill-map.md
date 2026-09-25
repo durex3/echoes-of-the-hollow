@@ -30,4 +30,6 @@
 
 安装了但暂未使用的 Godot Shader 等技能不强行加入工程；需求出现时再读取和应用。
 
+0.12.0：level-design将第二关改为七房间上下层回环、两条解锁捷径、可选二段跳秘库与先教学再组合的节拍，约束记录在level_progression.md；game-ai为粉焰剑士实现独立后撤突斩FSM；create-game-assets核对原课程80×80帧表并复制未用图集；godot-tilemap将新房间持久化为可编辑原生TileMapLayer并拒绝重建覆盖；godot-gdscript负责类型、物理帧时序和父场景接线。主线与可选路线真实输入验证，章节敌人不重叠有自动断言。
+
 0.9.0：level-design 增加两种连续输入通关及战前路程测量；save-systems 同样用于独立设置的版本/验证/临时文件/备份恢复；game-ui-ux 用于可滚动设置、焦点跟随、覆盖确认、地图印记和目标。godot-animation 修复普通铠甲帧表，按实际片段长度驱动表现而不改战斗规则。

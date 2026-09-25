@@ -74,7 +74,7 @@ func run(h: Node, game: Node) -> void:
 	player.health.take_damage(99,player.position)
 	await h.frames(65)
 	h.check(game.room.room_id == "ember_quay" and player.health.current == player.health.maximum and absf(player.position.x-180)<2, "Chapter II death returns to its safe shrine with full health")
-	for id: String in ["valve_gallery", "cistern_archive"]:
+	for id: String in ["sluice_shaft", "pump_chamber"]:
 		game.load_room(id,"entry")
 		await h.frames(4)
 		var seal: WorldInteraction = game.room.get_node("Interactions/Seal")
@@ -85,7 +85,7 @@ func run(h: Node, game: Node) -> void:
 			enemy.queue_free()
 		await h.frames(3)
 		player.revive(seal.position)
-		await h.frames(30)
+		await h.frames(4)
 		await h.press("interact",2)
 		h.check(seal.stable_id in Session.flags and not seal.visible and game.ui.reward_notice.save_succeeded, "%s seal is unique, hidden and saved after claiming" % id)
 		game._on_interaction(seal)

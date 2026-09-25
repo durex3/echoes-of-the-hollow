@@ -113,6 +113,6 @@ func run(h: Node, game: Node) -> void:
 	player.revive(Vector2(1100,352))
 	await h.frames(4)
 	await h.press("interact",2)
-	h.check("flow_seal" in Session.flags, "Defeating new enemy unlocks the actual flow seal interaction")
+	h.check(game.room.room_id == "sluice_shaft" and "flow_seal" not in Session.flags, "Gallery leads deeper into the shaft rather than awarding a shallow seal")
 	game.load_room("ember_quay","checkpoint")
 	await h.frames(3)

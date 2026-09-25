@@ -24,14 +24,27 @@ func flow_branch() -> bool:
 		return false
 	if not await cross_steam(320) or not await walk_to(Vector2(460,416)) or not await walk_to(Vector2(650,352)):
 		return false
-	if not await cross_steam(800,352) or not await clear_room() or not await use("Seal"):
+	if not await cross_steam(800,352) or not await clear_room() or not await use("ShaftDoor") or not await use("Shrine"):
 		return false
-	return "flow_seal" in Session.flags and await use("Shortcut")
+	for at: Vector2 in [Vector2(360,608),Vector2(560,544),Vector2(750,480),Vector2(930,416),Vector2(980,416)]:
+		if not await walk_to(at):
+			return false
+	if not await clear_room() or not await use("Seal"):
+		return false
+	if not await walk_to(Vector2(850,672)) or not await use("Crosslink"):
+		return false
+	return "flow_seal" in Session.flags and await use("Return")
 
 func pressure_branch() -> bool:
 	if not await use("PressureDoor") or not await use("Shrine") or not await cross_steam(400):
 		return false
-	if not await clear_room() or not await use("Seal"):
+	if not await clear_room() or not await use("PumpDoor") or not await use("Shrine"):
+		return false
+	for at: Vector2 in [Vector2(420,544),Vector2(650,480),Vector2(705,480)]:
+		if not await walk_to(at):
+			return false
+	# Finish the upper duelist before dropping into the lower chest encounter.
+	if not await walk_to(Vector2(850,608)) or not await cross_steam(960,608) or not await clear_room() or not await use("Seal"):
 		return false
 	return "pressure_seal" in Session.flags and await use("Shortcut")
 

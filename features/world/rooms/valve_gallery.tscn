@@ -1319,13 +1319,6 @@ script = ExtResource("7_ulj2d")
 kind = "sign"
 prompt = "Climb the dry ledges. Wait for the steam to settle."
 
-[node name="Seal" type="Node2D" parent="Interactions" unique_id=1373235325]
-position = Vector2(1100, 352)
-script = ExtResource("7_ulj2d")
-kind = "reward"
-stable_id = "flow_seal"
-prompt = "E / CLAIM THE FLOW SEAL"
-
 [node name="ChestHint" type="Node2D" parent="Interactions"]
 position = Vector2(716, 352)
 script = ExtResource("7_ulj2d")
@@ -1365,3 +1358,23 @@ collision_mask = 2
 monitorable = false
 script = ExtResource("10_vw7so")
 config = ExtResource("11_b2qli")
+
+[node name="ShaftDoor" type="Node2D" parent="Interactions"]
+position = Vector2(1100, 352)
+script = ExtResource("7_ulj2d")
+kind = "exit"
+target_room = "sluice_shaft"
+target_spawn = "entry"
+prompt = "E / DESCEND INTO THE SLUICE SHAFT"
+
+[node name="ForgeDoor" type="Sprite2D" parent="Interactions/ShaftDoor"]
+position = Vector2(0, -32)
+scale = Vector2(2, 2)
+texture = ExtResource("7_lkjg7")
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 32)
+
+[node name="shaft_return" type="Marker2D" parent="Spawns"]
+position = Vector2(1050, 352)
+
+[node name="ExpansionMarker" type="Node" parent="."]

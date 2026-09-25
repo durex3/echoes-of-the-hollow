@@ -9,9 +9,9 @@ static func objective(abilities: Array[String], flags: Array[String], visited: A
 		if "ember_quay" not in visited:
 			return "Chapter II / Beyond the heart chamber"
 		if "flow_seal" not in flags:
-			return "Claim the flow seal / Valve Gallery"
+			return "Claim the flow seal / Beyond Valve Gallery"
 		if "pressure_seal" not in flags:
-			return "Claim the pressure seal / Cistern Archive"
+			return "Claim the pressure seal / Below Cistern Archive"
 		return "Two valves ready / Enter the furnace core"
 	if "warden_defeated" in flags:
 		return "Warden defeated / Restore the final echo"

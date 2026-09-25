@@ -16,11 +16,14 @@ const LINKS := [["forest","sanctuary"],["sanctuary","wind_hall"],["wind_hall","b
 const CHAPTER_TWO := {
 	"heart_chamber": {"title":"HEART CHAMBER", "at":Vector2(15,88)},
 	"ember_quay": {"title":"EMBER QUAY", "at":Vector2(195,88)},
-	"valve_gallery": {"title":"VALVE GALLERY", "at":Vector2(195,8)},
-	"cistern_archive": {"title":"CISTERN ARCHIVE", "at":Vector2(375,8)},
-	"furnace_core": {"title":"FURNACE CORE", "at":Vector2(375,168)}
+	"valve_gallery": {"title":"VALVE GALLERY", "at":Vector2(15,8)},
+	"sluice_shaft": {"title":"SLUICE SHAFT", "at":Vector2(195,8)},
+	"echo_vault": {"title":"ECHO VAULT", "at":Vector2(375,8)},
+	"cistern_archive": {"title":"CISTERN ARCHIVE", "at":Vector2(375,88)},
+	"pump_chamber": {"title":"LOWER PUMP", "at":Vector2(375,168)},
+	"furnace_core": {"title":"FURNACE CORE", "at":Vector2(195,168)}
 }
-const SECOND_LINKS := [["heart_chamber","ember_quay"],["ember_quay","valve_gallery"],["ember_quay","cistern_archive"],["ember_quay","furnace_core"]]
+const SECOND_LINKS := [["heart_chamber","ember_quay"],["ember_quay","valve_gallery"],["ember_quay","cistern_archive"],["ember_quay","furnace_core"],["valve_gallery","sluice_shaft"],["sluice_shaft","echo_vault"],["cistern_archive","pump_chamber"],["sluice_shaft","cistern_archive"],["ember_quay","pump_chamber"]]
 var chapter := 1
 var current_room := "forest"
 var visited: Array[String] = []
@@ -67,9 +70,9 @@ func target_room() -> String:
 		if "ember_quay" not in visited:
 			return "heart_chamber"
 		if "flow_seal" not in flags:
-			return "valve_gallery"
+			return "sluice_shaft" if "valve_gallery" in visited else "valve_gallery"
 		if "pressure_seal" not in flags:
-			return "cistern_archive"
+			return "pump_chamber" if "cistern_archive" in visited else "cistern_archive"
 		return "furnace_core"
 	if "warden_defeated" in flags:
 		return "heart_chamber"
@@ -89,6 +92,10 @@ func gate_requirement(a: String, b: String) -> String:
 	# Requirements are only shown for exits whose source room is known.
 	if a not in visited:
 		return ""
+	if a == "sluice_shaft" and b == "cistern_archive" and "flow_seal" not in flags:
+		return "Flow seal"
+	if a == "ember_quay" and b == "pump_chamber" and "pressure_seal" not in flags:
+		return "Pressure seal"
 	if b == "ember_quay" and "journey_restored" not in flags:
 		return "Final echo"
 	if b == "furnace_core" and ("flow_seal" not in flags or "pressure_seal" not in flags):

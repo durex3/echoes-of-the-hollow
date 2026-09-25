@@ -34,6 +34,9 @@ if ($routeLog -notmatch 'ROUTE_PASS: combat_first' -or $routeLog -notmatch 'ROUT
 Invoke-CheckedGodot -Name 'chapter_two_route' -Arguments @('--headless','--fixed-fps','60','res://tests/chapter_two_route.tscn')
 $secondRouteLog = Get-Content -LiteralPath (Join-Path $artifacts 'chapter_two_route.log') -Raw
 if ($secondRouteLog -notmatch 'CHAPTER_TWO_PASS: flow_first' -or $secondRouteLog -notmatch 'CHAPTER_TWO_PASS: pressure_first') { throw 'Both Chapter II branch orders must complete.' }
+Invoke-CheckedGodot -Name 'cistern_exploration' -Arguments @('--headless','--fixed-fps','60','res://tests/cistern_exploration_route.tscn')
+$explorationLog = Get-Content -LiteralPath (Join-Path $artifacts 'cistern_exploration.log') -Raw
+if ($explorationLog -notmatch 'CISTERN_EXPLORATION_PASS:') { throw 'Optional exploration and return loop must complete.' }
 Invoke-CheckedGodot -Name 'save_write' -Arguments @('--headless','--script','res://tests/save_process.gd','--','--write')
 Invoke-CheckedGodot -Name 'save_read' -Arguments @('--headless','--script','res://tests/save_process.gd','--','--read')
 Invoke-CheckedGodot -Name 'chapter_two_save_write' -Arguments @('--headless','--script','res://tests/chapter_two_save_process.gd','--','--write')

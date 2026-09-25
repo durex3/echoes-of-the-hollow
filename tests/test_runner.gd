@@ -276,6 +276,10 @@ func _run() -> void:
 	add_child(chest_suite)
 	await chest_suite.run(self,game)
 	chest_suite.queue_free()
+	var redesign := preload("res://tests/cistern_redesign_suite.gd").new()
+	add_child(redesign)
+	await redesign.run(self,game)
+	redesign.queue_free()
 	check(Repository.validate(Session.snapshot()), "Save schema validates")
 	check(Session.commit() == OK, "Second save safely replaces first")
 	var saved_room := Session.checkpoint_room

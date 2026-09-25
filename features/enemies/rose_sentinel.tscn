@@ -1,0 +1,61 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://features/enemies/rose_sentinel.gd" id="1"]
+[ext_resource type="SpriteFrames" path="res://features/enemies/rose_frames.tres" id="2"]
+[ext_resource type="Resource" path="res://features/enemies/rose_config.tres" id="3"]
+[ext_resource type="Script" path="res://features/combat/health.gd" id="4"]
+[ext_resource type="Script" path="res://features/combat/hurtbox.gd" id="5"]
+[ext_resource type="Script" path="res://features/combat/hitbox.gd" id="6"]
+
+[sub_resource type="RectangleShape2D" id="body"]
+size = Vector2(22,42)
+[sub_resource type="RectangleShape2D" id="hurt"]
+size = Vector2(28,44)
+[sub_resource type="RectangleShape2D" id="bite"]
+size = Vector2(46,32)
+
+[node name="RoseSentinel" type="CharacterBody2D" groups=["enemies"]]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("1")
+config = ExtResource("3")
+
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+position = Vector2(0,-40)
+sprite_frames = ExtResource("2")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="Body" type="CollisionShape2D" parent="."]
+position = Vector2(0,-21)
+shape = SubResource("body")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("4")
+invulnerability_seconds = 0.16
+
+[node name="Hurtbox" type="Area2D" parent="." node_paths=PackedStringArray("health")]
+collision_layer = 16
+collision_mask = 0
+monitoring = false
+script = ExtResource("5")
+health = NodePath("../Health")
+
+[node name="Shape" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0,-22)
+shape = SubResource("hurt")
+
+[node name="AttackBox" type="Area2D" parent="."]
+position = Vector2(-29,-24)
+collision_layer = 0
+collision_mask = 8
+monitorable = false
+script = ExtResource("6")
+
+[node name="Shape" type="CollisionShape2D" parent="AttackBox"]
+shape = SubResource("bite")
+
+[node name="Edge" type="RayCast2D" parent="."]
+position = Vector2(-28,-12)
+target_position = Vector2(0,64)
+collision_mask = 1
