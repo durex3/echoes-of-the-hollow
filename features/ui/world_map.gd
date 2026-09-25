@@ -9,9 +9,10 @@ const ROOMS := {
 	"ruins": {"title":"THE ARCHIVE", "at":Vector2(195,88)},
 	"training": {"title":"WATCHERS HALL", "at":Vector2(375,88)},
 	"scriptorium": {"title":"INK SANCTUM", "at":Vector2(375,168)},
-	"atrium": {"title":"ECHO ANTECHAMBER", "at":Vector2(15,168)}
+	"atrium": {"title":"ECHO ANTECHAMBER", "at":Vector2(15,168)},
+	"heart_chamber": {"title":"HEART CHAMBER", "at":Vector2(195,168)}
 }
-const LINKS := [["forest","sanctuary"],["sanctuary","wind_hall"],["wind_hall","belfry"],["forest","ruins"],["ruins","training"],["training","scriptorium"],["forest","atrium"]]
+const LINKS := [["forest","sanctuary"],["sanctuary","wind_hall"],["wind_hall","belfry"],["forest","ruins"],["ruins","training"],["training","scriptorium"],["forest","atrium"],["atrium","heart_chamber"]]
 var current_room := "forest"
 var visited: Array[String] = []
 var checkpoint_room := "forest"
@@ -56,7 +57,7 @@ func _draw() -> void:
 		draw_polyline(PackedVector2Array([Vector2(450,140),Vector2(450,153),Vector2(90,153),Vector2(90,140)]),Color("94e4ce"),1)
 		draw_colored_polygon(PackedVector2Array([Vector2(90,140),Vector2(86,146),Vector2(94,146)]),Color("94e4ce"))
 	if "scriptorium_cleared" in flags and "scriptorium" in visited and "ruins" in visited:
-		draw_polyline(PackedVector2Array([Vector2(375,194),Vector2(270,194),Vector2(270,140)]),Color("94e4ce"),1)
+		draw_polyline(PackedVector2Array([Vector2(375,194),Vector2(360,194),Vector2(360,148),Vector2(270,148),Vector2(270,140)]),Color("94e4ce"),1)
 		draw_colored_polygon(PackedVector2Array([Vector2(270,140),Vector2(266,146),Vector2(274,146)]),Color("94e4ce"))
 	for id: String in ROOMS:
 		if not revealed(id):

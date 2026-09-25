@@ -1,0 +1,88 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" path="res://features/world/room.gd" id="1_okc37"]
+[ext_resource type="Script" path="res://features/world/backdrop.gd" id="2_13dyb"]
+[ext_resource type="Script" path="res://features/world/heart_landmarks.gd" id="3_hmoqf"]
+[ext_resource type="TileSet" path="res://features/world/forest_tileset.tres" id="4_doug8"]
+[ext_resource type="PackedScene" path="res://features/enemies/hollow_warden.tscn" id="5_63gu3"]
+[ext_resource type="Script" path="res://features/enemies/hollow_warden.gd" id="6_rx887"]
+[ext_resource type="Resource" path="res://features/enemies/warden_config.tres" id="7_kfdnq"]
+[ext_resource type="Script" path="res://features/world/interaction.gd" id="8_qpmqr"]
+
+[sub_resource type="RectangleShape2D" id="Boundary"]
+size = Vector2(32, 640)
+
+[node name="HeartChamber" type="Node2D" unique_id=601705271]
+script = ExtResource("1_okc37")
+room_id = "heart_chamber"
+display_name = "09 / HEART CHAMBER"
+music_track = "dungeon"
+bounds = Rect2(0, 0, 640, 576)
+
+[node name="Backdrop" type="Node2D" parent="." unique_id=1671505959]
+script = ExtResource("2_13dyb")
+ruins = true
+room_width = 640.0
+
+[node name="Landmarks" type="Node2D" parent="." unique_id=402646335]
+script = ExtResource("3_hmoqf")
+
+[node name="Terrain" type="TileMapLayer" parent="." unique_id=81977782]
+tile_map_data = PackedByteArray("AAAAAA8AAAABAAYAAAABAA8AAAACAAYAAAACAA8AAAADAAYAAAADAA8AAAABAAYAAAAEAA8AAAACAAYAAAAFAA8AAAADAAYAAAAGAA8AAAABAAYAAAAHAA8AAAACAAYAAAAIAA8AAAADAAYAAAAJAA8AAAABAAYAAAAKAA8AAAACAAYAAAALAA8AAAADAAYAAAAMAA8AAAABAAYAAAANAA8AAAACAAYAAAAOAA8AAAADAAYAAAAPAA8AAAABAAYAAAAQAA8AAAACAAYAAAARAA8AAAADAAYAAAASAA8AAAABAAYAAAATAA8AAAACAAYAAAAUAA8A//////////8VAA8A//////////8WAA8A//////////8XAA8A//////////8YAA8A//////////8ZAA8A//////////8aAA8A//////////8bAA8A//////////8cAA8A//////////8dAA8A//////////8eAA8A//////////8fAA8A//////////8gAA8A//////////8hAA8A//////////8iAA8A//////////8jAA8A//////////8kAA8A//////////8lAA8A//////////8mAA8A//////////8nAA8A//////////8AABAAAAABAAcAAAABABAAAAACAAcAAAACABAAAAADAAcAAAADABAAAAABAAcAAAAEABAAAAACAAcAAAAFABAAAAADAAcAAAAGABAAAAABAAcAAAAHABAAAAACAAcAAAAIABAAAAADAAcAAAAJABAAAAABAAcAAAAKABAAAAACAAcAAAALABAAAAADAAcAAAAMABAAAAABAAcAAAANABAAAAACAAcAAAAOABAAAAADAAcAAAAPABAAAAABAAcAAAAQABAAAAACAAcAAAARABAAAAADAAcAAAASABAAAAABAAcAAAATABAAAAACAAcAAAAUABAA//////////8VABAA//////////8WABAA//////////8XABAA//////////8YABAA//////////8ZABAA//////////8aABAA//////////8bABAA//////////8cABAA//////////8dABAA//////////8eABAA//////////8fABAA//////////8gABAA//////////8hABAA//////////8iABAA//////////8jABAA//////////8kABAA//////////8lABAA//////////8mABAA//////////8nABAA//////////8AABEAAAABAAcAAAABABEAAAACAAcAAAACABEAAAADAAcAAAADABEAAAABAAcAAAAEABEAAAACAAcAAAAFABEAAAADAAcAAAAGABEAAAABAAcAAAAHABEAAAACAAcAAAAIABEAAAADAAcAAAAJABEAAAABAAcAAAAKABEAAAACAAcAAAALABEAAAADAAcAAAAMABEAAAABAAcAAAANABEAAAACAAcAAAAOABEAAAADAAcAAAAPABEAAAABAAcAAAAQABEAAAACAAcAAAARABEAAAADAAcAAAASABEAAAABAAcAAAATABEAAAACAAcAAAAUABEA//////////8VABEA//////////8WABEA//////////8XABEA//////////8YABEA//////////8ZABEA//////////8aABEA//////////8bABEA//////////8cABEA//////////8dABEA//////////8eABEA//////////8fABEA//////////8gABEA//////////8hABEA//////////8iABEA//////////8jABEA//////////8kABEA//////////8lABEA//////////8mABEA//////////8nABEA//////////8IAAwA//////////8JAAwA//////////8KAAwA//////////8LAAwA//////////8MAAwA//////////8NAAwA//////////8OAAwA//////////8IAA0A//////////8JAA0A//////////8KAA0A//////////8LAA0A//////////8MAA0A//////////8NAA0A//////////8OAA0A//////////8LAAcA//////////8MAAcA//////////8NAAcA//////////8OAAcA//////////8PAAcA//////////8LAAgA//////////8MAAgA//////////8NAAgA//////////8OAAgA//////////8PAAgA//////////8WAAwA//////////8XAAwA//////////8YAAwA//////////8ZAAwA//////////8WAA0A//////////8XAA0A//////////8YAA0A//////////8ZAA0A//////////8=")
+tile_set = ExtResource("4_doug8")
+
+[node name="Details" type="TileMapLayer" parent="." unique_id=40044950]
+tile_map_data = PackedByteArray("AAAGAA4A//////////8RAA4A//////////8aAA4A//////////8iAA4A//////////8=")
+tile_set = ExtResource("4_doug8")
+collision_enabled = false
+
+[node name="Bounds" type="StaticBody2D" parent="." unique_id=1358145428]
+collision_mask = 0
+
+[node name="Left" type="CollisionShape2D" parent="Bounds" unique_id=706008918]
+position = Vector2(-16, 256)
+shape = SubResource("Boundary")
+
+[node name="Right" type="CollisionShape2D" parent="Bounds" unique_id=1364135426]
+position = Vector2(656, 256)
+shape = SubResource("Boundary")
+
+[node name="Spawns" type="Node2D" parent="." unique_id=22093897]
+
+[node name="entry" type="Marker2D" parent="Spawns" unique_id=501280135]
+position = Vector2(96, 480)
+
+[node name="checkpoint" type="Marker2D" parent="Spawns" unique_id=131344887]
+position = Vector2(96, 480)
+
+[node name="Enemies" type="Node2D" parent="." unique_id=1963065800]
+
+[node name="Warden" type="CharacterBody2D" parent="Enemies" unique_id=273080359 groups=["enemies"] instance=ExtResource("5_63gu3")]
+position = Vector2(448, 480)
+collision_layer = 4
+script = ExtResource("6_rx887")
+config = ExtResource("7_kfdnq")
+
+[node name="Interactions" type="Node2D" parent="." unique_id=1839794500]
+
+[node name="Return" type="Node2D" parent="Interactions" unique_id=393206268]
+position = Vector2(48, 480)
+script = ExtResource("8_qpmqr")
+kind = "exit"
+target_room = "atrium"
+target_spawn = "boss_return"
+prompt = "E / RETURN TO THE ANTECHAMBER"
+
+[node name="Lesson" type="Node2D" parent="Interactions" unique_id=1275901765]
+position = Vector2(145, 480)
+script = ExtResource("8_qpmqr")
+kind = "sign"
+prompt = "Amber: step away. Mint: jump the rush. Strike after."
+
+[node name="FinalEcho" type="Node2D" parent="Interactions" unique_id=1433380123]
+position = Vector2(560, 480)
+script = ExtResource("8_qpmqr")
+kind = "finale"
+required_flag = "warden_defeated"
+stable_id = "journey_restored"
+prompt = "E / RESTORE THE FINAL ECHO"

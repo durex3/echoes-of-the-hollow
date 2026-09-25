@@ -3,6 +3,10 @@ extends RefCounted
 ## Pure guidance derived from existing progress; no second quest save state.
 
 static func objective(abilities: Array[String], flags: Array[String], visited: Array[String]) -> String:
+	if "journey_restored" in flags:
+		return "Hollow restored / Explore the paths you opened"
+	if "warden_defeated" in flags:
+		return "Warden defeated / Restore the final echo"
 	if "double_jump" not in abilities:
 		return "Find the sky echo / Eastern archive"
 	if "training_cleared" not in flags:
@@ -15,4 +19,4 @@ static func objective(abilities: Array[String], flags: Array[String], visited: A
 		return "Light the wind beacon / Beyond Wind Gallery"
 	if "atrium" not in visited:
 		return "Three marks gathered / Grove ground-level gate"
-	return "Antechamber reached / Rest before the sealed door"
+	return "Antechamber reached / Face the Hollow Warden"

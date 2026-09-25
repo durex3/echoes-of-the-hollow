@@ -86,5 +86,9 @@ prompt = "A quiet threshold. Rest here before going onward."
 [node name="InnerDoor" type="Node2D" parent="Interactions" unique_id=1747091635]
 position = Vector2(816, 352)
 script = ExtResource("5_887n2")
-kind = "sign"
-prompt = "Inner door sealed / The guardian awakens in a future chapter."
+kind = "exit"
+target_room = "heart_chamber"
+prompt = "E / FACE THE HOLLOW WARDEN"
+
+[node name="boss_return" type="Marker2D" parent="Spawns"]
+position = Vector2(748, 352)

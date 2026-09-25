@@ -9,7 +9,8 @@ const ROOMS := {
 	"sanctuary": preload("res://features/world/rooms/sanctuary.tscn"),
 	"wind_hall": preload("res://features/world/rooms/wind_hall.tscn"),
 	"belfry": preload("res://features/world/rooms/belfry.tscn"),
-	"atrium": preload("res://features/world/rooms/atrium.tscn")
+	"atrium": preload("res://features/world/rooms/atrium.tscn"),
+	"heart_chamber": preload("res://features/world/rooms/heart_chamber.tscn")
 }
 const Repository := preload("res://core/save_repository.gd")
 @onready var room_host: Node2D = $RoomHost
@@ -53,6 +54,7 @@ func load_room(room_id: String, spawn: String) -> void:
 		push_error("Unknown room: " + room_id)
 		return
 	$Feedback.clear()
+	ui.hide_boss()
 	player.cancel_dash()
 	player.cancel_attack()
 	if player.state == Player.State.ATTACK:
@@ -69,6 +71,13 @@ func load_room(room_id: String, spawn: String) -> void:
 	room.prompt_changed.connect(func(message: String) -> void: ui.set_text(ui.prompt,message))
 	room.update_progress()
 	for enemy: Node in room.get_node("Enemies").get_children():
+		if enemy is HollowWarden:
+			enemy.target = player
+			enemy.awakened.connect(func() -> void: ui.show_boss(enemy.health.current,enemy.health.maximum))
+			enemy.health.changed.connect(ui.update_boss_health)
+			enemy.phase_changed.connect(ui.update_boss_phase)
+			enemy.impact.connect($Feedback.show_impact.bind(false))
+			enemy.defeated.connect(_on_warden_defeated.bind(room.get_instance_id()),CONNECT_DEFERRED)
 		if enemy is DoomScribe:
 			enemy.target = player
 		if enemy is LivingArmor:
@@ -91,7 +100,10 @@ func load_room(room_id: String, spawn: String) -> void:
 
 func _process(_delta: float) -> void:
 	if running and is_instance_valid(player):
-		camera.position = player.position + Vector2(player.facing * 45, -65)
+		if room.room_id == "heart_chamber":
+			camera.position = Vector2(320,396)
+		else:
+			camera.position = player.position + Vector2(player.facing * 45, -65)
 
 func _input(event: InputEvent) -> void:
 	if event.is_echo():
@@ -143,6 +155,11 @@ func _on_interaction(point: WorldInteraction) -> void:
 			if not locked.is_empty():
 				ui.notify(locked)
 				return
+			if point.target_room == "heart_chamber" and room.room_id == "atrium":
+				Session.checkpoint_room = "atrium"
+				Session.checkpoint_spawn = "checkpoint"
+				player.health.restore_full()
+				_save("Restored & saved")
 			transition_pending = true
 			load_room.call_deferred(point.target_room, point.target_spawn)
 		"checkpoint":
@@ -175,6 +192,16 @@ func _on_interaction(point: WorldInteraction) -> void:
 			player.health.restore_full()
 			room.update_progress()
 			_save_reward(point.stable_id)
+		"finale":
+			if "warden_defeated" not in Session.flags or "journey_restored" in Session.flags or not room.is_cleared():
+				return
+			Session.set_flag("journey_restored")
+			room.update_progress()
+			var saved := Session.commit() == OK
+			player.reset_input()
+			get_tree().paused = true
+			ui.finale_saved = saved
+			ui.show_menu("finale")
 		"goal":
 			if not Session.abilities.has("double_jump"):
 				ui.notify("The shrine awaits an echo from the eastern ruins")
@@ -206,9 +233,19 @@ func _on_gate_breached(stable_id: String) -> void:
 	_save("Wind barrier opened / Route saved")
 
 func _on_player_died() -> void:
+	ui.hide_boss()
 	room.enabled = false
 	room.clear_projectiles()
 	ui.notify("Returning to the last shrine...")
 	await get_tree().create_timer(0.85, false).timeout
 	load_room(Session.checkpoint_room, Session.checkpoint_spawn)
 	player.revive(room.spawn_position(Session.checkpoint_spawn))
+
+func _on_warden_defeated(room_instance: int) -> void:
+	if not is_instance_valid(room) or room.get_instance_id() != room_instance or player.state == Player.State.DEAD or "warden_defeated" in Session.flags:
+		return
+	Session.set_flag("warden_defeated")
+	ui.hide_boss()
+	room.update_progress()
+	player.health.restore_full()
+	_save_reward("warden_defeated")

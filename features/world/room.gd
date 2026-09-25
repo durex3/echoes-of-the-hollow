@@ -25,6 +25,10 @@ func _ready() -> void:
 			gate.set_open(gate.stable_id in Session.flags)
 			gate.breached.connect(func(id: String) -> void: gate_breached.emit(id))
 	for enemy: Node in $Enemies.get_children():
+		if enemy is HollowWarden and "warden_defeated" in Session.flags:
+			$Enemies.remove_child(enemy)
+			enemy.queue_free()
+			continue
 		if enemy is DoomScribe:
 			enemy.cast_requested.connect(_spawn_bolt.bind(enemy.get_instance_id()))
 			enemy.defeated.connect(clear_projectiles.bind(enemy.get_instance_id()))
@@ -79,6 +83,8 @@ func update_progress() -> void:
 			point.visible = not Session.completed
 		elif point.kind in ["reward", "upgrade"]:
 			point.visible = point.stable_id not in Session.flags
+		elif point.kind == "finale":
+			point.visible = "warden_defeated" in Session.flags and point.stable_id not in Session.flags
 
 func is_cleared() -> bool:
 	for enemy: Node in $Enemies.get_children():

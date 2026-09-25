@@ -74,7 +74,7 @@ func run(h: Node, game: Node) -> void:
 	h.check(player.is_on_floor() and absf(player.position.y-352)<2, "Second antechamber step reachable by normal jump")
 	await h.press("move_right",47)
 	await h.frames(30)
-	h.check(game.ui.prompt.text.contains("内门尚未开启"), "Inner threshold states that the guardian is future content")
+	h.check(game.ui.prompt.text.contains("挑战空谷守门者"), "Inner threshold identifies the guardian challenge")
 	await h.shot("43_atrium_inner_door")
 	game.ui.show_map("atrium")
 	get_tree().paused = true
@@ -150,7 +150,7 @@ func check_route_graph(h: Node, game: Node) -> void:
 						flags.append(gate.stable_id)
 		if visited.size()+abilities.size()+flags.size() == prior:
 			break
-	h.check(visited.size() == rooms.size() and "atrium" in visited, "Room and prerequisite graph reaches all eight rooms from a fresh start")
+	h.check(visited.size() == rooms.size() and "heart_chamber" in visited, "Room and prerequisite graph reaches all nine rooms from a fresh start")
 	h.check("heart_bloom" not in flags, "Main route graph requires neither optional health nor high-shrine completion")
 	for room: GameRoom in rooms.values():
 		room.free()

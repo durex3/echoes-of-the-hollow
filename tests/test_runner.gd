@@ -13,7 +13,7 @@ func _ready() -> void:
 	Session.save_path = "user://test_%s.json" % OS.get_process_id()
 	Session.settings_path = "user://test_ui_settings_%s.cfg" % OS.get_process_id()
 	Session.set_language("en")
-	get_tree().create_timer(150.0, true, false, true).timeout.connect(func() -> void:
+	get_tree().create_timer(210.0, true, false, true).timeout.connect(func() -> void:
 		push_error("Integration test timeout")
 		get_tree().quit(1))
 	_run.call_deferred()
@@ -251,6 +251,10 @@ func _run() -> void:
 	add_child(convergence)
 	await convergence.run(self,game)
 	convergence.queue_free()
+	var warden := preload("res://tests/warden_suite.gd").new()
+	add_child(warden)
+	await warden.run(self,game)
+	warden.queue_free()
 	check(Repository.validate(Session.snapshot()), "Save schema validates")
 	check(Session.commit() == OK, "Second save safely replaces first")
 	var saved_room := Session.checkpoint_room

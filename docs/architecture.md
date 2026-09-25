@@ -38,6 +38,7 @@ flowchart TD
 | Hitbox / Hurtbox | 碰撞筛选、同一挥击目标去重、传递伤害 | 判定游戏胜利 |
 | Slime | PATROL/HURT/DEAD 状态，墙/边缘检测 | 复杂寻路、全局关卡进度 |
 | LivingArmor / ArmorConfig | 七状态 FSM、目标视线、方向锁定、可调攻击/感知参数 | 房间切换和存档 |
+| HollowWarden / WardenConfig | 九状态首领 FSM、交替攻击、半血阶段、独立数值 | 保存进度、打开结局、控制镜头 |
 | DoomScribe / ScribeConfig | 六状态 FSM、视线、锁定瞄准、可打断施法、数值 | 管理弹体生命周期 |
 | InkBolt | 半径 5px ShapeCast2D 扫掠、一次命中、寿命、释放 | 追踪玩家、保存自己 |
 | CombatFeedback / ImpactEffect | 命中信号驱动短暂粒子、镜头偏移和声音 | 改变物理位置、全局时间 |
@@ -105,6 +106,15 @@ RewardNotice 使用原生 PanelContainer/VBoxContainer，统一显示能力、�
 测试使用独立 test_ui_settings_<pid>.cfg 与 test_language_cross_process.cfg，不覆盖玩家语言设置。字体及授权文件有 SHA-256 记录；导出预设包含字体授权文本，尚未实际执行导出。
 
 ## 原生内容编辑
+
+### 首领与最终回响（0.8.0）
+
+HollowWarden 为独立 CharacterBody2D，组合现有 Health/Hitbox/Hurtbox；不继承普通铠甲逻辑。WardenConfig 与两个 AttackProfile 为只读资源，阶段、计时、朝向、攻击次数均为实例状态。交替横扫/突进，风格和判定共用阶段计时；命中不缩短预警和收招。半血只在收招结束后转入 1.2s 无伤害阶段提示，二阶段仅增加追击速度、收招乘 0.85，不缩短预警。
+Main 注入 Player，接 awakened/health.changed/phase_changed 驱动原生首领栏；击败信号延迟到安全时机，并核对房间实例、玩家仍活着与标记唯一性，再回血、保存和显示奖励。玩家死亡关闭血条，Boss 下一物理帧关闭攻击；切房释放整个实例。双方同帧死亡按失败重试，旧房间延迟胜利不影响新房间。
+进入 heart_chamber 前把 checkpoint 固定到 atrium/checkpoint 并尝试保存；保存失败显示原提示，会话检查点仍可重试。首领房仅 640px 宽，Main 固定 Camera2D 到 (320,396)，全场可见且跳跃不推动镜头；其他房间维持原跟随方式。西门允许主动撤退，返回前庭 boss_return。
+GameRoom 在装载时移除已有 warden_defeated 标记的首领；finale 交互仅在击败且尚无 journey_restored 时可见，Main 再检查前置和清场。结局按实际保存结果展示成功/失败，菜单支持继续探索、语言切换及地图往返。重复交互不重复播放；保存失败后可到祭坛重试。
+schema 2 不变，增加 heart_chamber 与 warden_defeated/journey_restored 白名单。completed 仍表示旧高台事件，绝不自动迁移成新结局；主线结局以 journey_restored 为准。不持久化首领半血或攻击阶段，未击败则重入满血。
+heart_chamber.tscn 是原生 640×576 房间，连续平地 y=480；tools/build_heart_chamber.tscn 只首次创建并拒绝覆盖。复用原铠甲帧图与图块，无新增 Autoload、外部素材或依赖。
 
 ### 主线汇合（0.7.0）
 

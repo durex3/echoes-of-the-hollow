@@ -2,6 +2,7 @@ class_name RewardNotice
 extends PanelContainer
 ## Informational overlay: never captures input or pauses gameplay.
 const REWARDS := {
+	"warden_defeated": ["HOLLOW WARDEN DEFEATED", "The final echo is now within reach", "All vitality restored. Claim the echo on your right."],
 	"double_jump": ["SKY ECHO ACQUIRED", "Double jump unlocked", "Press SPACE again in the air."],
 	"dash": ["WIND ECHO ACQUIRED", "Wind dash unlocked", "K / Right shoulder to dash. No invincibility."],
 	"heart_bloom": ["HEART BLOOM ACQUIRED", "Maximum vitality +1 permanently", "All vitality restored."],

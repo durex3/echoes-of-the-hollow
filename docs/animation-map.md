@@ -55,6 +55,8 @@ DoomScribe 原图朝右，面向左时 flip_h=true。弹体视觉跟随 directio
 
 ## 修改后检查
 
+0.8.0 HollowWarden 复用上述铠甲 SpriteFrames，独立 AnimatedSprite2D 使用1.5倍缩放和金色调制，不修改源 PNG 或普通铠甲资源。横扫/突进均使用原举剑/挥砍/收招，另加弧线/箭头区分；死亡沿用原帧段，结束释放。物理形状保持固定，不随帧或冠形标记改变。首领回归截图46–55包含预警、阶段、击败与结局。
+
 修改原生 SpriteFrames 后执行 `tools/check.ps1 -Visual`，检查 `06_sword_active`、`08_armor_warning`、`09_counterattack`、`13_armor_strike`。
 更改动作帧数量时同步相应播放速度计算；更改阶段时长须复测命中、方向锁定和反击窗口。
 自动截图不覆盖每一帧的动态衔接；完整动作观感仍需人工试玩。

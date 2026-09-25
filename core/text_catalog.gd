@@ -2,6 +2,22 @@ class_name TextCatalog
 extends RefCounted
 ## Source English strings are stable translation keys; native Godot Translation backend.
 const ZH := {
+	"Hollow restored / Explore the paths you opened": "空谷已复苏 / 继续探索已开启的道路",
+	"Warden defeated / Restore the final echo": "守门者已倒下 / 唤醒最终回响",
+	"Antechamber reached / Face the Hollow Warden": "已抵达回响前庭 / 挑战空谷守门者",
+	"HEART CHAMBER": "空谷心室",
+	"09 / HEART CHAMBER": "09 / 空谷心室",
+	"E / FACE THE HOLLOW WARDEN": "E / 挑战空谷守门者",
+	"E / RETURN TO THE ANTECHAMBER": "E / 返回回响前庭",
+	"Amber: step away. Mint: jump the rush. Strike after.": "琥珀预警先退开，青绿突进跳过，收招时反击。",
+	"E / RESTORE THE FINAL ECHO": "E / 唤醒最终回响",
+	"HOLLOW WARDEN / I": "空谷守门者 / 第一阶段",
+	"HOLLOW WARDEN / II": "空谷守门者 / 第二阶段",
+	"HOLLOW WARDEN DEFEATED": "已击败 · 空谷守门者",
+	"The final echo is now within reach": "最终回响已解封",
+	"All vitality restored. Claim the echo on your right.": "生命已全部恢复，前往右侧唤醒最终回响。",
+	"HOLLOW RESTORED": "空谷复苏",
+	"The warden rests. The grove remembers your journey.": "守门者归于宁静，林地将铭记你的旅程。",
 	"Find the sky echo / Eastern archive": "前往东侧档案馆，寻找天空回响",
 	"Claim the Watchers seal / East of the archive": "前往档案馆东侧，取得守望者封印",
 	"Claim the Ink seal / Through Watchers Hall": "穿过守望者训练厅，取得墨文封印",

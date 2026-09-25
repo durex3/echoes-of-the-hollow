@@ -25,6 +25,10 @@ const CHINESE_FONT := preload("res://assets/fonts/noto_sans_sc.otf")
 var health_current := 5
 var health_maximum := 5
 var menu_can_continue := false
+var boss_panel: VBoxContainer
+var boss_title: Label
+var boss_bar: ProgressBar
+var finale_saved := false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -77,6 +81,28 @@ func _ready() -> void:
 	bottom.add_child(controls)
 	reward_notice = RewardNotice.new()
 	hud.add_child(reward_notice)
+	boss_panel = VBoxContainer.new()
+	boss_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+	boss_panel.offset_left = -170
+	boss_panel.offset_right = 170
+	boss_panel.offset_top = 70
+	boss_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hud.add_child(boss_panel)
+	boss_title = label("HOLLOW WARDEN / I",14,Color("efce8e"))
+	boss_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	boss_panel.add_child(boss_title)
+	boss_bar = ProgressBar.new()
+	boss_bar.custom_minimum_size.y = 8
+	boss_bar.show_percentage = false
+	boss_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var bar_background := StyleBoxFlat.new()
+	bar_background.bg_color = Color("263941")
+	var bar_fill := StyleBoxFlat.new()
+	bar_fill.bg_color = Color("d6ba7e")
+	boss_bar.add_theme_stylebox_override("background",bar_background)
+	boss_bar.add_theme_stylebox_override("fill",bar_fill)
+	boss_panel.add_child(boss_bar)
+	boss_panel.hide()
 	modal = PanelContainer.new()
 	modal.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	modal.offset_left = -210
@@ -153,12 +179,19 @@ func show_menu(mode: String, can_continue := false) -> void:
 		menu.remove_child(child)
 		child.queue_free()
 	modal.show()
-	var title := label("ECHOES OF THE HOLLOW" if mode == "title" else ("ECHO RESTORED" if mode == "win" else "PAUSED"), 24, Color("efce8e"))
+	var heading := "HOLLOW RESTORED" if mode == "finale" else ("ECHOES OF THE HOLLOW" if mode == "title" else ("ECHO RESTORED" if mode == "win" else "PAUSED"))
+	var title := label(heading, 24, Color("efce8e"))
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	menu.add_child(title)
-	var subtitle := label("A small journey through the forgotten grove", 12, Color("b4c6c2"))
+	var subtitle := label("The warden rests. The grove remembers your journey." if mode == "finale" else "A small journey through the forgotten grove", 12, Color("b4c6c2"))
+	subtitle.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	menu.add_child(subtitle)
+	if mode == "finale":
+		var saved_label := label("Progress saved" if finale_saved else "Save failed - visit a shrine to retry",12,Color("efce8e"))
+		saved_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		saved_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		menu.add_child(saved_label)
 	if mode == "title":
 		if can_continue:
 			button("Continue from checkpoint", func() -> void: start_requested.emit(true))
@@ -166,7 +199,7 @@ func show_menu(mode: String, can_continue := false) -> void:
 		if can_continue:
 			menu.add_child(label("New journey replaces progress on the next save.", 12, Color("b4c6c2")))
 	else:
-		button("Continue exploring" if mode == "win" else "Resume", func() -> void: resume_requested.emit())
+		button("Continue exploring" if mode in ["win","finale"] else "Resume", func() -> void: resume_requested.emit())
 		if mode == "pause":
 			setting_toggle("Reduce screen shake", Session.reduce_shake, "reduce_shake")
 			setting_toggle("Reduce hit flashes", Session.reduce_flashes, "reduce_flashes")
@@ -210,6 +243,22 @@ func update_health(current: int, maximum: int) -> void:
 
 func update_progress() -> void:
 	set_text(objective,JourneyProgress.objective(Session.abilities,Session.flags,Session.visited))
+
+func show_boss(current: int, maximum: int) -> void:
+	update_boss_health(current,maximum)
+	update_boss_phase(1)
+	reward_notice.remaining = 0
+	boss_panel.show()
+
+func update_boss_health(current: int, maximum: int) -> void:
+	boss_bar.max_value = maximum
+	boss_bar.value = current
+
+func update_boss_phase(phase: int) -> void:
+	set_text(boss_title,"HOLLOW WARDEN / II" if phase == 2 else "HOLLOW WARDEN / I")
+
+func hide_boss() -> void:
+	boss_panel.hide()
 
 func notify(message: String) -> void:
 	set_text(toast,message)
