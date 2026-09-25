@@ -100,29 +100,32 @@ func _enter(next: State) -> void:
 		State.WINDUP:
 			velocity.x = 0
 			timer = config.attack.windup
-			sprite.play("windup")
-			sprite.speed_scale = 8.0 / (12.0 * config.attack.windup)
+			_play_clip("windup", timer)
 			attack_box.position.x = facing * 34
 			attack_box.begin_swing()
 		State.STRIKE:
 			timer = config.attack.active_seconds
 			attack_box.active = true
-			sprite.play("strike")
-			sprite.speed_scale = 3.0 / (12.0 * config.attack.active_seconds)
+			_play_clip("strike", timer)
 			Audio.play_sound("attack")
 		State.RECOVER:
 			timer = config.attack.recovery
-			sprite.speed_scale = 3.0 / (6.0 * config.attack.recovery)
-			sprite.play("recover")
+			_play_clip("recover", timer)
 		State.HURT:
 			timer = 0.18
-			sprite.speed_scale = 1
-			sprite.play("recover")
+			_play_clip("recover", timer)
 		State.DEAD:
 			velocity = Vector2.ZERO
 			sprite.modulate = Color(1.65,1.65,1.8)
-			sprite.speed_scale = 1
-			sprite.play("death")
+			_play_clip("death")
+
+func _play_clip(animation: StringName, duration := 0.0) -> void:
+	sprite.stop()
+	sprite.speed_scale = 1.0
+	if duration > 0:
+		var frames := sprite.sprite_frames
+		sprite.speed_scale = frames.get_frame_count(animation) / (frames.get_animation_speed(animation) * duration)
+	sprite.play(animation)
 
 func _on_damage(_amount: int, at: Vector2) -> void:
 	flash_left = 0.08

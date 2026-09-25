@@ -3,6 +3,7 @@ extends CharacterBody2D
 
 signal died
 signal impact(at: Vector2, defeated: bool)
+signal dash_status_changed(status: String)
 enum State { MOVE, ATTACK, HURT, DEAD, DASH }
 @export var config: PlayerConfig
 @onready var sprite: AnimatedSprite2D = $Visual/Sprite
@@ -25,6 +26,7 @@ var dash_held := false
 var air_dash_used := false
 var dash_left := 0.0
 var dash_cooldown_left := 0.0
+var last_dash_status := ""
 
 func _ready() -> void:
 	health.maximum = Session.maximum_health()
@@ -34,6 +36,7 @@ func _ready() -> void:
 	attack_box.impact.connect(func(at: Vector2, defeated: bool) -> void: impact.emit(at, defeated))
 
 func _physics_process(delta: float) -> void:
+	_publish_dash_status()
 	if state == State.DEAD:
 		return
 	# Discrete actions require a fresh press after menus, even if held during resume.
@@ -205,3 +208,19 @@ func _draw() -> void:
 	for i: int in range(3):
 		var y := -12.0 - i * 11.0
 		draw_line(Vector2(-facing * 16,y),Vector2(-facing * (38 + i*7),y),Color(0.58,0.89,0.81,0.65),2)
+
+func _publish_dash_status() -> void:
+	var value := "Dash ready"
+	if "dash" not in Session.abilities:
+		value = "Dash locked"
+	elif state == State.DASH:
+		value = "Dashing"
+	elif state != State.MOVE:
+		value = "Dash unavailable"
+	elif dash_cooldown_left > 0:
+		value = "Dash recharging"
+	elif air_dash_used:
+		value = "Dash: land to recharge"
+	if value != last_dash_status:
+		last_dash_status = value
+		dash_status_changed.emit(value)

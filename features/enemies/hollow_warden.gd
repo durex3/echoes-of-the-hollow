@@ -4,6 +4,7 @@ extends CharacterBody2D
 signal defeated
 signal awakened
 signal phase_changed(phase: int)
+signal cue_changed(message: String)
 signal impact(at: Vector2, killed: bool)
 enum State { DORMANT, INTRO, CHASE, WINDUP, STRIKE, RECOVER, TRANSITION, DEAD }
 @export var config: WardenConfig
@@ -90,14 +91,19 @@ func _enter(next: State) -> void:
 		State.INTRO, State.TRANSITION:
 			timer = config.intro_seconds if state == State.INTRO else config.transition_seconds
 			_play_clip("idle")
+			cue_changed.emit("Warden awakens" if state == State.INTRO else "Phase II / Faster pursuit")
+			Audio.play_sound("ability_acquire", 0.65, -8.0)
 		State.CHASE:
 			_play_clip("walk")
+			cue_changed.emit("")
 		State.WINDUP:
 			timer = active_profile.windup
 			attack_box.position.x = facing*44
 			attack_box.damage = active_profile.damage
 			attack_box.begin_swing()
 			_play_clip("windup",timer)
+			cue_changed.emit("RUSH / Jump over" if rush_attack else "SWEEP / Step back or behind")
+			Audio.play_sound("jump" if rush_attack else "attack", 0.75 if rush_attack else 0.55, -5.0)
 		State.STRIKE:
 			timer = active_profile.active_seconds
 			attack_box.active = true
@@ -106,6 +112,7 @@ func _enter(next: State) -> void:
 		State.RECOVER:
 			timer = active_profile.recovery*(config.phase_two_recovery_scale if phase == 2 else 1.0)
 			_play_clip("recover",timer)
+			cue_changed.emit("RECOVERY / Strike now")
 		State.DEAD:
 			velocity = Vector2.ZERO
 			_play_clip("death")

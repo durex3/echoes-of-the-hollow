@@ -12,6 +12,11 @@ func _ready() -> void:
 	visual = "--visual" in OS.get_cmdline_user_args()
 	Session.save_path = "user://test_%s.json" % OS.get_process_id()
 	Session.settings_path = "user://test_ui_settings_%s.cfg" % OS.get_process_id()
+	Session.bindings.apply({})
+	Session.bindings.gamepad = false
+	Session.music_volume = 1.0
+	Session.sfx_volume = 1.0
+	Session.fullscreen = false
 	Session.set_language("en")
 	get_tree().create_timer(210.0, true, false, true).timeout.connect(func() -> void:
 		push_error("Integration test timeout")
@@ -255,6 +260,10 @@ func _run() -> void:
 	add_child(warden)
 	await warden.run(self,game)
 	warden.queue_free()
+	var polish := preload("res://tests/polish_suite.gd").new()
+	add_child(polish)
+	await polish.run(self,game)
+	polish.queue_free()
 	check(Repository.validate(Session.snapshot()), "Save schema validates")
 	check(Session.commit() == OK, "Second save safely replaces first")
 	var saved_room := Session.checkpoint_room
@@ -276,8 +285,9 @@ func _run() -> void:
 		if FileAccess.file_exists(Session.save_path + suffix):
 			DirAccess.remove_absolute(Session.save_path + suffix)
 	game.queue_free()
-	if FileAccess.file_exists(Session.settings_path):
-		DirAccess.remove_absolute(Session.settings_path)
+	for suffix: String in ["", ".tmp", ".bak"]:
+		if FileAccess.file_exists(Session.settings_path + suffix):
+			DirAccess.remove_absolute(Session.settings_path + suffix)
 	Audio.stop_all()
 	await frames(4)
 	if visual:

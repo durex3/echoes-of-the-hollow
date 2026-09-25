@@ -18,12 +18,23 @@
 | 静态规范 | 必备文件、UTF-8/结尾换行、资源路径、素材摘要、非法绝对路径 | static_check 输出 |
 | 引擎导入 | 原生 Godot 扫描、脚本解析、场景/资源导入 | artifacts/import.log |
 | 集成 | 真实主场景、角色、物理、命中、交互、存档与关卡可达 | artifacts/integration.log |
-| 跨进程 | 进程 A 写档/语言设置退出，进程 B 恢复并检查 | save_write/read.log、language_write/read.log |
-| 图形回归 | 实际 OpenGL、探索/战斗、首领、地图、冲刺、中英文界面与结局 | artifacts/visual.log、57 张 PNG |
+| 连续路线 | 两种支路顺序，从新游戏用实际输入走到结局，不传送、不无敌、不直接改进度 | artifacts/chapter_route.log、chapter_routes.json |
+| 跨进程 | 进程 A 写进度/语言/音量/窗口模式/按键退出，进程 B 恢复并检查 | save_write/read.log、language_write/read.log |
+| 图形回归 | 实际 OpenGL、战斗、地图、中英文界面、设置、重绑、确认与结局 | artifacts/visual.log、66 张 PNG |
 
 集成测试独立 `test_<pid>.json`，结束清理；跨进程用独立 test_cross_process.json。不访问正式 progress_v1.json。
 无窗口模式跳过音频播放；音频加载/退出由图形检查覆盖。自动检查无法证明听感、操作舒适度和实体手柄兼容。
 部分用例会重新定位角色以隔离特定行为；关键平台攀升使用模拟输入真实运行物理，明确区分两类测试。
+
+## 0.9.0 第一关打磨回归
+
+`tests/polish_suite.gd` 检查生命图标、冲刺状态、实际设置按钮/滑块、音量总线、重绑冲突、键盘/手柄取消、重绑后的实际跳跃、设备提示、设置错误显示、损坏备份恢复、范围/版本/重复映射拒绝、新游戏取消保留进度、地图进度/隐藏信息，以及普通铠甲每帧可见性/播放时长。图形模式另验证真实全屏与窗口切换。键盘和手柄事件由引擎注入，不等于实体手柄硬件验收。
+
+独立 `chapter_route.tscn` 读取坐标和敌人状态来决策，以 InputMap 行动连续完成 combat_first / wind_first 两条路线；不调用 revive、传送、直接伤害、发能力或写胜利标记。包含独立保存与结局恢复，失败或任一路线缺少完成标记都会阻止门禁通过。自动操作时长不是预计玩家游玩时长，方法和节点数据说明见 chapter_playthrough.md。
+
+设置测试使用 test_ui_settings_<pid>.cfg；路线用 test_route_<pid>.json/.cfg；跨进程用 test_language_cross_process.cfg，均不写玩家进度/设置。SettingsRepository 对预期的损坏 ConfigFile 解析同步屏蔽该解析器报错并返回失败/备份，不吞运行时或其他测试错误。
+
+新增图形58–66覆盖生命/冲刺、中文设置、滚动后的重绑、保存失败、覆盖确认、三印完整/缺印地图、英文设置和手柄HUD；查看实际图像，不能只以截图写入成功作为视觉通过依据。
 
 ## 0.2.0 战斗回归
 

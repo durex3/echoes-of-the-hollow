@@ -29,6 +29,15 @@ var boss_panel: VBoxContainer
 var boss_title: Label
 var boss_bar: ProgressBar
 var finale_saved := false
+var settings_panel: SettingsPanel
+var vitality_pips: VitalityPips
+var dash_label: Label
+var dash_status := "Dash locked"
+var controls: Label
+var map_progress: Label
+var map_objective: Label
+var boss_hint: Label
+var confirmation: ConfirmationDialog
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -58,7 +67,14 @@ func _ready() -> void:
 	left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	top.add_child(left)
 	health_label = label("VITALITY", 18, Color("e9d4a3"))
-	left.add_child(health_label)
+	var health_row := HBoxContainer.new()
+	left.add_child(health_row)
+	health_label.add_theme_font_size_override("font_size", 14)
+	health_row.add_child(health_label)
+	vitality_pips = VitalityPips.new()
+	health_row.add_child(vitality_pips)
+	dash_label = label("Dash locked", 11, Color("94e4ce"))
+	health_row.add_child(dash_label)
 	objective = label("Find the echo in the eastern ruins", 12, Color("b4c6c2"))
 	left.add_child(objective)
 	area_label = label("", 14, Color("94e4ce"))
@@ -76,7 +92,7 @@ func _ready() -> void:
 	prompt = label("", 16, Color("94e4ce"))
 	prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	bottom.add_child(prompt)
-	var controls := label("A/D Move  SPACE Jump  J Attack  K Dash  E Use  Q Map  ESC Pause  M Mute", 11, Color("9aafad"))
+	controls = label("", 11, Color("9aafad"))
 	controls.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	bottom.add_child(controls)
 	reward_notice = RewardNotice.new()
@@ -102,6 +118,9 @@ func _ready() -> void:
 	boss_bar.add_theme_stylebox_override("background",bar_background)
 	boss_bar.add_theme_stylebox_override("fill",bar_fill)
 	boss_panel.add_child(boss_bar)
+	boss_hint = label("", 12, Color("94e4ce"))
+	boss_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	boss_panel.add_child(boss_hint)
 	boss_panel.hide()
 	modal = PanelContainer.new()
 	modal.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
@@ -142,22 +161,42 @@ func _ready() -> void:
 	var map_title := label("PATHS OF THE HOLLOW",20,Color("efce8e"))
 	map_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	map_layout.add_child(map_title)
+	map_progress = label("", 12, Color("efce8e"))
+	map_progress.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	map_layout.add_child(map_progress)
+	map_objective = label("", 11, Color("94e4ce"))
+	map_objective.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	map_layout.add_child(map_objective)
 	world_map = WorldMap.new()
-	world_map.custom_minimum_size = Vector2(540,226)
+	world_map.custom_minimum_size = Vector2(540,202)
 	world_map.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	map_layout.add_child(world_map)
 	var close := Button.new()
 	close.name = "CloseMap"
-	close.text = "Return / Q or ESC"
+	close.text = "Back"
 	close.set_meta("source_text",close.text)
 	close.text = TextCatalog.text(close.text)
 	close.pressed.connect(func() -> void: map_closed.emit())
 	map_layout.add_child(close)
 	map_panel.hide()
+	settings_panel = SettingsPanel.new()
+	root.add_child(settings_panel)
+	settings_panel.closed.connect(func() -> void:
+		show_menu(menu_mode, menu_can_continue)
+		(menu.get_node("SettingsButton") as Button).grab_focus())
+	confirmation = ConfirmationDialog.new()
+	confirmation.title = TextCatalog.text("Start a new journey?")
+	confirmation.dialog_text = TextCatalog.text("New journey replaces progress on the next save.")
+	confirmation.confirmed.connect(func() -> void: start_requested.emit(false))
+	root.add_child(confirmation)
 	Session.language_changed.connect(_refresh_language)
+	Session.bindings.changed.connect(_refresh_bindings)
+	_refresh_bindings()
 
 func show_map(room_id: String) -> void:
 	world_map.configure(room_id,Session.visited,Session.checkpoint_room,Session.flags,Session.abilities)
+	map_progress.text = world_map.mark_summary()
+	map_objective.text = TextCatalog.text(JourneyProgress.objective(Session.abilities,Session.flags,Session.visited))
 	modal.hide()
 	map_panel.show()
 	(map_panel.find_child("CloseMap",true,false) as Button).grab_focus()
@@ -195,14 +234,15 @@ func show_menu(mode: String, can_continue := false) -> void:
 	if mode == "title":
 		if can_continue:
 			button("Continue from checkpoint", func() -> void: start_requested.emit(true))
-		button("New journey", func() -> void: start_requested.emit(false))
+		button("New journey", request_new_journey)
 		if can_continue:
 			menu.add_child(label("New journey replaces progress on the next save.", 12, Color("b4c6c2")))
 	else:
 		button("Continue exploring" if mode in ["win","finale"] else "Resume", func() -> void: resume_requested.emit())
-		if mode == "pause":
-			setting_toggle("Reduce screen shake", Session.reduce_shake, "reduce_shake")
-			setting_toggle("Reduce hit flashes", Session.reduce_flashes, "reduce_flashes")
+	button("Settings", func() -> void:
+		modal.hide()
+		settings_panel.open())
+	menu.get_child(menu.get_child_count() - 1).name = "SettingsButton"
 	button("Quit", func() -> void: quit_requested.emit())
 	var language_button := Button.new()
 	language_button.name = "LanguageButton"
@@ -235,11 +275,13 @@ func setting_toggle(text: String, value: bool, property: String) -> void:
 func show_hud() -> void:
 	hud.show()
 	modal.hide()
+	settings_panel.hide()
 
 func update_health(current: int, maximum: int) -> void:
 	health_current = current
 	health_maximum = maximum
-	health_label.text = TextCatalog.text("VITALITY") + "  " + "| ".repeat(current) + ". ".repeat(maximum - current)
+	health_label.text = TextCatalog.text("VITALITY") + " %d/%d" % [current, maximum]
+	vitality_pips.update_health(current, maximum)
 
 func update_progress() -> void:
 	set_text(objective,JourneyProgress.objective(Session.abilities,Session.flags,Session.visited))
@@ -265,7 +307,7 @@ func notify(message: String) -> void:
 	toast_left = 3.0
 
 func _process(delta: float) -> void:
-	reward_notice.advance(delta,get_tree().paused or modal.visible or map_panel.visible)
+	reward_notice.advance(delta,get_tree().paused or modal.visible or map_panel.visible or settings_panel.visible)
 	if toast_left > 0:
 		toast_left -= delta
 		if toast_left <= 0:
@@ -290,8 +332,38 @@ func _refresh_language() -> void:
 	reward_notice.refresh_language()
 	if modal.visible:
 		show_menu(menu_mode,menu_can_continue)
+	_refresh_bindings()
 
 func _toggle_language() -> void:
 	if Session.set_language("en" if Session.language == "zh_CN" else "zh_CN") != OK:
 		notify("Settings could not be saved")
 	(menu.get_node("LanguageButton") as Button).grab_focus()
+
+func request_new_journey() -> void:
+	if menu_can_continue:
+		confirmation.title = TextCatalog.text("Start a new journey?")
+		confirmation.dialog_text = TextCatalog.text("New journey replaces progress on the next save.")
+		confirmation.ok_button_text = TextCatalog.text("New journey")
+		confirmation.cancel_button_text = TextCatalog.text("Back")
+		confirmation.popup_centered(Vector2i(400, 140))
+	else:
+		start_requested.emit(false)
+
+func update_dash_status(value: String) -> void:
+	dash_status = value
+	dash_label.text = (Session.bindings.hint("dash") + " " if value != "Dash locked" else "") + TextCatalog.text(value)
+
+func update_boss_cue(value: String) -> void:
+	set_text(boss_hint, value)
+
+func _refresh_bindings() -> void:
+	_refresh_text(root_control)
+	update_health(health_current, health_maximum)
+	var hints: Array[String] = []
+	hints.append(("LS" if Session.bindings.gamepad else Session.bindings.hint("move_left") + "/" + Session.bindings.hint("move_right")) + " " + TextCatalog.text("Move"))
+	for action: String in ["jump", "attack", "interact", "world_map", "pause"]:
+		var index := InputBindings.ACTIONS.find(action)
+		hints.append(Session.bindings.hint(action) + " " + TextCatalog.text(InputBindings.TITLES[index]))
+	controls.text = "   ".join(hints)
+	update_dash_status(dash_status)
+	reward_notice.refresh_language()

@@ -2,6 +2,51 @@ class_name TextCatalog
 extends RefCounted
 ## Source English strings are stable translation keys; native Godot Translation backend.
 const ZH := {
+	"Settings": "设置",
+	"Back": "返回",
+	"Settings saved": "设置已保存",
+	"Music volume": "音乐音量",
+	"Sound volume": "音效音量",
+	"Fullscreen": "全屏显示",
+	"Move left": "向左移动",
+	"Move": "移动",
+	"Move right": "向右移动",
+	"Jump": "跳跃",
+	"Attack": "攻击",
+	"Dash": "冲刺",
+	"Interact": "交互",
+	"Map": "地图",
+	"Pause": "暂停",
+	"Mute": "静音",
+	"Reset bindings": "恢复默认按键",
+	"Select an action, then press a key or gamepad button. ESC cancels.": "选择动作后，按下键盘按键或手柄按钮。ESC 取消；暂停键保留。",
+	"Waiting for input / ESC to cancel": "等待输入 / ESC 或 Start 取消",
+	"Binding cancelled": "已取消修改按键",
+	"Use a single key without modifiers": "请使用单个按键，不要组合功能键",
+	"Reserved for menu navigation": "该按键保留用于菜单导航",
+	"Already assigned: ": "该按键已用于：",
+	"Unsupported input": "不支持此输入",
+	"Press a keyboard key or gamepad button": "请按键盘按键或手柄按钮",
+	"Start a new journey?": "开始新旅程？",
+	"Dash locked": "冲刺未解锁",
+	"Dash ready": "冲刺就绪",
+	"Dashing": "冲刺中",
+	"Dash unavailable": "冲刺暂不可用",
+	"Dash recharging": "冲刺恢复中",
+	"Dash: land to recharge": "冲刺：落地恢复",
+	"Warden awakens": "守门者苏醒",
+	"Phase II / Faster pursuit": "第二阶段 / 追击加速",
+	"RUSH / Jump over": "突进 / 起跳躲避",
+	"SWEEP / Step back or behind": "横扫 / 退开或绕后",
+	"RECOVERY / Strike now": "收招 / 趁机反击",
+	"Watchers seal": "守望者封印",
+	"Ink seal": "墨文封印",
+	"Wind beacon": "风信标",
+	"Double jump": "二段跳",
+	"Wind dash": "风之冲刺",
+	"Three marks": "三枚印记",
+	"NEXT": "目标",
+	"Locked: ": "锁门条件：",
 	"Hollow restored / Explore the paths you opened": "空谷已复苏 / 继续探索已开启的道路",
 	"Warden defeated / Restore the final echo": "守门者已倒下 / 唤醒最终回响",
 	"Antechamber reached / Face the Hollow Warden": "已抵达回响前庭 / 挑战空谷守门者",
@@ -143,5 +188,8 @@ static func install() -> void:
 		translation.add_message(key,ZH[key])
 	TranslationServer.add_translation(translation)
 
+static var input_formatter: Callable
+
 static func text(source: String) -> String:
-	return String(TranslationServer.translate(source))
+	var translated := String(TranslationServer.translate(source))
+	return input_formatter.call(source, translated) if input_formatter.is_valid() else translated

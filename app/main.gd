@@ -24,6 +24,8 @@ var map_return_paused := false
 var map_return_menu := "pause"
 
 func _ready() -> void:
+	if get_parent() == get_tree().root:
+		Session.apply_display()
 	ui.start_requested.connect(start_game)
 	ui.resume_requested.connect(resume)
 	ui.map_closed.connect(close_map)
@@ -41,6 +43,7 @@ func start_game(load_save: bool) -> void:
 	player = PLAYER_SCENE.instantiate() as Player
 	add_child(player)
 	player.health.changed.connect(ui.update_health)
+	player.dash_status_changed.connect(ui.update_dash_status)
 	player.died.connect(_on_player_died)
 	player.impact.connect($Feedback.show_impact)
 	running = true
@@ -76,6 +79,7 @@ func load_room(room_id: String, spawn: String) -> void:
 			enemy.awakened.connect(func() -> void: ui.show_boss(enemy.health.current,enemy.health.maximum))
 			enemy.health.changed.connect(ui.update_boss_health)
 			enemy.phase_changed.connect(ui.update_boss_phase)
+			enemy.cue_changed.connect(ui.update_boss_cue)
 			enemy.impact.connect($Feedback.show_impact.bind(false))
 			enemy.defeated.connect(_on_warden_defeated.bind(room.get_instance_id()),CONNECT_DEFERRED)
 		if enemy is DoomScribe:
@@ -106,6 +110,15 @@ func _process(_delta: float) -> void:
 			camera.position = player.position + Vector2(player.facing * 45, -65)
 
 func _input(event: InputEvent) -> void:
+	Session.bindings.observe(event)
+	if ui.confirmation.visible:
+		return
+	if ui.settings_panel.visible:
+		var capturing := not ui.settings_panel.capture_action.is_empty()
+		ui.settings_panel.handle_input(event)
+		if capturing or event.is_action_pressed("pause") or event.is_action_pressed("ui_cancel"):
+			get_viewport().set_input_as_handled()
+		return
 	if event.is_echo():
 		return
 	if event.is_action_pressed("mute"):
@@ -249,3 +262,4 @@ func _on_warden_defeated(room_instance: int) -> void:
 	room.update_progress()
 	player.health.restore_full()
 	_save_reward("warden_defeated")
+	Audio.play_sound("ability_acquire", 0.8, -2.0)

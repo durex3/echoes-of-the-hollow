@@ -28,6 +28,9 @@ function Invoke-CheckedGodot {
 
 Invoke-CheckedGodot -Name 'import' -Arguments @('--headless','--editor','--import')
 Invoke-CheckedGodot -Name 'integration' -Arguments @('--headless','--fixed-fps','60','res://tests/test_runner.tscn')
+Invoke-CheckedGodot -Name 'chapter_route' -Arguments @('--headless','--fixed-fps','60','res://tests/chapter_route.tscn')
+$routeLog = Get-Content -LiteralPath (Join-Path $artifacts 'chapter_route.log') -Raw
+if ($routeLog -notmatch 'ROUTE_PASS: combat_first' -or $routeLog -notmatch 'ROUTE_PASS: wind_first') { throw 'Both continuous chapter routes must complete.' }
 Invoke-CheckedGodot -Name 'save_write' -Arguments @('--headless','--script','res://tests/save_process.gd','--','--write')
 Invoke-CheckedGodot -Name 'save_read' -Arguments @('--headless','--script','res://tests/save_process.gd','--','--read')
 Invoke-CheckedGodot -Name 'language_write' -Arguments @('--headless','--script','res://tests/settings_process.gd','--','--write')

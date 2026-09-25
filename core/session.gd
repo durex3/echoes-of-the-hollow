@@ -3,6 +3,7 @@ extends Node
 
 signal progress_changed
 signal language_changed
+signal settings_changed
 const Repository := preload("res://core/save_repository.gd")
 var save_path := "user://progress_v1.json"
 var checkpoint_room := "forest"
@@ -15,9 +16,15 @@ var reduce_shake := false
 var reduce_flashes := false
 var settings_path := "user://settings.cfg"
 var language := "en"
+var music_volume := 1.0
+var sfx_volume := 1.0
+var fullscreen := false
+var bindings := InputBindings.new()
 
 func _ready() -> void:
 	TextCatalog.install()
+	bindings.capture_defaults()
+	TextCatalog.input_formatter = bindings.format_text
 	load_settings()
 
 func snapshot() -> Dictionary:
@@ -69,14 +76,23 @@ func set_flag(flag: String) -> void:
 		progress_changed.emit()
 
 func load_settings() -> void:
-	var config := ConfigFile.new()
-	if config.load(settings_path) == OK:
+	var config := SettingsRepository.read(settings_path)
+	if config != null:
 		reduce_shake = bool(config.get_value("accessibility", "reduce_shake", false))
 		reduce_flashes = bool(config.get_value("accessibility", "reduce_flashes", false))
 		var saved_language := str(config.get_value("interface", "language", "en"))
 		language = saved_language if saved_language in ["en", "zh_CN"] else "en"
+		music_volume = float(config.get_value("audio", "music", 1.0))
+		sfx_volume = float(config.get_value("audio", "sfx", 1.0))
+		fullscreen = bool(config.get_value("display", "fullscreen", false))
+		bindings.apply(config.get_value("input", "bindings", {}))
 	TranslationServer.set_locale(language)
 	language_changed.emit()
+	settings_changed.emit()
+
+func apply_display() -> void:
+	if DisplayServer.get_name() != "headless":
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if fullscreen else DisplayServer.WINDOW_MODE_WINDOWED)
 
 func set_language(value: String) -> Error:
 	if value not in ["en", "zh_CN"]:
@@ -88,7 +104,13 @@ func set_language(value: String) -> Error:
 
 func save_settings() -> Error:
 	var config := ConfigFile.new()
+	config.set_value("meta", "version", 1)
 	config.set_value("accessibility", "reduce_shake", reduce_shake)
 	config.set_value("accessibility", "reduce_flashes", reduce_flashes)
 	config.set_value("interface", "language", language)
-	return config.save(settings_path)
+	config.set_value("audio", "music", music_volume)
+	config.set_value("audio", "sfx", sfx_volume)
+	config.set_value("display", "fullscreen", fullscreen)
+	config.set_value("input", "bindings", bindings.overrides)
+	settings_changed.emit()
+	return SettingsRepository.write(settings_path, config)
