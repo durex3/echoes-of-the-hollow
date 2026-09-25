@@ -140,5 +140,19 @@
     "source_relative_path": "Sans/LICENSE",
     "sha256": "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2",
     "license_status": "Original SIL Open Font License 1.1 text"
+  },
+  {
+    "file": "assets/props/door_and_switch.png",
+    "source_pack": "Godot 4《类银河恶魔城锻造坊》资源目录(1)",
+    "source_relative_path": "ch_03_game_systems/ch_03_game_systems/sprites/door_and_switch.png",
+    "sha256": "8026ed09e94877c18680c9a4a2a7ab8dec35d3d732c3e0118c34db0242f58954",
+    "license_status": "Not supplied in extracted chapter pack; verify before distribution."
+  },
+  {
+    "file": "assets/props/props_destructible.png",
+    "source_pack": "Godot 4《类银河恶魔城锻造坊》资源目录(1)",
+    "source_relative_path": "ch_04_player_abilities/ch_04_player_abilities/sprites/props_destructible.png",
+    "sha256": "d982a61e8a8dbea98840ae34f5ec5068edc1d1f39c99ff96901d62a3642a0cf2",
+    "license_status": "Not supplied in extracted chapter pack; verify before distribution."
   }
 ]

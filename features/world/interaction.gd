@@ -35,6 +35,10 @@ func _draw() -> void:
 		"checkpoint":
 			draw_circle(Vector2(0, -19), 26 + sin(clock * 2) * 2, Color(0.35, 0.9, 0.75, 0.07))
 		"exit":
+			if has_node("ForgeDoor"):
+				var tint := Color("efb268") if not locked_message(Session.abilities,Session.flags).is_empty() else mint
+				draw_circle(Vector2(0,-77),3,tint)
+				return
 			draw_style_box(_door_style(), Rect2(-21, -70, 42, 70))
 			draw_line(Vector2(-16, -66), Vector2(-16, -4), mint, 2)
 			draw_line(Vector2(16, -66), Vector2(16, -4), mint, 2)

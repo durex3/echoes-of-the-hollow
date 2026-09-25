@@ -1,0 +1,46 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/environment/forest.png" id="1_d7g4r"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pu2cs"]
+atlas = ExtResource("1_d7g4r")
+region = Rect2(512, 256, 32, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n2uij"]
+atlas = ExtResource("1_d7g4r")
+region = Rect2(544, 256, 32, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o4sut"]
+atlas = ExtResource("1_d7g4r")
+region = Rect2(576, 256, 32, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yea7h"]
+atlas = ExtResource("1_d7g4r")
+region = Rect2(608, 256, 32, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b582f"]
+atlas = ExtResource("1_d7g4r")
+region = Rect2(640, 256, 32, 64)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pu2cs")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_n2uij")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_o4sut")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yea7h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b582f")
+}],
+"loop": 1,
+"name": &"burn",
+"speed": 8.0
+}]
