@@ -1140,90 +1140,99 @@ centered = false
 region_enabled = true
 region_rect = Rect2(0, 256, 192, 224)
 
-[node name="Water" type="Sprite2D" parent="CastleArt" unique_id=442755944]
+[node name="Water00" type="Sprite2D" parent="CastleArt" unique_id=442755944]
 modulate = Color(0.28, 0.55, 0.59, 0.6)
-position = Vector2(0, 416)
-scale = Vector2(4, 1)
+position = Vector2(0, 448)
 texture = ExtResource("2_28qw1")
+scale = Vector2(2, 1)
 centered = false
 region_enabled = true
-region_rect = Rect2(992, 384, 32, 96)
+region_rect = Rect2(928, 384, 64, 96)
 
-[node name="@Sprite2D@6" type="Sprite2D" parent="CastleArt" unique_id=1705813061]
+[node name="Water01" type="Sprite2D" parent="CastleArt" unique_id=1705813061]
 modulate = Color(0.28, 0.55, 0.59, 0.6)
-position = Vector2(128, 416)
+position = Vector2(128, 448)
 texture = ExtResource("2_28qw1")
+scale = Vector2(2, 1)
 centered = false
 region_enabled = true
-region_rect = Rect2(896, 384, 128, 128)
+region_rect = Rect2(928, 384, 64, 96)
 
-[node name="@Sprite2D@7" type="Sprite2D" parent="CastleArt" unique_id=1208414278]
+[node name="Water02" type="Sprite2D" parent="CastleArt" unique_id=1208414278]
 modulate = Color(0.28, 0.55, 0.59, 0.6)
-position = Vector2(256, 416)
+position = Vector2(256, 448)
 texture = ExtResource("2_28qw1")
+scale = Vector2(2, 1)
 centered = false
 region_enabled = true
-region_rect = Rect2(896, 384, 128, 128)
+region_rect = Rect2(928, 384, 64, 96)
 
-[node name="@Sprite2D@8" type="Sprite2D" parent="CastleArt" unique_id=1387375675]
+[node name="Water03" type="Sprite2D" parent="CastleArt" unique_id=1387375675]
 modulate = Color(0.28, 0.55, 0.59, 0.6)
-position = Vector2(384, 416)
+position = Vector2(384, 448)
 texture = ExtResource("2_28qw1")
+scale = Vector2(2, 1)
 centered = false
 region_enabled = true
-region_rect = Rect2(896, 384, 128, 128)
+region_rect = Rect2(928, 384, 64, 96)
 
-[node name="@Sprite2D@9" type="Sprite2D" parent="CastleArt" unique_id=1894198242]
+[node name="Water04" type="Sprite2D" parent="CastleArt" unique_id=1894198242]
 modulate = Color(0.28, 0.55, 0.59, 0.6)
-position = Vector2(512, 416)
+position = Vector2(512, 448)
 texture = ExtResource("2_28qw1")
+scale = Vector2(2, 1)
 centered = false
 region_enabled = true
-region_rect = Rect2(896, 384, 128, 128)
+region_rect = Rect2(928, 384, 64, 96)
 
-[node name="@Sprite2D@10" type="Sprite2D" parent="CastleArt" unique_id=660897163]
+[node name="Water05" type="Sprite2D" parent="CastleArt" unique_id=660897163]
 modulate = Color(0.28, 0.55, 0.59, 0.6)
-position = Vector2(640, 416)
+position = Vector2(640, 448)
 texture = ExtResource("2_28qw1")
+scale = Vector2(2, 1)
 centered = false
 region_enabled = true
-region_rect = Rect2(896, 384, 128, 128)
+region_rect = Rect2(928, 384, 64, 96)
 
-[node name="@Sprite2D@11" type="Sprite2D" parent="CastleArt" unique_id=1973348492]
+[node name="Water06" type="Sprite2D" parent="CastleArt" unique_id=1973348492]
 modulate = Color(0.28, 0.55, 0.59, 0.6)
-position = Vector2(768, 416)
+position = Vector2(768, 448)
 texture = ExtResource("2_28qw1")
+scale = Vector2(2, 1)
 centered = false
 region_enabled = true
-region_rect = Rect2(896, 384, 128, 128)
+region_rect = Rect2(928, 384, 64, 96)
 
-[node name="@Sprite2D@12" type="Sprite2D" parent="CastleArt" unique_id=1293613124]
+[node name="Water07" type="Sprite2D" parent="CastleArt" unique_id=1293613124]
 modulate = Color(0.28, 0.55, 0.59, 0.6)
-position = Vector2(896, 416)
+position = Vector2(896, 448)
 texture = ExtResource("2_28qw1")
+scale = Vector2(2, 1)
 centered = false
 region_enabled = true
-region_rect = Rect2(896, 384, 128, 128)
+region_rect = Rect2(928, 384, 64, 96)
 
-[node name="@Sprite2D@13" type="Sprite2D" parent="CastleArt" unique_id=1344875612]
+[node name="Water08" type="Sprite2D" parent="CastleArt" unique_id=1344875612]
 modulate = Color(0.28, 0.55, 0.59, 0.6)
-position = Vector2(1024, 416)
+position = Vector2(1024, 448)
 texture = ExtResource("2_28qw1")
+scale = Vector2(2, 1)
 centered = false
 region_enabled = true
-region_rect = Rect2(896, 384, 128, 128)
+region_rect = Rect2(928, 384, 64, 96)
 
-[node name="@Sprite2D@14" type="Sprite2D" parent="CastleArt" unique_id=326473980]
+[node name="Water09" type="Sprite2D" parent="CastleArt" unique_id=326473980]
 modulate = Color(0.28, 0.55, 0.59, 0.6)
-position = Vector2(1152, 416)
+position = Vector2(1152, 448)
 texture = ExtResource("2_28qw1")
+scale = Vector2(2, 1)
 centered = false
 region_enabled = true
-region_rect = Rect2(896, 384, 128, 128)
+region_rect = Rect2(928, 384, 64, 96)
 
 [node name="Crate" type="Sprite2D" parent="CastleArt" unique_id=1361368721]
 modulate = Color(0.75, 0.8, 0.85, 1)
-position = Vector2(220, 436)
+position = Vector2(220, 444)
 texture = ExtResource("3_l7r72")
 centered = false
 region_enabled = true
@@ -1231,7 +1240,7 @@ region_rect = Rect2(52, 28, 44, 36)
 
 [node name="Barrel" type="Sprite2D" parent="CastleArt" unique_id=1903786479]
 modulate = Color(0.75, 0.8, 0.85, 1)
-position = Vector2(266, 444)
+position = Vector2(266, 452)
 texture = ExtResource("3_l7r72")
 centered = false
 region_enabled = true
@@ -1239,7 +1248,7 @@ region_rect = Rect2(108, 36, 22, 28)
 
 [node name="@Sprite2D@15" type="Sprite2D" parent="CastleArt" unique_id=1033737390]
 modulate = Color(0.75, 0.8, 0.85, 1)
-position = Vector2(906, 436)
+position = Vector2(906, 444)
 texture = ExtResource("3_l7r72")
 centered = false
 region_enabled = true
@@ -1247,7 +1256,7 @@ region_rect = Rect2(52, 28, 44, 36)
 
 [node name="@Sprite2D@16" type="Sprite2D" parent="CastleArt" unique_id=2105874812]
 modulate = Color(0.75, 0.8, 0.85, 1)
-position = Vector2(952, 444)
+position = Vector2(952, 452)
 texture = ExtResource("3_l7r72")
 centered = false
 region_enabled = true
@@ -1264,6 +1273,83 @@ position = Vector2(1050, 448)
 sprite_frames = SubResource("SpriteFrames_ajkhe")
 animation = &"burn"
 autoplay = "burn"
+
+[node name="DeckBacking00" type="Sprite2D" parent="CastleArt"]
+position = Vector2(224, 480)
+texture = ExtResource("2_28qw1")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="DeckBacking01" type="Sprite2D" parent="CastleArt"]
+position = Vector2(256, 480)
+texture = ExtResource("2_28qw1")
+centered = false
+region_enabled = true
+region_rect = Rect2(832, 64, 32, 32)
+
+[node name="DeckBacking02" type="Sprite2D" parent="CastleArt"]
+position = Vector2(288, 480)
+texture = ExtResource("2_28qw1")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="DeckBacking03" type="Sprite2D" parent="CastleArt"]
+position = Vector2(320, 480)
+texture = ExtResource("2_28qw1")
+centered = false
+region_enabled = true
+region_rect = Rect2(832, 64, 32, 32)
+
+[node name="DeckBacking04" type="Sprite2D" parent="CastleArt"]
+position = Vector2(352, 480)
+texture = ExtResource("2_28qw1")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="DeckBacking05" type="Sprite2D" parent="CastleArt"]
+position = Vector2(384, 480)
+texture = ExtResource("2_28qw1")
+centered = false
+region_enabled = true
+region_rect = Rect2(832, 64, 32, 32)
+
+[node name="DeckBacking06" type="Sprite2D" parent="CastleArt"]
+position = Vector2(416, 480)
+texture = ExtResource("2_28qw1")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="DeckBacking07" type="Sprite2D" parent="CastleArt"]
+position = Vector2(448, 480)
+texture = ExtResource("2_28qw1")
+centered = false
+region_enabled = true
+region_rect = Rect2(832, 64, 32, 32)
+
+[node name="DeckBacking08" type="Sprite2D" parent="CastleArt"]
+position = Vector2(480, 480)
+texture = ExtResource("2_28qw1")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="DeckBacking09" type="Sprite2D" parent="CastleArt"]
+position = Vector2(512, 480)
+texture = ExtResource("2_28qw1")
+centered = false
+region_enabled = true
+region_rect = Rect2(832, 64, 32, 32)
+
+[node name="DeckBacking10" type="Sprite2D" parent="CastleArt"]
+position = Vector2(544, 480)
+texture = ExtResource("2_28qw1")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
 
 [node name="Terrain" type="TileMapLayer" parent="." unique_id=81977782]
 tile_map_data = PackedByteArray("AAAAAA8AAAAZAAAAAAABAA8AAAAaAAAAAAACAA8AAAAZAAAAAAADAA8AAAAaAAAAAAAEAA8AAAAZAAAAAAAFAA8AAAAaAAAAAAAGAA8AAAAZAAAAAAAHAA8AAAASAAYAAAAIAA8AAAARAAYAAAAJAA8AAAASAAYAAAAKAA8AAAARAAYAAAALAA8AAAASAAYAAAAMAA8AAAARAAYAAAANAA8AAAASAAYAAAAOAA8AAAARAAYAAAAPAA8AAAASAAYAAAAQAA8AAAARAAYAAAARAA8AAAASAAYAAAASAA8AAAAZAAAAAAATAA8AAAAaAAAAAAAUAA8AAAAZAAAAAAAVAA8AAAAaAAAAAAAWAA8AAAAZAAAAAAAXAA8AAAAaAAAAAAAYAA8AAAAZAAAAAAAZAA8AAAAaAAAAAAAaAA8AAAAZAAAAAAAbAA8AAAAaAAAAAAAcAA8AAAAZAAAAAAAdAA8AAAAaAAAAAAAeAA8AAAAZAAAAAAAfAA8AAAAaAAAAAAAgAA8AAAAZAAAAAAAhAA8AAAAaAAAAAAAiAA8AAAAZAAAAAAAjAA8AAAAaAAAAAAAkAA8AAAAZAAAAAAAlAA8AAAAaAAAAAAAmAA8AAAAZAAAAAAAnAA8AAAAaAAAAAAAAABAAAAAZAAIAAAABABAAAAAaAAIAAAACABAAAAAZAAIAAAADABAAAAAaAAIAAAAEABAAAAAZAAIAAAAFABAAAAAaAAIAAAAGABAAAAAZAAIAAAAHABAAAAAaAAIAAAAIABAAAAAZAAIAAAAJABAAAAAaAAIAAAAKABAAAAAZAAIAAAALABAAAAAaAAIAAAAMABAAAAAZAAIAAAANABAAAAAaAAIAAAAOABAAAAAZAAIAAAAPABAAAAAaAAIAAAAQABAAAAAZAAIAAAARABAAAAAaAAIAAAASABAAAAAZAAIAAAATABAAAAAaAAIAAAAUABAAAAAZAAIAAAAVABAAAAAaAAIAAAAWABAAAAAZAAIAAAAXABAAAAAaAAIAAAAYABAAAAAZAAIAAAAZABAAAAAaAAIAAAAaABAAAAAZAAIAAAAbABAAAAAaAAIAAAAcABAAAAAZAAIAAAAdABAAAAAaAAIAAAAeABAAAAAZAAIAAAAfABAAAAAaAAIAAAAgABAAAAAZAAIAAAAhABAAAAAaAAIAAAAiABAAAAAZAAIAAAAjABAAAAAaAAIAAAAkABAAAAAZAAIAAAAlABAAAAAaAAIAAAAmABAAAAAZAAIAAAAnABAAAAAaAAIAAAAAABEAAAAZAAMAAAABABEAAAAaAAMAAAACABEAAAAZAAMAAAADABEAAAAaAAMAAAAEABEAAAAZAAMAAAAFABEAAAAaAAMAAAAGABEAAAAZAAMAAAAHABEAAAAaAAMAAAAIABEAAAAZAAMAAAAJABEAAAAaAAMAAAAKABEAAAAZAAMAAAALABEAAAAaAAMAAAAMABEAAAAZAAMAAAANABEAAAAaAAMAAAAOABEAAAAZAAMAAAAPABEAAAAaAAMAAAAQABEAAAAZAAMAAAARABEAAAAaAAMAAAASABEAAAAZAAMAAAATABEAAAAaAAMAAAAUABEAAAAZAAMAAAAVABEAAAAaAAMAAAAWABEAAAAZAAMAAAAXABEAAAAaAAMAAAAYABEAAAAZAAMAAAAZABEAAAAaAAMAAAAaABEAAAAZAAMAAAAbABEAAAAaAAMAAAAcABEAAAAZAAMAAAAdABEAAAAaAAMAAAAeABEAAAAZAAMAAAAfABEAAAAaAAMAAAAgABEAAAAZAAMAAAAhABEAAAAaAAMAAAAiABEAAAAZAAMAAAAjABEAAAAaAAMAAAAkABEAAAAZAAMAAAAlABEAAAAaAAMAAAAmABEAAAAZAAMAAAAnABEAAAAaAAMAAAAIAAwA//////////8JAAwA//////////8KAAwA//////////8LAAwA//////////8MAAwA//////////8NAAwA//////////8OAAwA//////////8IAA0A//////////8JAA0A//////////8KAA0A//////////8LAA0A//////////8MAA0A//////////8NAA0A//////////8OAA0A//////////8LAAcA//////////8MAAcA//////////8NAAcA//////////8OAAcA//////////8PAAcA//////////8LAAgA//////////8MAAgA//////////8NAAgA//////////8OAAgA//////////8PAAgA//////////8WAAwA//////////8XAAwA//////////8YAAwA//////////8ZAAwA//////////8WAA0A//////////8XAA0A//////////8YAA0A//////////8ZAA0A//////////8=")

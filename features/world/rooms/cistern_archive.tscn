@@ -1148,7 +1148,7 @@ region_rect = Rect2(0, 256, 192, 224)
 
 [node name="Crate" type="Sprite2D" parent="CastleArt" unique_id=1544243401]
 modulate = Color(0.75, 0.8, 0.85, 1)
-position = Vector2(226, 436)
+position = Vector2(226, 444)
 texture = ExtResource("3_7hvy6")
 centered = false
 region_enabled = true
@@ -1156,7 +1156,7 @@ region_rect = Rect2(52, 28, 44, 36)
 
 [node name="Barrel" type="Sprite2D" parent="CastleArt" unique_id=1220672943]
 modulate = Color(0.75, 0.8, 0.85, 1)
-position = Vector2(272, 444)
+position = Vector2(272, 452)
 texture = ExtResource("3_7hvy6")
 centered = false
 region_enabled = true
@@ -1164,7 +1164,7 @@ region_rect = Rect2(108, 36, 22, 28)
 
 [node name="@Sprite2D@34" type="Sprite2D" parent="CastleArt" unique_id=1711946556]
 modulate = Color(0.75, 0.8, 0.85, 1)
-position = Vector2(514, 436)
+position = Vector2(514, 444)
 texture = ExtResource("3_7hvy6")
 centered = false
 region_enabled = true
@@ -1172,7 +1172,7 @@ region_rect = Rect2(52, 28, 44, 36)
 
 [node name="@Sprite2D@35" type="Sprite2D" parent="CastleArt" unique_id=478345495]
 modulate = Color(0.75, 0.8, 0.85, 1)
-position = Vector2(560, 444)
+position = Vector2(560, 452)
 texture = ExtResource("3_7hvy6")
 centered = false
 region_enabled = true
@@ -1180,7 +1180,7 @@ region_rect = Rect2(108, 36, 22, 28)
 
 [node name="@Sprite2D@36" type="Sprite2D" parent="CastleArt" unique_id=921443060]
 modulate = Color(0.75, 0.8, 0.85, 1)
-position = Vector2(918, 436)
+position = Vector2(918, 444)
 texture = ExtResource("3_7hvy6")
 centered = false
 region_enabled = true
@@ -1188,7 +1188,7 @@ region_rect = Rect2(52, 28, 44, 36)
 
 [node name="@Sprite2D@37" type="Sprite2D" parent="CastleArt" unique_id=851273320]
 modulate = Color(0.75, 0.8, 0.85, 1)
-position = Vector2(964, 444)
+position = Vector2(964, 452)
 texture = ExtResource("3_7hvy6")
 centered = false
 region_enabled = true

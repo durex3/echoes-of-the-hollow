@@ -22,6 +22,7 @@ const ZH := {
 	"Steam: amber warns, white burns. Cross on green.": "蒸汽：琥珀预警、白色喷发；绿色停歇时通过。",
 	"Two branches, two valve seals. Return here to open the core.": "探索两条支路，收集两枚阀印，再回来开启炉心。",
 	"Climb the dry ledges. Wait for the steam to settle.": "沿干燥台阶向上，等待蒸汽停歇再前进。",
+	"Winged chest: jump the bite, strike after it lands.": "飞翼宝箱蓄力后扑咬：跳过扑击，落地后反击。",
 	"Dry stone blocks ink. Fight away from the steam.": "石台可以挡住墨弹，远离喷口再交战。",
 	"Draw guardians onto dry ground. Restore the core after battle.": "把敌人引向干燥地面，清场后唤醒炉心。",
 	"Missing flow seal / Explore Valve Gallery": "缺少流量阀印 / 探索阀门长廊",

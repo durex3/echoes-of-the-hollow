@@ -56,9 +56,11 @@ func _ready() -> void:
 			"ember_quay":
 				for x: int in [64,384,704,1024]:
 					arch(room,root,Vector2(x,256),Color(0.54,0.68,0.71))
-				water(room,root,416,Color(0.28,0.55,0.59,0.60))
-				props(room,root,Vector2(242,472))
-				props(room,root,Vector2(928,472))
+				water(room,root,448,Color(0.28,0.55,0.59,0.60))
+				for x: int in range(7,18):
+					sprite(room,root,"DeckBacking%d" % x,Vector2(x*32,480),Rect2(800+posmod(x,2)*32,64,32,32),Color.WHITE)
+				props(room,root,Vector2(242,480))
+				props(room,root,Vector2(928,480))
 				brazier(room,root,Vector2(560,480))
 				brazier(room,root,Vector2(1050,480))
 			"valve_gallery":
@@ -75,7 +77,7 @@ func _ready() -> void:
 				for x: int in [32,288,576,928]:
 					arch(room,root,Vector2(x,224),Color(0.48,0.52,0.62))
 				for x: int in [248,536,940]:
-					props(room,root,Vector2(x,472))
+					props(room,root,Vector2(x,480))
 				brazier(room,root,Vector2(488,480))
 				brazier(room,root,Vector2(980,480))
 			"furnace_core":
@@ -165,8 +167,8 @@ func arch(room: Node, parent: Node, at: Vector2, tint: Color) -> void:
 
 func water(room: Node, parent: Node, y: float, tint: Color) -> void:
 	for x: int in range(0,1280,128):
-		var surface := sprite(room,parent,"Water",Vector2(x,y),Rect2(992,384,32,96),tint)
-		surface.scale.x = 4
+		var surface := sprite(room,parent,"Water%d" % x,Vector2(x,y),Rect2(928,384,64,96),tint)
+		surface.scale.x = 2
 
 func brazier(room: Node, parent: Node, at: Vector2, zoom := 1.0) -> void:
 	var result := AnimatedSprite2D.new()

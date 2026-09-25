@@ -73,4 +73,10 @@ DoomScribe 原图朝右，面向左时 flip_h=true。弹体视觉跟随 directio
 修改原生 SpriteFrames 后执行 `tools/check.ps1 -Visual`，检查 `06_sword_active`、`08_armor_warning`、`09_counterattack`、`13_armor_strike`。
 更改动作帧数量时同步相应播放速度计算；更改阶段时长须复测命中、方向锁定和反击窗口。
 自动截图不覆盖每一帧的动态衔接；完整动作观感仍需人工试玩。
+
+## 飞翼宝箱（0.11.0）
+
+同包dchestspritesheet.png复制为winged_chest.png；386×264原图，按64×66、每行6格读取，末尾2px不用。待机0–5，预警12/13/14，张嘴扑咬15/18，收招19–22；17/23为空白，禁止入列。均8fps，动作状态切换重新起播；死亡使用收招贴图淡出0.35s，没有伪称原图存在死亡动画。原生SpriteFrames独立可编辑。
+
+Sprite位于(0,-22)，原始1倍最近邻；状态与攻击判定由物理计时管理，视觉翻转不改变碰撞。图形检查81–84覆盖中文教学、方向锁定预警、张嘴扑咬和收招；组件回归另验证真实跳跃躲咬、实际剑击打断和清场领奖。
 远程动作另看 `16_scribe_warning`、`17_ink_dodge`、`19_mixed_encounter`；必须同时复测锁定瞄准、受击取消与飞行碰撞。

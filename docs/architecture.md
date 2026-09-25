@@ -40,6 +40,7 @@ flowchart TD
 | LivingArmor / ArmorConfig | 七状态 FSM、目标视线、方向锁定、可调攻击/感知参数 | 房间切换和存档 |
 | HollowWarden / WardenConfig | 九状态首领 FSM、交替攻击、半血阶段、独立数值 | 保存进度、打开结局、控制镜头 |
 | DoomScribe / ScribeConfig | 六状态 FSM、视线、锁定瞄准、可打断施法、数值 | 管理弹体生命周期 |
+| WingedChest / ChestConfig | 五状态FSM、视线、方向锁定、短距扑咬、墙/边缘保护 | 全局进度、奖励或存档 |
 | InkBolt | 半径 5px ShapeCast2D 扫掠、一次命中、寿命、释放 | 追踪玩家、保存自己 |
 | CombatFeedback / ImpactEffect | 命中信号驱动短暂粒子、镜头偏移和声音 | 改变物理位置、全局时间 |
 | GameRoom | 房间元数据、出生点、附近交互、原生地图 | 直接持久化 |

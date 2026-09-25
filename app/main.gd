@@ -78,6 +78,9 @@ func load_room(room_id: String, spawn: String) -> void:
 	room.prompt_changed.connect(func(message: String) -> void: ui.set_text(ui.prompt,message))
 	room.update_progress()
 	for enemy: Node in room.get_node("Enemies").get_children():
+		if enemy is WingedChest:
+			enemy.target = player
+			enemy.impact.connect($Feedback.show_impact.bind(false))
 		if enemy is HollowWarden:
 			enemy.target = player
 			enemy.awakened.connect(func() -> void: ui.show_boss(enemy.health.current,enemy.health.maximum))

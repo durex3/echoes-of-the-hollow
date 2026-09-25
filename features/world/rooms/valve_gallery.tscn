@@ -3,8 +3,8 @@
 [ext_resource type="Script" path="res://features/world/room.gd" id="1_g41s6"]
 [ext_resource type="Texture2D" path="res://assets/environment/forest.png" id="2_w2j7n"]
 [ext_resource type="TileSet" path="res://features/world/forest_tileset.tres" id="4_lkjg7"]
-[ext_resource type="PackedScene" path="res://features/enemies/slime.tscn" id="5_siahr"]
-[ext_resource type="Script" path="res://features/enemies/slime.gd" id="6_ho8lh"]
+[ext_resource type="PackedScene" path="res://features/enemies/winged_chest.tscn" id="5_siahr"]
+[ext_resource type="Script" path="res://features/enemies/winged_chest.gd" id="6_ho8lh"]
 [ext_resource type="Texture2D" path="res://assets/props/door_and_switch.png" id="7_lkjg7"]
 [ext_resource type="Script" path="res://features/world/interaction.gd" id="7_ulj2d"]
 [ext_resource type="SpriteFrames" path="res://features/world/checkpoint_frames.tres" id="8_61d30"]
@@ -1147,86 +1147,95 @@ tile_map_data = PackedByteArray("AAAAAAkAAAARAAYAAAABAAkAAAASAAYAAAACAAkAAAARAAY
 tile_set = SubResource("TileSet_88lo6")
 collision_enabled = false
 
-[node name="Water" type="Sprite2D" parent="CastleArt" unique_id=1429320078]
+[node name="Water00" type="Sprite2D" parent="CastleArt" unique_id=1429320078]
 modulate = Color(0.24, 0.45, 0.5, 0.7)
 position = Vector2(0, 512)
-scale = Vector2(4, 1)
 texture = ExtResource("2_w2j7n")
+scale = Vector2(2, 1)
 centered = false
 region_enabled = true
-region_rect = Rect2(992, 384, 32, 96)
+region_rect = Rect2(928, 384, 64, 96)
 
-[node name="@Sprite2D@21" type="Sprite2D" parent="CastleArt" unique_id=597994490]
+[node name="Water01" type="Sprite2D" parent="CastleArt" unique_id=597994490]
 modulate = Color(0.24, 0.45, 0.5, 0.7)
 position = Vector2(128, 512)
 texture = ExtResource("2_w2j7n")
+scale = Vector2(2, 1)
 centered = false
 region_enabled = true
-region_rect = Rect2(896, 384, 128, 128)
+region_rect = Rect2(928, 384, 64, 96)
 
-[node name="@Sprite2D@22" type="Sprite2D" parent="CastleArt" unique_id=1551170479]
+[node name="Water02" type="Sprite2D" parent="CastleArt" unique_id=1551170479]
 modulate = Color(0.24, 0.45, 0.5, 0.7)
 position = Vector2(256, 512)
 texture = ExtResource("2_w2j7n")
+scale = Vector2(2, 1)
 centered = false
 region_enabled = true
-region_rect = Rect2(896, 384, 128, 128)
+region_rect = Rect2(928, 384, 64, 96)
 
-[node name="@Sprite2D@23" type="Sprite2D" parent="CastleArt" unique_id=758783084]
+[node name="Water03" type="Sprite2D" parent="CastleArt" unique_id=758783084]
 modulate = Color(0.24, 0.45, 0.5, 0.7)
 position = Vector2(384, 512)
 texture = ExtResource("2_w2j7n")
+scale = Vector2(2, 1)
 centered = false
 region_enabled = true
-region_rect = Rect2(896, 384, 128, 128)
+region_rect = Rect2(928, 384, 64, 96)
 
-[node name="@Sprite2D@24" type="Sprite2D" parent="CastleArt" unique_id=60373111]
+[node name="Water04" type="Sprite2D" parent="CastleArt" unique_id=60373111]
 modulate = Color(0.24, 0.45, 0.5, 0.7)
 position = Vector2(512, 512)
 texture = ExtResource("2_w2j7n")
+scale = Vector2(2, 1)
 centered = false
 region_enabled = true
-region_rect = Rect2(896, 384, 128, 128)
+region_rect = Rect2(928, 384, 64, 96)
 
-[node name="@Sprite2D@25" type="Sprite2D" parent="CastleArt" unique_id=867420080]
+[node name="Water05" type="Sprite2D" parent="CastleArt" unique_id=867420080]
 modulate = Color(0.24, 0.45, 0.5, 0.7)
 position = Vector2(640, 512)
 texture = ExtResource("2_w2j7n")
+scale = Vector2(2, 1)
 centered = false
 region_enabled = true
-region_rect = Rect2(896, 384, 128, 128)
+region_rect = Rect2(928, 384, 64, 96)
 
-[node name="@Sprite2D@26" type="Sprite2D" parent="CastleArt" unique_id=299768020]
+[node name="Water06" type="Sprite2D" parent="CastleArt" unique_id=299768020]
 modulate = Color(0.24, 0.45, 0.5, 0.7)
 position = Vector2(768, 512)
 texture = ExtResource("2_w2j7n")
+scale = Vector2(2, 1)
 centered = false
 region_enabled = true
-region_rect = Rect2(896, 384, 128, 128)
+region_rect = Rect2(928, 384, 64, 96)
 
-[node name="@Sprite2D@27" type="Sprite2D" parent="CastleArt" unique_id=1994046128]
+[node name="Water07" type="Sprite2D" parent="CastleArt" unique_id=1994046128]
 modulate = Color(0.24, 0.45, 0.5, 0.7)
 position = Vector2(896, 512)
 texture = ExtResource("2_w2j7n")
+scale = Vector2(2, 1)
 centered = false
 region_enabled = true
-region_rect = Rect2(896, 384, 128, 128)
+region_rect = Rect2(928, 384, 64, 96)
 
-[node name="@Sprite2D@28" type="Sprite2D" parent="CastleArt" unique_id=512580059]
+[node name="Water08" type="Sprite2D" parent="CastleArt" unique_id=512580059]
 modulate = Color(0.24, 0.45, 0.5, 0.7)
 position = Vector2(1024, 512)
 texture = ExtResource("2_w2j7n")
+scale = Vector2(2, 1)
 centered = false
 region_enabled = true
-region_rect = Rect2(896, 384, 128, 128)
+region_rect = Rect2(928, 384, 64, 96)
 
-[node name="@Sprite2D@29" type="Sprite2D" parent="CastleArt" unique_id=206424060]
+[node name="Water09" type="Sprite2D" parent="CastleArt" unique_id=206424060]
 modulate = Color(0.24, 0.45, 0.5, 0.7)
 position = Vector2(1152, 512)
 texture = ExtResource("2_w2j7n")
+scale = Vector2(2, 1)
 centered = false
 region_enabled = true
-region_rect = Rect2(896, 384, 128, 128)
+region_rect = Rect2(928, 384, 64, 96)
 
 [node name="Brazier" type="AnimatedSprite2D" parent="CastleArt" unique_id=2116270827]
 position = Vector2(552, 448)
@@ -1270,7 +1279,7 @@ position = Vector2(180, 480)
 
 [node name="Enemies" type="Node2D" parent="." unique_id=1963065800]
 
-[node name="Slime" type="CharacterBody2D" parent="Enemies" unique_id=1202595909 groups=["enemies"] instance=ExtResource("5_siahr")]
+[node name="WingedChest" type="CharacterBody2D" parent="Enemies" unique_id=1202595909 groups=["enemies"] instance=ExtResource("5_siahr")]
 position = Vector2(990, 352)
 collision_layer = 4
 script = ExtResource("6_ho8lh")
@@ -1316,6 +1325,12 @@ script = ExtResource("7_ulj2d")
 kind = "reward"
 stable_id = "flow_seal"
 prompt = "E / CLAIM THE FLOW SEAL"
+
+[node name="ChestHint" type="Node2D" parent="Interactions"]
+position = Vector2(716, 352)
+script = ExtResource("7_ulj2d")
+kind = "sign"
+prompt = "Winged chest: jump the bite, strike after it lands."
 
 [node name="Shortcut" type="Node2D" parent="Interactions" unique_id=1844504199]
 position = Vector2(1200, 352)

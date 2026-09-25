@@ -154,5 +154,12 @@
     "source_relative_path": "ch_04_player_abilities/ch_04_player_abilities/sprites/props_destructible.png",
     "sha256": "d982a61e8a8dbea98840ae34f5ec5068edc1d1f39c99ff96901d62a3642a0cf2",
     "license_status": "Not supplied in extracted chapter pack; verify before distribution."
+  },
+  {
+    "file": "assets/characters/winged_chest.png",
+    "source_pack": "Godot 4《类银河恶魔城锻造坊》资源目录(1)",
+    "source_relative_path": "其他敌人资源/dchestspritesheet.png",
+    "sha256": "2a837b9d9f78529f55d8ad32e62ed6e645a0ce3993ea57a5c5337f52073c316b",
+    "license_status": "Not supplied in extracted chapter pack; verify before distribution."
   }
 ]
