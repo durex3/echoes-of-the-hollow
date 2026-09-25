@@ -23,6 +23,8 @@ var attack_held := false
 var jump_held := false
 
 func _ready() -> void:
+	health.maximum = Session.maximum_health()
+	health.restore_full()
 	health.damaged.connect(_on_damaged)
 	health.died.connect(_on_died)
 	attack_box.impact.connect(func(at: Vector2, defeated: bool) -> void: impact.emit(at, defeated))
@@ -134,6 +136,7 @@ func revive(at: Vector2) -> void:
 	coyote_left = 0
 	buffer_left = 0
 	air_jump_used = false
+	health.maximum = Session.maximum_health()
 	health.restore_full()
 	visual.modulate = Color.WHITE
 

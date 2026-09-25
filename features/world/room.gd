@@ -71,7 +71,7 @@ func update_progress() -> void:
 			point.visible = not Session.abilities.has(point.stable_id)
 		elif point.kind == "goal":
 			point.visible = not Session.completed
-		elif point.kind == "reward":
+		elif point.kind in ["reward", "upgrade"]:
 			point.visible = point.stable_id not in Session.flags
 
 func is_cleared() -> bool:

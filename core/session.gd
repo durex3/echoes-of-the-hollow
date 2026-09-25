@@ -47,6 +47,9 @@ func restore() -> bool:
 func commit() -> Error:
 	return Repository.write(save_path, snapshot())
 
+func maximum_health() -> int:
+	return 6 if "heart_bloom" in flags else 5
+
 func unlock(ability: String) -> void:
 	if ability not in abilities:
 		abilities.append(ability)

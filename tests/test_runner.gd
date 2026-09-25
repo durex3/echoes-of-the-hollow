@@ -233,6 +233,10 @@ func _run() -> void:
 	add_child(scribe_suite)
 	await scribe_suite.run(self,game)
 	scribe_suite.queue_free()
+	var exploration := preload("res://tests/exploration_suite.gd").new()
+	add_child(exploration)
+	await exploration.run(self,game)
+	exploration.queue_free()
 	check(Repository.validate(Session.snapshot()), "Save schema validates")
 	check(Session.commit() == OK, "Second save safely replaces first")
 	var saved_room := Session.checkpoint_room

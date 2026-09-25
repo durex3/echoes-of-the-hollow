@@ -1,0 +1,85 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" path="res://features/world/room.gd" id="1_1kgqv"]
+[ext_resource type="Script" path="res://features/world/backdrop.gd" id="2_7fhsb"]
+[ext_resource type="TileSet" path="res://features/world/forest_tileset.tres" id="3_hrbjq"]
+[ext_resource type="Script" path="res://features/world/interaction.gd" id="4_k6kvr"]
+[ext_resource type="SpriteFrames" path="res://features/world/checkpoint_frames.tres" id="5_gduev"]
+
+[sub_resource type="RectangleShape2D" id="Boundary"]
+size = Vector2(32, 640)
+
+[node name="Sanctuary" type="Node2D" unique_id=601705271]
+script = ExtResource("1_1kgqv")
+room_id = "sanctuary"
+display_name = "05 / ROOT SANCTUARY"
+bounds = Rect2(0, 0, 960, 576)
+
+[node name="Backdrop" type="Node2D" parent="." unique_id=1671505959]
+script = ExtResource("2_7fhsb")
+room_width = 960.0
+
+[node name="Terrain" type="TileMapLayer" parent="." unique_id=81977782]
+tile_map_data = PackedByteArray("AAAAAA8AAAABAAAAAAABAA8AAAACAAAAAAACAA8AAAADAAAAAAADAA8AAAABAAAAAAAEAA8AAAACAAAAAAAFAA8AAAADAAAAAAAGAA8AAAABAAAAAAAHAA8AAAACAAAAAAAIAA8AAAADAAAAAAAJAA8AAAABAAAAAAAKAA8AAAACAAAAAAALAA8AAAADAAAAAAAMAA8AAAABAAAAAAANAA8AAAACAAAAAAAOAA8AAAADAAAAAAAPAA8AAAABAAAAAAAQAA8AAAACAAAAAAARAA8AAAADAAAAAAASAA8AAAABAAAAAAATAA8AAAACAAAAAAAUAA8AAAADAAAAAAAVAA8AAAABAAAAAAAWAA8AAAACAAAAAAAXAA8AAAADAAAAAAAYAA8AAAABAAAAAAAZAA8AAAACAAAAAAAaAA8AAAADAAAAAAAbAA8AAAABAAAAAAAcAA8AAAACAAAAAAAdAA8AAAADAAAAAAAeAA8A//////////8fAA8A//////////8gAA8A//////////8hAA8A//////////8iAA8A//////////8jAA8A//////////8kAA8A//////////8lAA8A//////////8mAA8A//////////8nAA8A//////////8AABAAAAABAAEAAAABABAAAAACAAEAAAACABAAAAADAAEAAAADABAAAAABAAEAAAAEABAAAAACAAEAAAAFABAAAAADAAEAAAAGABAAAAABAAEAAAAHABAAAAACAAEAAAAIABAAAAADAAEAAAAJABAAAAABAAEAAAAKABAAAAACAAEAAAALABAAAAADAAEAAAAMABAAAAABAAEAAAANABAAAAACAAEAAAAOABAAAAADAAEAAAAPABAAAAABAAEAAAAQABAAAAACAAEAAAARABAAAAADAAEAAAASABAAAAABAAEAAAATABAAAAACAAEAAAAUABAAAAADAAEAAAAVABAAAAABAAEAAAAWABAAAAACAAEAAAAXABAAAAADAAEAAAAYABAAAAABAAEAAAAZABAAAAACAAEAAAAaABAAAAADAAEAAAAbABAAAAABAAEAAAAcABAAAAACAAEAAAAdABAAAAADAAEAAAAeABAA//////////8fABAA//////////8gABAA//////////8hABAA//////////8iABAA//////////8jABAA//////////8kABAA//////////8lABAA//////////8mABAA//////////8nABAA//////////8AABEAAAABAAEAAAABABEAAAACAAEAAAACABEAAAADAAEAAAADABEAAAABAAEAAAAEABEAAAACAAEAAAAFABEAAAADAAEAAAAGABEAAAABAAEAAAAHABEAAAACAAEAAAAIABEAAAADAAEAAAAJABEAAAABAAEAAAAKABEAAAACAAEAAAALABEAAAADAAEAAAAMABEAAAABAAEAAAANABEAAAACAAEAAAAOABEAAAADAAEAAAAPABEAAAABAAEAAAAQABEAAAACAAEAAAARABEAAAADAAEAAAASABEAAAABAAEAAAATABEAAAACAAEAAAAUABEAAAADAAEAAAAVABEAAAABAAEAAAAWABEAAAACAAEAAAAXABEAAAADAAEAAAAYABEAAAABAAEAAAAZABEAAAACAAEAAAAaABEAAAADAAEAAAAbABEAAAABAAEAAAAcABEAAAACAAEAAAAdABEAAAADAAEAAAAeABEA//////////8fABEA//////////8gABEA//////////8hABEA//////////8iABEA//////////8jABEA//////////8kABEA//////////8lABEA//////////8mABEA//////////8nABEA//////////8IAAwA//////////8JAAwA//////////8KAAwA//////////8LAAwA//////////8MAAwA//////////8NAAwA//////////8OAAwA//////////8IAA0AAAADAAAAAAAJAA0AAAABAAAAAAAKAA0AAAACAAAAAAALAA0AAAADAAAAAAAMAA0A//////////8NAA0A//////////8OAA0A//////////8LAAcA//////////8MAAcA//////////8NAAcA//////////8OAAcA//////////8PAAcA//////////8LAAgA//////////8MAAgA//////////8NAAgA//////////8OAAgA//////////8PAAgA//////////8WAAwA//////////8XAAwA//////////8YAAwA//////////8ZAAwA//////////8WAA0A//////////8XAA0A//////////8YAA0A//////////8ZAA0A//////////8OAAsAAAADAAAAAAAPAAsAAAABAAAAAAAQAAsAAAACAAAAAAARAAsAAAADAAAAAAAUAAkAAAADAAAAAAAVAAkAAAABAAAAAAAWAAkAAAACAAAAAAAXAAkAAAADAAAAAAA=")
+tile_set = ExtResource("3_hrbjq")
+
+[node name="Details" type="TileMapLayer" parent="." unique_id=40044950]
+tile_map_data = PackedByteArray("AAAGAA4A//////////8RAA4A//////////8aAA4A//////////8iAA4A//////////8=")
+tile_set = ExtResource("3_hrbjq")
+collision_enabled = false
+
+[node name="Bounds" type="StaticBody2D" parent="." unique_id=1358145428]
+collision_mask = 0
+
+[node name="Left" type="CollisionShape2D" parent="Bounds" unique_id=706008918]
+position = Vector2(-16, 256)
+shape = SubResource("Boundary")
+
+[node name="Right" type="CollisionShape2D" parent="Bounds" unique_id=1364135426]
+position = Vector2(976, 256)
+shape = SubResource("Boundary")
+
+[node name="Spawns" type="Node2D" parent="." unique_id=22093897]
+
+[node name="entry" type="Marker2D" parent="Spawns" unique_id=665174439]
+position = Vector2(110, 480)
+
+[node name="checkpoint" type="Marker2D" parent="Spawns" unique_id=171201402]
+position = Vector2(165, 480)
+
+[node name="Enemies" type="Node2D" parent="." unique_id=1963065800]
+
+[node name="Interactions" type="Node2D" parent="." unique_id=1839794500]
+
+[node name="Return" type="Node2D" parent="Interactions" unique_id=1376322947]
+position = Vector2(48, 480)
+script = ExtResource("4_k6kvr")
+kind = "exit"
+target_room = "forest"
+target_spawn = "sanctuary_return"
+prompt = "E / RETURN TO THE HIGH GROVE"
+
+[node name="Shrine" type="Node2D" parent="Interactions" unique_id=1981213881]
+position = Vector2(165, 480)
+script = ExtResource("4_k6kvr")
+prompt = "E / REST & SAVE"
+
+[node name="Sprite" type="AnimatedSprite2D" parent="Interactions/Shrine" unique_id=309618162]
+position = Vector2(0, -20)
+scale = Vector2(0.5, 0.5)
+sprite_frames = ExtResource("5_gduev")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="Hint" type="Node2D" parent="Interactions" unique_id=1278635289]
+position = Vector2(215, 480)
+script = ExtResource("4_k6kvr")
+kind = "sign"
+prompt = "Above the roots, a heart still blooms."
+
+[node name="HeartBloom" type="Node2D" parent="Interactions" unique_id=1731325893]
+position = Vector2(705, 288)
+script = ExtResource("4_k6kvr")
+kind = "upgrade"
+stable_id = "heart_bloom"
+prompt = "E / CLAIM HEART BLOOM / +1 MAX VITALITY"

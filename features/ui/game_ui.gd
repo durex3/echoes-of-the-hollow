@@ -4,6 +4,7 @@ extends CanvasLayer
 signal start_requested(load_save: bool)
 signal resume_requested
 signal quit_requested
+signal map_closed
 var health_label: Label
 var area_label: Label
 var objective: Label
@@ -13,6 +14,9 @@ var modal: PanelContainer
 var menu: VBoxContainer
 var toast_left := 0.0
 var hud: Control
+var map_panel: PanelContainer
+var world_map: WorldMap
+var menu_mode := "title"
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -56,7 +60,7 @@ func _ready() -> void:
 	prompt = label("", 16, Color("94e4ce"))
 	prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	bottom.add_child(prompt)
-	var controls := label("A/D Move   SPACE Jump   J Attack   E Interact   ESC Pause   M Mute", 12, Color("9aafad"))
+	var controls := label("A/D Move  SPACE Jump  J Attack  E Use  Q Map  ESC Pause  M Mute", 12, Color("9aafad"))
 	controls.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	bottom.add_child(controls)
 	modal = PanelContainer.new()
@@ -80,6 +84,43 @@ func _ready() -> void:
 	modal.add_child(menu)
 	hud.hide()
 	modal.hide()
+	map_panel = PanelContainer.new()
+	map_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	map_panel.offset_left = -290
+	map_panel.offset_right = 290
+	map_panel.offset_top = -160
+	map_panel.offset_bottom = 160
+	var map_style := style.duplicate() as StyleBoxFlat
+	map_style.content_margin_left = 20
+	map_style.content_margin_right = 20
+	map_style.content_margin_top = 12
+	map_style.content_margin_bottom = 12
+	map_panel.add_theme_stylebox_override("panel",map_style)
+	root.add_child(map_panel)
+	var map_layout := VBoxContainer.new()
+	map_panel.add_child(map_layout)
+	var map_title := label("PATHS OF THE HOLLOW",20,Color("efce8e"))
+	map_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	map_layout.add_child(map_title)
+	world_map = WorldMap.new()
+	world_map.custom_minimum_size = Vector2(540,226)
+	world_map.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	map_layout.add_child(world_map)
+	var close := Button.new()
+	close.name = "CloseMap"
+	close.text = "Return / Q or ESC"
+	close.pressed.connect(func() -> void: map_closed.emit())
+	map_layout.add_child(close)
+	map_panel.hide()
+
+func show_map(room_id: String) -> void:
+	world_map.configure(room_id,Session.visited,Session.checkpoint_room,Session.flags,Session.abilities)
+	modal.hide()
+	map_panel.show()
+	(map_panel.find_child("CloseMap",true,false) as Button).grab_focus()
+
+func hide_map() -> void:
+	map_panel.hide()
 
 func label(text: String, font_size: int, color: Color) -> Label:
 	var node := Label.new()
@@ -89,6 +130,7 @@ func label(text: String, font_size: int, color: Color) -> Label:
 	return node
 
 func show_menu(mode: String, can_continue := false) -> void:
+	menu_mode = mode
 	for child: Node in menu.get_children():
 		menu.remove_child(child)
 		child.queue_free()

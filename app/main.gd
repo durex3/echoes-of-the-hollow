@@ -5,7 +5,8 @@ const ROOMS := {
 	"forest": preload("res://features/world/rooms/forest.tscn"),
 	"ruins": preload("res://features/world/rooms/ruins.tscn"),
 	"training": preload("res://features/world/rooms/training.tscn"),
-	"scriptorium": preload("res://features/world/rooms/scriptorium.tscn")
+	"scriptorium": preload("res://features/world/rooms/scriptorium.tscn"),
+	"sanctuary": preload("res://features/world/rooms/sanctuary.tscn")
 }
 const Repository := preload("res://core/save_repository.gd")
 @onready var room_host: Node2D = $RoomHost
@@ -15,10 +16,13 @@ var player: Player
 var room: GameRoom
 var running := false
 var transition_pending := false
+var map_return_paused := false
+var map_return_menu := "pause"
 
 func _ready() -> void:
 	ui.start_requested.connect(start_game)
 	ui.resume_requested.connect(resume)
+	ui.map_closed.connect(close_map)
 	ui.quit_requested.connect(func() -> void: get_tree().quit())
 	Session.progress_changed.connect(ui.update_progress)
 	ui.show_menu("title", not Repository.read(Session.save_path).is_empty())
@@ -85,9 +89,24 @@ func _process(_delta: float) -> void:
 		camera.position = player.position + Vector2(player.facing * 45, -65)
 
 func _input(event: InputEvent) -> void:
+	if event.is_echo():
+		return
 	if event.is_action_pressed("mute"):
 		Audio.toggle_mute()
+	if event.is_action_pressed("world_map") and running and player.state != Player.State.DEAD:
+		if ui.map_panel.visible:
+			close_map()
+		else:
+			map_return_paused = get_tree().paused
+			map_return_menu = ui.menu_mode
+			player.reset_input()
+			get_tree().paused = true
+			ui.show_map(room.room_id)
+		return
 	if event.is_action_pressed("pause") and running:
+		if ui.map_panel.visible:
+			close_map()
+			return
 		if get_tree().paused:
 			resume()
 		else:
@@ -97,14 +116,27 @@ func _input(event: InputEvent) -> void:
 
 func resume() -> void:
 	player.reset_input()
+	ui.hide_map()
 	get_tree().paused = false
 	ui.show_hud()
+
+func close_map() -> void:
+	ui.hide_map()
+	player.reset_input()
+	if map_return_paused:
+		get_tree().paused = true
+		ui.show_menu(map_return_menu)
+	else:
+		resume()
 
 func _on_interaction(point: WorldInteraction) -> void:
 	if transition_pending:
 		return
 	match point.kind:
 		"exit":
+			if not point.required_ability.is_empty() and point.required_ability not in Session.abilities:
+				ui.notify("The high roots answer only to the sky echo")
+				return
 			if not point.required_flag.is_empty() and point.required_flag not in Session.flags:
 				ui.notify("Clear this hall and claim its seal first")
 				return
@@ -120,6 +152,14 @@ func _on_interaction(point: WorldInteraction) -> void:
 			room.update_progress()
 			Audio.play_sound("ability_acquire")
 			_save("DOUBLE JUMP / Press SPACE again in the air")
+		"upgrade":
+			if point.stable_id != "heart_bloom" or point.stable_id in Session.flags:
+				return
+			Session.set_flag(point.stable_id)
+			player.health.maximum = Session.maximum_health()
+			player.health.restore_full()
+			room.update_progress()
+			_save("HEART BLOOM / Maximum vitality increased")
 		"reward":
 			if not room.is_cleared():
 				ui.notify("Defeat the hall guardians to release the seal")

@@ -90,3 +90,15 @@ script = ExtResource("5")
 kind = "goal"
 stable_id = "high_shrine"
 prompt = "E  /  RESTORE THE HOLLOW"
+
+[node name="sanctuary_return" type="Marker2D" parent="Spawns"]
+position = Vector2(475, 224)
+
+[node name="SanctuaryDoor" type="Node2D" parent="Interactions"]
+position = Vector2(490, 224)
+script = ExtResource("5")
+kind = "exit"
+required_ability = "double_jump"
+target_room = "sanctuary"
+target_spawn = "entry"
+prompt = "E / FOLLOW THE HIGH ROOTS"
