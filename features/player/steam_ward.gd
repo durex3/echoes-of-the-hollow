@@ -1,8 +1,8 @@
 class_name SteamWard
 extends Node2D
-## Steam-only charge; no health invulnerability or physics shapes are changed.
+## One incoming hit per charge; no global invulnerability or physics changes.
 signal status_changed(status: String, seconds: int)
-signal steam_blocked
+signal damage_blocked
 @export var config: SteamWardConfig
 var active_left := 0.0
 var cooldown_left := 0.0
@@ -25,7 +25,7 @@ func absorb() -> bool:
 		return false
 	active_left = 0
 	feedback_left = config.feedback_seconds
-	steam_blocked.emit()
+	damage_blocked.emit()
 	Audio.play_sound("save",1.3,-8)
 	publish()
 	queue_redraw()
@@ -52,7 +52,7 @@ func publish() -> void:
 	if "steam_ward" not in Session.abilities:
 		status = "Ward locked"
 	elif feedback_left > 0:
-		status = "Steam blocked"
+		status = "Hit blocked"
 	elif active_left > 0:
 		status = "Ward active"
 	elif cooldown_left > 0:

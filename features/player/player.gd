@@ -31,6 +31,7 @@ var dash_cooldown_left := 0.0
 var last_dash_status := ""
 
 func _ready() -> void:
+	($Hurtbox as Hurtbox).damage_guard = steam_ward.absorb
 	health.maximum = Session.maximum_health()
 	health.restore_full()
 	health.damaged.connect(_on_damaged)

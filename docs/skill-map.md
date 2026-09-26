@@ -30,6 +30,8 @@
 
 安装了但暂未使用的 Godot Shader 等技能不强行加入工程；需求出现时再读取和应用。
 
+0.13.1：godot-gdscript为Hurtbox定义明确的IGNORED/DAMAGED/BLOCKED结果，Hitbox对挡住的同次挥击去重；godot-signals-groups保持Player组合并接入自身防护回调、damage_blocked表示已发生的抵挡、伤害反馈仅在实际扣血时发出。粉焰剑士/宝箱/墨弹真实场景验证，不以检查技能函数返回值替代玩法回归。
+
 0.13.0：input-systems将steam_ward纳入InputMap、双设备提示、重绑和菜单释放输入规则，兼容旧动作占用新默认键；save-systems落实旧心权益保留、校验后幂等补能力、保存失败后重试、新旧档跨进程验证；godot-gdscript落实只读能力Resource、实例计时、物理帧推进与事件驱动HUD。实现、测试、图形复核、文档和本地提交遵循development-workflow.md，人工验收与自动检查分别记录。
 
 0.12.0：level-design将第二关改为七房间上下层回环、两条解锁捷径、可选二段跳秘库与先教学再组合的节拍，约束记录在level_progression.md；game-ai为粉焰剑士实现独立后撤突斩FSM；create-game-assets核对原课程80×80帧表并复制未用图集；godot-tilemap将新房间持久化为可编辑原生TileMapLayer并拒绝重建覆盖；godot-gdscript负责类型、物理帧时序和父场景接线。主线与可选路线真实输入验证，章节敌人不重叠有自动断言。

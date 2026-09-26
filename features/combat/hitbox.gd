@@ -26,7 +26,9 @@ func _physics_process(_delta: float) -> void:
 			ray.collision_mask = 1
 			if not get_world_2d().direct_space_state.intersect_ray(ray).is_empty():
 				continue
-			if area.receive_hit(damage, global_position):
+			var result: Hurtbox.HitResult = area.resolve_hit(damage, global_position)
+			if result != Hurtbox.HitResult.IGNORED:
 				hit_ids.append(area.get_instance_id())
+			if result == Hurtbox.HitResult.DAMAGED:
 				landed.emit()
 				impact.emit(area.hit_position(), area.health.current == 0)

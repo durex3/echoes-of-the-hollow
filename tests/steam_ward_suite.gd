@@ -137,7 +137,7 @@ func run(h: Node, game: Node) -> void:
 	vent.deactivate()
 	player.health.invulnerability_left = 0
 	var hit := (player.get_node("Hurtbox") as Hurtbox).receive_hit(1,player.position+Vector2(20,0))
-	h.check(hit and ward.active_left > 0 and player.health.current == player.health.maximum-1, "Enemy hurtbox damage bypasses steam ward without consuming charge")
+	h.check(not hit and ward.active_left == 0 and player.health.current == player.health.maximum, "Enemy hurtbox damage consumes ward without health loss or hurt reaction")
 	player.health.invulnerability_left = 0
 	player.health.take_damage(99,player.position)
 	h.check(ward.active_left == 0, "Death cancels ward immediately")
@@ -202,4 +202,86 @@ func run(h: Node, game: Node) -> void:
 	Session.bindings.observe(key(KEY_A))
 	Session.set_language("en")
 	player.revive(Vector2(180,608))
+	await h.frames(3)
+	await combat_blocks(h,game)
+
+func combat_blocks(h: Node, game: Node) -> void:
+	var player: Player = game.player
+	var ward: SteamWard = player.steam_ward
+	var hurt := player.get_node("Hurtbox") as Hurtbox
+	var events := {"blocked":0,"damaged":0,"impact":0}
+	var on_block := func() -> void: events.blocked += 1
+	var on_damage := func(_amount: int, _origin: Vector2) -> void: events.damaged += 1
+	ward.damage_blocked.connect(on_block)
+	player.health.damaged.connect(on_damage)
+	# Let the actual duelist acquire, retreat, warn and strike, without forcing its FSM.
+	game.load_room("cistern_archive","entry")
+	for vent: SteamVent in game.room.get_node("Hazards").get_children():
+		vent.deactivate()
+	player.revive(Vector2(610,480))
+	game.ui.reward_notice.remaining = 0
+	game.ui.toast_left = 0
+	game.ui.set_text(game.ui.toast,"")
+	var rose: RoseSentinel = game.room.get_node("Enemies/RoseSentinel")
+	rose.impact.connect(func(_at: Vector2, _killed: bool) -> void: events.impact += 1)
+	await h.frames(20)
+	Session.set_language("zh_CN")
+	await h.press("steam_ward",2)
+	for tick: int in range(70):
+		if events.blocked > 0:
+			break
+		await h.frames(1)
+	h.check(events.blocked == 1 and ward.active_left == 0 and player.health.current == player.health.maximum, "Ward blocks the actual pink knight slash and consumes exactly one charge")
+	h.check(events.damaged == 0 and events.impact == 0 and player.state != Player.State.HURT and player.health.invulnerability_left == 0, "Blocked slash causes no damage signals, hit flash, knockback or global invulnerability")
+	h.check(rose.attack_box.hit_ids.has(hurt.get_instance_id()), "Blocked knight slash records its target as handled for the entire swing")
+	await h.shot("97_ward_rose_block_zh")
+	# Hold the real attack box overlapped beyond the visual feedback duration.
+	rose.set_physics_process(false)
+	await h.frames(25)
+	h.check(player.health.current == player.health.maximum and events.blocked == 1, "Same active slash cannot hurt on later frames after the shield disappears")
+	rose.attack_box.begin_swing()
+	rose.attack_box.active = true
+	await h.frames(2)
+	h.check(player.health.current == player.health.maximum-1 and events.damaged == 1, "A subsequent swing damages normally while the shield is cooling down")
+	# A second enemy uses its own native attack timing and overlap.
+	game.load_room("valve_gallery","entry")
+	for vent: SteamVent in game.room.get_node("Hazards").get_children():
+		vent.deactivate()
+	player.revive(Vector2(920,352))
+	await h.frames(5)
+	await h.press("steam_ward",2)
+	await h.frames(65)
+	h.check(events.blocked == 2 and player.health.current == player.health.maximum and ward.active_left == 0, "Ward blocks real winged chest pounce for the entire bite")
+	# Real swept projectile is consumed on shield contact, with no damage feedback.
+	game.load_room("echo_vault","checkpoint")
+	player.revive(Vector2(180,608))
+	await h.frames(3)
+	await h.press("steam_ward",2)
+	var bolt := preload("res://features/combat/ink_bolt.tscn").instantiate() as InkBolt
+	bolt.position = player.position+Vector2(45,-24)
+	bolt.direction = Vector2.LEFT
+	bolt.impact.connect(func(_at: Vector2, _killed: bool) -> void: events.impact += 1)
+	var previous_impacts: int = events.impact
+	game.room.projectiles.add_child(bolt)
+	await h.frames(18)
+	h.check(not is_instance_valid(bolt) and events.blocked == 3 and player.health.current == player.health.maximum, "Ward blocks and consumes a real swept ink bolt")
+	h.check(events.impact == previous_impacts, "Blocked projectile does not emit damage impact feedback")
+	# No blanket invulnerability: two distinct impacts in one tick consume only one charge.
+	ward.cancel(true)
+	ward.activate()
+	var first := hurt.resolve_hit(3,player.position)
+	var second := hurt.resolve_hit(1,player.position)
+	h.check(first == Hurtbox.HitResult.BLOCKED and second == Hurtbox.HitResult.DAMAGED and player.health.current == player.health.maximum-1, "One shield absorbs the complete first hit but not a second distinct hit in the same tick")
+	ward.cancel(true)
+	ward.activate()
+	var before: int = events.blocked
+	h.check(hurt.resolve_hit(1,player.position) == Hurtbox.HitResult.IGNORED and ward.active_left > 0 and events.blocked == before, "Damage invulnerability ignores enemy hits without consuming a fresh shield")
+	player.health.invulnerability_left = 0
+	h.check(hurt.resolve_hit(0,player.position) == Hurtbox.HitResult.IGNORED and hurt.resolve_hit(-1,player.position) == Hurtbox.HitResult.IGNORED and ward.active_left > 0, "Zero and negative damage cannot consume shield")
+	ward.advance(ward.config.active_seconds)
+	h.check(hurt.resolve_hit(1,player.position) == Hurtbox.HitResult.DAMAGED, "An expired shield cannot block a later enemy hit")
+	ward.damage_blocked.disconnect(on_block)
+	player.health.damaged.disconnect(on_damage)
+	player.revive(Vector2(180,608))
+	Session.set_language("en")
 	await h.frames(3)

@@ -124,8 +124,8 @@ func hint(action: String, pad_override := -1) -> String:
 	return "--"
 
 func format_text(source: String, translated: String) -> String:
-	if source == "L: ward for 1.5s. Blocks one steam plume; cooldown 5s.":
-		return ("按 %s 防护1.5秒，抵挡一轮喷流；冷却5秒。" if TranslationServer.get_locale() == "zh_CN" else "%s: ward for 1.5s. Blocks one steam plume; cooldown 5s.") % hint("steam_ward")
+	if source == "L: shield for 1.5s. One hit; cooldown 5s from activation.":
+		return ("按 %s 开盾1.5秒，抵挡一次伤害；启动后冷却5秒。" if TranslationServer.get_locale() == "zh_CN" else "%s: shield for 1.5s. One hit; cooldown 5s from activation.") % hint("steam_ward")
 	if source.begins_with("E "):
 		return hint("interact") + translated.substr(1)
 	if source == "Press SPACE again in the air.":

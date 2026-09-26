@@ -4,11 +4,13 @@
 
 0.13.0将秘库奖励改为steam_ward能力。第二关仍为七个持久化原生房间，地图几何不变。SaveRepository扩展能力白名单，schema仍为2；旧cistern_heart仅用于保留历史生命收益并补发技能，新领取不再添加此标记。实例状态不写配置，桌面源素材不修改。地图工具拒绝覆盖已保存场景；第二关敌人集合与第一关不重叠，由回归自动检查。
 
-### 水闸回响（0.13.0）
+### 水闸回响（0.13.1）
 
 Player组合SteamWard子节点，SteamWardConfig保存1.5s防护、5s启动冷却和0.3s抵挡反馈。Player在物理帧推进计时并读取InputMap steam_ward；暂停冻结、切房取消充能但保留冷却、死亡取消、复活重置。按键需释放后重新按下；受伤硬直不可启动，移动/跳跃/剑击/冲刺可同时使用。SteamWard的status_changed由Main接到HUD，仅状态或显示秒数改变时更新文字；圆环仅绘制，无碰撞或全局无敌。
 
-SteamVent在真实ACTIVE重叠时尝试消耗一次充能；成功后仅记录该Player实例ID，在本喷口当前喷发期间忽略其后续伤害，阶段转换/停用清空记录。已有伤害无敌期不消耗技能；敌人Hurtbox路径不经过该组件。没有新Autoload、纹理或外部依赖。
+SteamVent在真实ACTIVE重叠时尝试消耗一次充能；成功后仅记录该Player实例ID，在本喷口当前喷发期间忽略其后续伤害，阶段转换/停用清空记录。已有伤害无敌期不消耗技能。没有新Autoload、纹理或外部依赖。
+
+0.13.1由Player将steam_ward.absorb注入自身Hurtbox.damage_guard；敌人Hurtbox不绑定防护。resolve_hit先检查生命/伤害/无敌，再返回IGNORED、DAMAGED或BLOCKED。Hitbox将实际伤害与抵挡均记入本次挥击的hit_ids，只有DAMAGED发landed/impact，避免同一刀次帧补伤与假受伤反馈。receive_hit仍保持“实际扣血才true”的原契约，InkBolt通过它消耗护盾且照常销毁弹体，不产生伤害反馈。护盾damage_blocked信号表示已发生的抵挡，HUD沿用status_changed；不引入全局无敌。越界复活用Health直接结算，不受护盾阻碍。
 
 保存只持久化steam_ward解锁，不保存瞬時計时。迁移先深复制并校验旧schema2，只有合法cistern_heart标记才补发能力，保留全部原收益；重复迁移无重复条目，未来/非法档不补发。玩家文件只在正常游戏保存时更新，测试使用隔离路径。新奖励回满当前上限生命、唯一隐藏、沿用保存失败提示与祭坛重试。
 
