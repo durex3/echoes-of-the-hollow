@@ -2,6 +2,20 @@ class_name TextCatalog
 extends RefCounted
 ## Source English strings are stable translation keys; native Godot Translation backend.
 const ZH := {
+	"FURNACE KEEPER / I": "炉心监守者 / 第一阶段",
+	"FURNACE KEEPER / II": "炉心监守者 / 第二阶段",
+	"Keeper awakens": "监守者苏醒",
+	"Phase II / Twin eruption marks": "第二阶段 / 双重喷发标记",
+	"LOW FLAME / Jump over": "裂焰 / 跳跃越过",
+	"ERUPTION / Leave the marked ground": "喷发 / 离开粉色标记",
+	"PRESSURE RELEASE / Strike now": "泄压收招 / 趁机反击",
+	"Jump over low flame. Leave pink marks. Strike during pressure release.": "跳过低矮裂焰，离开粉色标记，泄压时反击。",
+	"E / RECALL THE KEEPER (PRACTICE)": "E / 回忆监守者之战（练习）",
+	"Practice battle / Your completed journey is preserved": "回忆挑战 / 已完成的旅程进度保留",
+	"Practice complete / Your journey is unchanged": "回忆挑战完成 / 原有旅程进度不变",
+	"FURNACE KEEPER DEFEATED": "已击败 · 炉心监守者",
+	"The pressure has fallen. The core awaits.": "炉心压力已消退，最终回响等待唤醒。",
+	"All vitality restored. Claim the core echo on your right.": "生命已恢复，前往右侧唤醒炉心回响。",
 	"Steam ward": "水闸回响",
 	"Ward ready": "就绪",
 	"Ward active": "防护中",

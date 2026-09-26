@@ -60,7 +60,7 @@ func start_game(load_save: bool) -> void:
 	ui.update_health(player.health.current, player.health.maximum)
 	ui.update_progress()
 
-func load_room(room_id: String, spawn: String) -> void:
+func load_room(room_id: String, spawn: String, rehearsal := false) -> void:
 	if not ROOMS.has(room_id):
 		push_error("Unknown room: " + room_id)
 		return
@@ -75,6 +75,7 @@ func load_room(room_id: String, spawn: String) -> void:
 		room_host.remove_child(room)
 		room.queue_free()
 	room = (ROOMS[room_id] as PackedScene).instantiate() as GameRoom
+	room.rehearsal = rehearsal
 	room_host.add_child(room)
 	room.player = player
 	room.interaction_requested.connect(_on_interaction)
@@ -83,6 +84,18 @@ func load_room(room_id: String, spawn: String) -> void:
 	room.prompt_changed.connect(func(message: String) -> void: ui.set_text(ui.prompt,message))
 	room.update_progress()
 	for enemy: Node in room.get_node("Enemies").get_children():
+		if enemy is FurnaceKeeper:
+			enemy.target = player
+			enemy.awakened.connect(func() -> void:
+				ui.show_boss(enemy.health.current,enemy.health.maximum,"FURNACE KEEPER")
+				for vent: SteamVent in room.get_node("Hazards").get_children():
+					vent.deactivate())
+			enemy.withdrawn.connect(ui.hide_boss)
+			enemy.health.changed.connect(ui.update_boss_health)
+			enemy.phase_changed.connect(ui.update_boss_phase)
+			enemy.cue_changed.connect(ui.update_boss_cue)
+			enemy.impact.connect($Feedback.show_impact.bind(false))
+			enemy.defeated.connect(_on_keeper_defeated.bind(room.get_instance_id()),CONNECT_DEFERRED)
 		if enemy is WingedChest or enemy is RoseSentinel:
 			enemy.target = player
 			enemy.impact.connect($Feedback.show_impact.bind(false))
@@ -118,6 +131,8 @@ func _process(_delta: float) -> void:
 	if running and is_instance_valid(player):
 		if room.room_id == "heart_chamber":
 			camera.position = Vector2(320,396)
+		elif room.room_id == "furnace_core" and ui.boss_panel.visible:
+			camera.position = Vector2(clampf(player.position.x+100,790,960),396)
 		else:
 			camera.position = player.position + Vector2(player.facing * 45, -65)
 
@@ -175,6 +190,12 @@ func _on_interaction(point: WorldInteraction) -> void:
 	if transition_pending:
 		return
 	match point.kind:
+		"challenge":
+			if room.room_id == "furnace_core" and not room.rehearsal and ("furnace_keeper_defeated" in Session.flags or "cistern_restored" in Session.flags):
+				player.revive(room.spawn_position("entry"))
+				load_room.call_deferred("furnace_core","entry",true)
+				transition_pending = true
+				ui.notify("Practice battle / Your completed journey is preserved")
 		"exit":
 			var locked := point.locked_message(Session.abilities,Session.flags)
 			if not locked.is_empty():
@@ -273,6 +294,9 @@ func _on_player_died() -> void:
 	ui.hide_boss()
 	room.enabled = false
 	room.clear_projectiles()
+	for enemy: Node in room.get_node("Enemies").get_children():
+		if enemy is FurnaceKeeper:
+			enemy.clear_flames()
 	ui.notify("Returning to the last shrine...")
 	await get_tree().create_timer(0.85, false).timeout
 	load_room(Session.checkpoint_room, Session.checkpoint_spawn)
@@ -287,3 +311,17 @@ func _on_warden_defeated(room_instance: int) -> void:
 	player.health.restore_full()
 	_save_reward("warden_defeated")
 	Audio.play_sound("ability_acquire", 0.8, -2.0)
+
+func _on_keeper_defeated(room_instance: int) -> void:
+	if not is_instance_valid(room) or room.get_instance_id() != room_instance or player.state == Player.State.DEAD:
+		return
+	ui.hide_boss()
+	player.health.restore_full()
+	if room.rehearsal:
+		ui.notify("Practice complete / Your journey is unchanged")
+		return
+	if "furnace_keeper_defeated" in Session.flags:
+		return
+	Session.set_flag("furnace_keeper_defeated")
+	room.update_progress()
+	_save_reward("furnace_keeper_defeated")

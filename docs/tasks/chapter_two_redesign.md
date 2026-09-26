@@ -1,5 +1,7 @@
 # 第二关重设计：余烬水道
 
+0.14.0后炉心混合战已升级为独立首领炉心监守者；以下早期方案中的“无独立Boss”仅描述0.12.0当时状态，当前规则见 [炉心监守者](furnace_keeper.md)。
+
 设计开始：2026-09-25；实现记录：2026-09-26（本地）。用户要求：不同章节敌人不同；第二关的探索深度应接近第一关；趣味与难度逐步递进。采用level-design、game-ai、create-game-assets、godot-tilemap与godot-gdscript。长期约束见../level_progression.md。
 
 ## 设计契约

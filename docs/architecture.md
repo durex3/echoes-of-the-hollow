@@ -1,5 +1,9 @@
 # 架构与编码规范
 
+## 炉心监守者（0.14.0）
+
+FurnaceKeeper 是独立 CharacterBody2D，组合 Health/Hurtbox 和只读 FurnaceConfig，物理帧状态机管理入场、预警、施法、泄压、转阶段及死亡。FurnaceFlame 是首领子节点 Area2D，负责低裂焰移动、喷发地面预警、单次命中和释放；命中走 Hurtbox.resolve_hit，继承护盾抵挡语义。视觉 Sprite 与碰撞形状分离。GameRoom 在加载时按 furnace_keeper_defeated 或旧 cistern_restored 过滤首领，并向 Main 转发事件；Main 负责血条、唯一击败标记、保存及通关交互。完成旧档可用 challenge 交互开启回忆战，rehearsal 状态只在当前房间实例中存在，不写存档。schema仍为2，新增稳定 flag；地形 TileMapLayer 与桌面素材未重建或修改。
+
 ## 基线
 
 0.13.0将秘库奖励改为steam_ward能力。第二关仍为七个持久化原生房间，地图几何不变。SaveRepository扩展能力白名单，schema仍为2；旧cistern_heart仅用于保留历史生命收益并补发技能，新领取不再添加此标记。实例状态不写配置，桌面源素材不修改。地图工具拒绝覆盖已保存场景；第二关敌人集合与第一关不重叠，由回归自动检查。

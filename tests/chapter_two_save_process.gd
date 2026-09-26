@@ -10,6 +10,7 @@ func _initialize() -> void:
 			return
 		print("CHAPTER_TWO_SAVE_WRITE_OK")
 		data.flags.erase("cistern_heart")
+		data.flags.append("furnace_keeper_defeated")
 		data.abilities.append("steam_ward")
 		if SaveRepository.write(PATH+".new",data) != OK:
 			quit(1)
@@ -21,7 +22,7 @@ func _initialize() -> void:
 			quit(1)
 			return
 		var fresh := SaveRepository.read(PATH+".new")
-		if "steam_ward" not in data.abilities or fresh.is_empty() or "steam_ward" not in fresh.abilities or "cistern_heart" in fresh.flags:
+		if "steam_ward" not in data.abilities or fresh.is_empty() or "steam_ward" not in fresh.abilities or "cistern_heart" in fresh.flags or "furnace_keeper_defeated" not in fresh.flags:
 			push_error("Steam ward new/legacy cross-process restore failed")
 			quit(1)
 			return

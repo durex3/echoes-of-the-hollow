@@ -22,7 +22,7 @@ static func validate(data: Variant) -> bool:
 	if not data.get("flags") is Array:
 		return false
 	for flag: Variant in data.flags:
-		if flag not in ["training_cleared", "scriptorium_cleared", "heart_bloom", "wind_passage_open", "belfry_cleared", "warden_defeated", "journey_restored", "flow_seal", "pressure_seal", "cistern_restored", "cistern_heart"]:
+		if flag not in ["training_cleared", "scriptorium_cleared", "heart_bloom", "wind_passage_open", "belfry_cleared", "warden_defeated", "journey_restored", "flow_seal", "pressure_seal", "cistern_restored", "cistern_heart", "furnace_keeper_defeated"]:
 			return false
 	for ability: Variant in data.abilities:
 		if ability not in ["double_jump", "dash", "steam_ward"]:

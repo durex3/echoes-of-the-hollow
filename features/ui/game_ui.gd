@@ -40,6 +40,7 @@ var controls: Label
 var map_progress: Label
 var map_objective: Label
 var boss_hint: Label
+var boss_name := "HOLLOW WARDEN"
 var confirmation: ConfirmationDialog
 var chapter_button: Button
 
@@ -310,7 +311,8 @@ func update_health(current: int, maximum: int) -> void:
 func update_progress() -> void:
 	set_text(objective,JourneyProgress.objective(Session.abilities,Session.flags,Session.visited))
 
-func show_boss(current: int, maximum: int) -> void:
+func show_boss(current: int, maximum: int, title := "HOLLOW WARDEN") -> void:
+	boss_name = title
 	update_boss_health(current,maximum)
 	update_boss_phase(1)
 	reward_notice.remaining = 0
@@ -321,7 +323,7 @@ func update_boss_health(current: int, maximum: int) -> void:
 	boss_bar.value = current
 
 func update_boss_phase(phase: int) -> void:
-	set_text(boss_title,"HOLLOW WARDEN / II" if phase == 2 else "HOLLOW WARDEN / I")
+	set_text(boss_title,boss_name + (" / II" if phase == 2 else " / I"))
 
 func hide_boss() -> void:
 	boss_panel.hide()

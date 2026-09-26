@@ -1,0 +1,34 @@
+[gd_scene load_steps=7 format=3]
+[ext_resource type="Script" path="res://features/enemies/furnace_keeper.gd" id="1"]
+[ext_resource type="Resource" path="res://features/enemies/furnace_config.tres" id="2"]
+[ext_resource type="SpriteFrames" path="res://features/enemies/rose_frames.tres" id="3"]
+[ext_resource type="Script" path="res://features/combat/health.gd" id="4"]
+[ext_resource type="Script" path="res://features/combat/hurtbox.gd" id="5"]
+[sub_resource type="RectangleShape2D" id="shape"]
+size = Vector2(32,60)
+[node name="FurnaceKeeper" type="CharacterBody2D" groups=["enemies"]]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("1")
+config = ExtResource("2")
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+position = Vector2(0,-60)
+scale = Vector2(1.5,1.5)
+sprite_frames = ExtResource("3")
+animation = &"idle"
+[node name="Body" type="CollisionShape2D" parent="."]
+position = Vector2(0,-30)
+shape = SubResource("shape")
+[node name="Health" type="Node" parent="."]
+script = ExtResource("4")
+invulnerability_seconds = 0.2
+[node name="Hurtbox" type="Area2D" parent="." node_paths=PackedStringArray("health")]
+collision_layer = 16
+collision_mask = 0
+monitoring = false
+script = ExtResource("5")
+health = NodePath("../Health")
+[node name="Shape" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0,-30)
+shape = SubResource("shape")
+[node name="Flames" type="Node2D" parent="."]

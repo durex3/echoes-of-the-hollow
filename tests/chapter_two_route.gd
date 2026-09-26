@@ -75,7 +75,7 @@ func run() -> void:
 				break
 		if not await use("CoreDoor"):
 			break
-		if not await cross_steam(384) or not await cross_steam(832) or not await clear_room() or not await use("CoreEcho"):
+		if not await cross_steam(384) or not await keeper_fight() or not await use("CoreEcho"):
 			break
 		if "cistern_restored" not in Session.flags or not Session.restore():
 			fail("Second chapter ending did not persist")
@@ -100,3 +100,43 @@ func run() -> void:
 				DirAccess.remove_absolute(path+suffix)
 	Audio.stop_all()
 	get_tree().quit(1 if failed else 0)
+
+func keeper_fight() -> bool:
+	var boss := game.room.get_node("Enemies/FurnaceKeeper") as FurnaceKeeper
+	var p: Player = game.player
+	var saw_phase_two := false
+	var saw_eruption := false
+	for tick: int in range(12000):
+		if "furnace_keeper_defeated" in Session.flags:
+			release()
+			await wait_frames(65)
+			return (saw_phase_two and saw_eruption and "steam_ward" not in Session.abilities) or fail("Keeper route skipped required patterns or depended on optional shield")
+		if p.state == Player.State.DEAD:
+			return fail("Died during keeper battle without optional ward")
+		var desired := boss.position.x-48
+		saw_phase_two = saw_phase_two or boss.phase == 2
+		saw_eruption = saw_eruption or (boss.state == FurnaceKeeper.State.CAST and not boss.wave_attack)
+		var jump := false
+		var attack := false
+		if boss.state == FurnaceKeeper.State.WARNING:
+			if boss.wave_attack:
+				desired = boss.position.x+boss.facing*78
+				jump = boss.timer < 0.18
+			else:
+				desired = boss.locked_x + 100 if boss.locked_x < boss.position.x else boss.locked_x-100
+		elif boss.state == FurnaceKeeper.State.CAST:
+			if boss.wave_attack:
+				desired = boss.position.x+boss.facing*78
+				jump = true
+			else:
+				desired = boss.locked_x + 100 if boss.locked_x < boss.position.x else boss.locked_x-100
+		elif boss.state == FurnaceKeeper.State.RECOVER:
+			desired = boss.position.x + (-36 if p.position.x < boss.position.x else 36)
+			attack = absf(p.position.x-boss.position.x)<62 and tick%25<14
+		var dx := desired-p.position.x
+		hold("move_left",dx < -6)
+		hold("move_right",dx > 6)
+		hold("jump",jump)
+		hold("attack",attack)
+		await frame()
+	return fail("Keeper battle timed out")

@@ -14,6 +14,7 @@ var player: Player
 var enabled := true
 var last_prompt := ""
 var projectiles: Node2D
+var rehearsal := false
 
 func _ready() -> void:
 	projectiles = Node2D.new()
@@ -25,6 +26,10 @@ func _ready() -> void:
 			gate.set_open(gate.stable_id in Session.flags)
 			gate.breached.connect(func(id: String) -> void: gate_breached.emit(id))
 	for enemy: Node in $Enemies.get_children():
+		if enemy is FurnaceKeeper and not rehearsal and ("furnace_keeper_defeated" in Session.flags or "cistern_restored" in Session.flags):
+			$Enemies.remove_child(enemy)
+			enemy.queue_free()
+			continue
 		if enemy is HollowWarden and "warden_defeated" in Session.flags:
 			$Enemies.remove_child(enemy)
 			enemy.queue_free()
@@ -90,6 +95,8 @@ func update_progress() -> void:
 			point.visible = point.stable_id not in Session.flags
 		elif point.kind == "finale":
 			point.visible = "warden_defeated" in Session.flags and point.stable_id not in Session.flags
+		elif point.kind == "challenge":
+			point.visible = not rehearsal and ("furnace_keeper_defeated" in Session.flags or "cistern_restored" in Session.flags)
 		if not point.visible_after_flag.is_empty():
 			point.visible = point.visible and point.visible_after_flag in Session.flags
 

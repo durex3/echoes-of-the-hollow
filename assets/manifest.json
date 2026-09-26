@@ -168,5 +168,12 @@
     "source_relative_path": "ch_06_boss_battles/ch_06_boss_battles/sprites/nega_pink_box.png",
     "sha256": "25a1a7979fdd3d038a5abc70cb43c84219e10f94aaf9a20df774c628326dcd67",
     "license_status": "Not supplied in extracted chapter pack; verify before distribution."
+  },
+  {
+    "file": "assets/effects/furnace_flame.png",
+    "source_pack": "Godot 4《类银河恶魔城锻造坊》资源目录(1)",
+    "source_relative_path": "ch_06_boss_battles/ch_06_boss_battles/sprites/pink_box_effects.png",
+    "sha256": "a2bf19e9c51d08f2d1e989b9c046e0bc2c113e4a007a3b9175488a58c85bd791",
+    "license_status": "Not supplied in extracted chapter pack; verify before distribution."
   }
 ]
