@@ -9,7 +9,7 @@ Godot 4.7.2 + GDScript 的 2D 类银河恶魔城工程基础，使用本机《�
 1. 双击根目录 `Play.cmd` 运行；或双击 `Open-Editor.cmd` 打开编辑器，按 F6 运行当前场景、F5 运行整个项目。
 2. 启动器优先使用 `E:\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe`。
 3. 也可以在 Godot 项目管理器导入此目录的 `project.godot`。无需安装插件、Python 包或 .NET。
-4. 双击 `Check.cmd` 运行项目规范、引擎导入、行为测试与跨进程存档检查。
+4. 双击 `Check.cmd` 运行项目规范、引擎导入与当前章节行为检查；跨章节和跨进程存档全量回归使用 `tools/check.ps1 -Full`。
 
 命令行（在项目根目录运行）：
 
@@ -18,11 +18,13 @@ Godot 4.7.2 + GDScript 的 2D 类银河恶魔城工程基础，使用本机《�
 .\tools\run.ps1
 .\tools\check.ps1
 .\tools\check.ps1 -Visual
+.\tools\check.ps1 -Full
+.\tools\check.ps1 -Full -Visual
 # 换电脑后显式指定，不必修改工程：
 .\tools\run.ps1 -GodotPath 'D:\Tools\Godot.exe'
 ```
 
-`-Visual` 会开启短暂的测试窗口并生成 `artifacts/` 截图；普通检查不打开窗口。
+默认检查直接从当前开发章节的隔离状态验证炉心内容，不重跑已验收的整章路线；`-Visual` 开启短暂测试窗口并生成 `artifacts/` 截图。修改共享移动、存档、跨章节流程或发布前，使用 `-Full` 跑两章完整回归。测试只用 `user://test_*` 文件，不读取玩家进度。
 开发检查需要 Python 3（仅标准库，用于静态检查）；运行游戏本身只需要 Godot。
 
 ## 当前玩法

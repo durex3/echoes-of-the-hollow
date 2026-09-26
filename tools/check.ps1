@@ -1,4 +1,4 @@
-param([string]$GodotPath = '', [switch]$Visual)
+param([string]$GodotPath = '', [switch]$Visual, [switch]$Full)
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'godot_path.ps1')
 $godotExe = Resolve-ProjectGodot $GodotPath
@@ -21,12 +21,21 @@ function Invoke-CheckedGodot {
     if ($contents -match '(?m)^(SCRIPT ERROR:|ERROR:|FAIL:)') {
         throw "$Name reported an engine/test error; see $log"
     }
-    if ($Name -in @('integration','visual') -and $contents -notmatch 'TEST_RESULT: \d+ checks, 0 failures') {
+    if ($Name -in @('integration','visual','current','current_visual') -and $contents -notmatch 'TEST_RESULT: \d+ checks, 0 failures') {
         throw "$Name runner did not finish."
     }
 }
 
 Invoke-CheckedGodot -Name 'import' -Arguments @('--headless','--editor','--import')
+if (-not $Full) {
+    if ($Visual) {
+        Invoke-CheckedGodot -Name 'current_visual' -Arguments @('--fixed-fps','60','--max-fps','60','res://tests/test_runner.tscn','--','--current','--visual')
+    } else {
+        Invoke-CheckedGodot -Name 'current' -Arguments @('--headless','--fixed-fps','60','res://tests/test_runner.tscn','--','--current')
+    }
+    Write-Output 'Current chapter checks passed. Use -Full for complete regression.'
+    return
+}
 Invoke-CheckedGodot -Name 'integration' -Arguments @('--headless','--fixed-fps','60','res://tests/test_runner.tscn')
 Invoke-CheckedGodot -Name 'chapter_route' -Arguments @('--headless','--fixed-fps','60','res://tests/chapter_route.tscn')
 $routeLog = Get-Content -LiteralPath (Join-Path $artifacts 'chapter_route.log') -Raw

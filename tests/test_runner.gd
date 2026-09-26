@@ -50,6 +50,9 @@ func shot(filename: String) -> void:
 	check(result == OK, "Screenshot: " + filename)
 
 func _run() -> void:
+	if "--current" in OS.get_cmdline_user_args():
+		await _run_current()
+		return
 	game = preload("res://app/main.tscn").instantiate()
 	add_child(game)
 	await frames(4)
@@ -316,5 +319,30 @@ func _run() -> void:
 	await frames(4)
 	if visual:
 		await get_tree().create_timer(0.3, true, false, true).timeout
+	print("TEST_RESULT: %d checks, %d failures" % [checks,failures.size()])
+	get_tree().quit(0 if failures.is_empty() else 1)
+
+func _run_current() -> void:
+	game = preload("res://app/main.tscn").instantiate()
+	add_child(game)
+	await frames(4)
+	game.start_game(false)
+	await frames(4)
+	Session.set_flag("flow_seal")
+	Session.set_flag("pressure_seal")
+	Session.checkpoint_room = "ember_quay"
+	Session.checkpoint_spawn = "checkpoint"
+	var keeper_suite := preload("res://tests/furnace_keeper_suite.gd").new()
+	add_child(keeper_suite)
+	await keeper_suite.run(self,game)
+	keeper_suite.queue_free()
+	check(Repository.validate(Session.snapshot()), "Current chapter fixture remains a valid isolated save")
+	game.queue_free()
+	Audio.stop_all()
+	await frames(4)
+	for path: String in [Session.save_path,Session.settings_path]:
+		for suffix: String in ["", ".tmp", ".bak"]:
+			if FileAccess.file_exists(path + suffix):
+				DirAccess.remove_absolute(path + suffix)
 	print("TEST_RESULT: %d checks, %d failures" % [checks,failures.size()])
 	get_tree().quit(0 if failures.is_empty() else 1)
