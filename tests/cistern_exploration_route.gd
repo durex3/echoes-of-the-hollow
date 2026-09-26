@@ -49,12 +49,12 @@ func explore() -> bool:
 		return fail("Real double jump missed the vault's optional high shelf: %s" % game.player.position)
 	if not await walk_to(Vector2(705,320)) or not await use("Heart"):
 		return false
-	if "cistern_heart" not in Session.flags or Session.maximum_health() != 6:
-		return fail("Optional heart was not obtained through actual movement")
+	if "steam_ward" not in Session.abilities or Session.maximum_health() != 5:
+		return fail("Optional ward was not obtained through actual movement")
 	if not await use("Return"):
 		return false
 	if not await walk_to(Vector2(850,672)) or not await use("Crosslink"):
 		return false
 	if game.room.room_id != "cistern_archive" or not await use("Return"):
 		return false
-	return game.room.room_id == "ember_quay" and Session.restore() and "cistern_heart" in Session.flags
+	return game.room.room_id == "ember_quay" and Session.restore() and "steam_ward" in Session.abilities

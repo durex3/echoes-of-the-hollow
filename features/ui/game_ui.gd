@@ -33,6 +33,9 @@ var settings_panel: SettingsPanel
 var vitality_pips: VitalityPips
 var dash_label: Label
 var dash_status := "Dash locked"
+var ward_label: Label
+var ward_status := "Ward locked"
+var ward_seconds := 0
 var controls: Label
 var map_progress: Label
 var map_objective: Label
@@ -78,6 +81,9 @@ func _ready() -> void:
 	health_row.add_child(dash_label)
 	objective = label("Find the echo in the eastern ruins", 12, Color("b4c6c2"))
 	left.add_child(objective)
+	ward_label = label("",11,Color("94e4ef"))
+	left.add_child(ward_label)
+	ward_label.hide()
 	area_label = label("", 14, Color("94e4ce"))
 	top.add_child(area_label)
 	var bottom := VBoxContainer.new()
@@ -372,6 +378,13 @@ func update_dash_status(value: String) -> void:
 	dash_status = value
 	dash_label.text = (Session.bindings.hint("dash") + " " if value != "Dash locked" else "") + TextCatalog.text(value)
 
+func update_ward_status(value: String, seconds: int) -> void:
+	ward_status = value
+	ward_seconds = seconds
+	ward_label.visible = value != "Ward locked"
+	reward_notice.offset_top = 84 if ward_label.visible else 64
+	ward_label.text = Session.bindings.hint("steam_ward") + " / " + TextCatalog.text("Steam ward") + ": " + TextCatalog.text(value) + (" %ds" % seconds if seconds > 0 else "")
+
 func update_boss_cue(value: String) -> void:
 	set_text(boss_hint, value)
 
@@ -385,4 +398,5 @@ func _refresh_bindings() -> void:
 		hints.append(Session.bindings.hint(action) + " " + TextCatalog.text(InputBindings.TITLES[index]))
 	controls.text = "   ".join(hints)
 	update_dash_status(dash_status)
+	update_ward_status(ward_status,ward_seconds)
 	reward_notice.refresh_language()

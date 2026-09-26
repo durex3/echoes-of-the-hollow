@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=14 format=3]
 [ext_resource type="Script" path="res://features/player/player.gd" id="1"]
 [ext_resource type="Resource" path="res://features/player/default_player.tres" id="2"]
 [ext_resource type="SpriteFrames" path="res://features/player/hero_frames.tres" id="3"]
@@ -6,6 +6,8 @@
 [ext_resource type="Script" path="res://features/combat/hurtbox.gd" id="5"]
 [ext_resource type="Script" path="res://features/combat/hitbox.gd" id="6"]
 [ext_resource type="Script" path="res://features/player/slash.gd" id="7"]
+[ext_resource type="Script" path="res://features/player/steam_ward.gd" id="8"]
+[ext_resource type="Resource" path="res://features/player/steam_ward_config.tres" id="9"]
 [sub_resource type="CapsuleShape2D" id="Body"]
 radius = 10.0
 height = 42.0
@@ -25,6 +27,10 @@ config = ExtResource("2")
 [node name="Collision" type="CollisionShape2D" parent="."]
 position = Vector2(0, -21)
 shape = SubResource("Body")
+
+[node name="SteamWard" type="Node2D" parent="."]
+script = ExtResource("8")
+config = ExtResource("9")
 [node name="Visual" type="Node2D" parent="."]
 [node name="Sprite" type="AnimatedSprite2D" parent="Visual"]
 position = Vector2(0, -40)

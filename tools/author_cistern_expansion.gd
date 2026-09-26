@@ -51,8 +51,8 @@ func _ready() -> void:
 				ledge(room,14,18,12)
 				ledge(room,21,27,10)
 				point(room,"Lesson","sign",Vector2(220,608),"An optional high echo. Double jump from the first ledge.")
-				var gift := point(room,"Heart","upgrade",Vector2(755,320),"E / CLAIM THE CISTERN HEART")
-				gift.stable_id = "cistern_heart"
+				var gift := point(room,"Heart","ability",Vector2(755,320),"E / CLAIM THE SLUICE ECHO")
+				gift.stable_id = "steam_ward"
 				brazier(room,Vector2(690,320))
 		var packed := PackedScene.new()
 		assert(packed.pack(room) == OK)

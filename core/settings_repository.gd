@@ -30,6 +30,7 @@ static func valid(config: ConfigFile) -> bool:
 				return false
 			if (kind == "key" and code in [KEY_ESCAPE, KEY_ENTER, KEY_KP_ENTER, KEY_TAB, KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN]) or (kind == "button" and code in [JOY_BUTTON_START, JOY_BUTTON_GUIDE]):
 				return false
+	bindings = InputBindings.with_ward_defaults(bindings)
 	var used_keys: Array[int] = []
 	var used_buttons: Array[int] = []
 	for action: String in InputBindings.ACTIONS:

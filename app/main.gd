@@ -51,6 +51,7 @@ func start_game(load_save: bool) -> void:
 	add_child(player)
 	player.health.changed.connect(ui.update_health)
 	player.dash_status_changed.connect(ui.update_dash_status)
+	player.steam_ward.status_changed.connect(ui.update_ward_status)
 	player.died.connect(_on_player_died)
 	player.impact.connect($Feedback.show_impact)
 	running = true
@@ -66,6 +67,7 @@ func load_room(room_id: String, spawn: String) -> void:
 	$Feedback.clear()
 	ui.hide_boss()
 	player.cancel_dash()
+	player.steam_ward.cancel()
 	player.cancel_attack()
 	if player.state == Player.State.ATTACK:
 		player.state = Player.State.MOVE
@@ -199,11 +201,13 @@ func _on_interaction(point: WorldInteraction) -> void:
 			if point.stable_id in Session.abilities:
 				return
 			Session.unlock(point.stable_id)
+			if point.stable_id == "steam_ward":
+				player.health.restore_full()
 			room.update_progress()
 			Audio.play_sound("ability_acquire")
 			_save_reward(point.stable_id)
 		"upgrade":
-			if point.stable_id not in ["heart_bloom","cistern_heart"] or point.stable_id in Session.flags:
+			if point.stable_id != "heart_bloom" or point.stable_id in Session.flags:
 				return
 			Session.set_flag(point.stable_id)
 			player.health.maximum = Session.maximum_health()

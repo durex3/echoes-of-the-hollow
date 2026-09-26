@@ -125,8 +125,8 @@ prompt = "An optional high echo. Double jump from the first ledge."
 [node name="Heart" type="Node2D" parent="Interactions" unique_id=1836835847]
 position = Vector2(755, 320)
 script = ExtResource("5_sy6ds")
-kind = "upgrade"
-stable_id = "cistern_heart"
-prompt = "E / CLAIM THE CISTERN HEART"
+kind = "ability"
+stable_id = "steam_ward"
+prompt = "E / CLAIM THE SLUICE ECHO"
 
 [node name="Hazards" type="Node2D" parent="." unique_id=1788886502]

@@ -151,6 +151,7 @@ func run(h: Node, game: Node) -> void:
 	h.check(game.room.room_id == "pump_chamber", "Pressure valve opens the quay-to-pump return route")
 	# Optional reward remains unique, additive and persisted without requiring it for core.
 	Session.flags.erase("cistern_heart")
+	Session.abilities.erase("steam_ward")
 	var previous_max := Session.maximum_health()
 	game.load_room("echo_vault","checkpoint")
 	await h.frames(3)
@@ -159,13 +160,13 @@ func run(h: Node, game: Node) -> void:
 	player.revive(Vector2(755,320))
 	await h.frames(3)
 	await h.press("interact",2)
-	h.check(Session.maximum_health() == previous_max+1 and player.health.current == previous_max+1, "Cistern heart grants one permanent additive vitality and full heal")
+	h.check(Session.maximum_health() == previous_max and player.health.current == previous_max and "steam_ward" in Session.abilities, "Vault grants steam ward and full heal without increasing maximum health")
 	game._on_interaction(game.room.get_node("Interactions/Heart"))
-	h.check(Session.flags.count("cistern_heart") == 1 and Session.restore() and Session.maximum_health() == previous_max+1, "Optional heart is unique and survives save restore")
+	h.check(Session.abilities.count("steam_ward") == 1 and Session.restore() and Session.maximum_health() == previous_max, "Optional ward is unique and survives save restore")
 	player.health.invulnerability_left = 0
 	player.health.take_damage(99,player.position)
 	await h.frames(65)
-	h.check(game.room.room_id == "echo_vault" and player.health.current == previous_max+1, "Death after secret reward respawns safely with upgraded vitality")
+	h.check(game.room.room_id == "echo_vault" and player.health.current == previous_max and "steam_ward" in Session.abilities, "Death after secret reward retains ward at a safe checkpoint")
 	Session.set_language("zh_CN")
 	for id: String in second:
 		Session.visit(id)

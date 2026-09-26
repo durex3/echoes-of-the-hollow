@@ -25,7 +25,7 @@ static func validate(data: Variant) -> bool:
 		if flag not in ["training_cleared", "scriptorium_cleared", "heart_bloom", "wind_passage_open", "belfry_cleared", "warden_defeated", "journey_restored", "flow_seal", "pressure_seal", "cistern_restored", "cistern_heart"]:
 			return false
 	for ability: Variant in data.abilities:
-		if ability not in ["double_jump", "dash"]:
+		if ability not in ["double_jump", "dash", "steam_ward"]:
 			return false
 	for room: Variant in data.visited:
 		if room not in ROOMS:
@@ -69,6 +69,9 @@ static func migrate(data: Variant) -> Variant:
 	if migrated.get("version") == 1:
 		migrated.version = VERSION
 		migrated.flags = []
+	# Additive, idempotent upgrade for validated 0.12 saves. Preserve earned HP.
+	if validate(migrated) and "cistern_heart" in migrated.flags and "steam_ward" not in migrated.abilities:
+		migrated.abilities.append("steam_ward")
 	return migrated
 
 static func _parse(path: String) -> Variant:

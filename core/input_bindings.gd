@@ -2,8 +2,8 @@ class_name InputBindings
 extends RefCounted
 ## Owns mappings and prompt formatting; gameplay still reads InputMap actions.
 signal changed
-const ACTIONS := ["move_left", "move_right", "jump", "attack", "dash", "interact", "world_map", "pause", "mute"]
-const TITLES := ["Move left", "Move right", "Jump", "Attack", "Dash", "Interact", "Map", "Pause", "Mute"]
+const ACTIONS := ["move_left", "move_right", "jump", "attack", "dash", "interact", "world_map", "pause", "mute", "steam_ward"]
+const TITLES := ["Move left", "Move right", "Jump", "Attack", "Dash", "Interact", "Map", "Pause", "Mute", "Steam ward"]
 const PAD_NAMES := {0: "A / Cross", 1: "B / Circle", 2: "X / Square", 3: "Y / Triangle", 4: "Back", 6: "Start", 9: "LB / L1", 10: "RB / R1", 11: "D-pad Up", 12: "D-pad Down", 13: "D-pad Left", 14: "D-pad Right"}
 var defaults: Dictionary = {}
 var overrides: Dictionary = {}
@@ -26,7 +26,7 @@ func observe(event: InputEvent) -> void:
 		changed.emit()
 
 func apply(values: Dictionary) -> void:
-	overrides = values.duplicate(true)
+	overrides = with_ward_defaults(values)
 	for action: String in ACTIONS:
 		InputMap.action_erase_events(action)
 		var custom: Dictionary = overrides.get(action, {})
@@ -45,6 +45,40 @@ func apply(values: Dictionary) -> void:
 			button.button_index = int(custom.button) as JoyButton
 			InputMap.action_add_event(action, button)
 	changed.emit()
+
+static func with_ward_defaults(values: Dictionary) -> Dictionary:
+	# Preserve legacy rebinds that occupied the newly introduced L / LB defaults.
+	var result := values.duplicate(true)
+	var ward: Dictionary = result.get("steam_ward", {})
+	for kind: String in ["key", "button"]:
+		if ward.has(kind):
+			continue
+		var used: Array[int] = []
+		for action: String in ACTIONS:
+			if action == "steam_ward":
+				continue
+			var custom: Dictionary = result.get(action, {})
+			if custom.has(kind):
+				used.append(int(custom[kind]))
+				continue
+			var definition: Dictionary = ProjectSettings.get_setting("input/"+action)
+			for event: InputEvent in definition.events:
+				if kind == "key" and event is InputEventKey:
+					used.append(event.physical_keycode if event.physical_keycode else event.keycode)
+				elif kind == "button" and event is InputEventJoypadButton:
+					used.append(event.button_index)
+		var default_code: int = KEY_L if kind == "key" else JOY_BUTTON_LEFT_SHOULDER
+		if default_code not in used:
+			continue
+		var candidates: Array = range(KEY_A, KEY_Z+1) if kind == "key" else range(JOY_BUTTON_MAX)
+		for code: int in candidates:
+			if code in used or (kind == "button" and code in [JOY_BUTTON_START, JOY_BUTTON_GUIDE]):
+				continue
+			ward[kind] = code
+			break
+	if not ward.is_empty():
+		result["steam_ward"] = ward
+	return result
 
 func rebind(action: String, event: InputEvent) -> String:
 	if action not in ACTIONS:
@@ -90,6 +124,8 @@ func hint(action: String, pad_override := -1) -> String:
 	return "--"
 
 func format_text(source: String, translated: String) -> String:
+	if source == "L: ward for 1.5s. Blocks one steam plume; cooldown 5s.":
+		return ("按 %s 防护1.5秒，抵挡一轮喷流；冷却5秒。" if TranslationServer.get_locale() == "zh_CN" else "%s: ward for 1.5s. Blocks one steam plume; cooldown 5s.") % hint("steam_ward")
 	if source.begins_with("E "):
 		return hint("interact") + translated.substr(1)
 	if source == "Press SPACE again in the air.":

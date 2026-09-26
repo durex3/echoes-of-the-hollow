@@ -6,6 +6,7 @@ enum Phase { REST, WARNING, ACTIVE }
 var phase := Phase.REST
 var elapsed := 0.0
 var enabled := true
+var protected_ids: Array[int] = []
 
 func _ready() -> void:
 	assert(config != null)
@@ -26,13 +27,20 @@ func _physics_process(delta: float) -> void:
 	if elapsed >= duration:
 		elapsed -= duration
 		phase = (phase + 1) % 3 as Phase
+		protected_ids.clear()
 	if phase == Phase.ACTIVE:
 		for body: Node2D in get_overlapping_bodies():
 			if body is Player:
+				if body.state == Player.State.DEAD or body.get_instance_id() in protected_ids:
+					continue
+				if body.health.invulnerability_left <= 0 and body.steam_ward.absorb():
+					protected_ids.append(body.get_instance_id())
+					continue
 				body.health.take_damage(config.damage, global_position)
 	queue_redraw()
 
 func deactivate() -> void:
+	protected_ids.clear()
 	enabled = false
 	phase = Phase.REST
 	elapsed = 0

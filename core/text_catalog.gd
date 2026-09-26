@@ -2,6 +2,16 @@ class_name TextCatalog
 extends RefCounted
 ## Source English strings are stable translation keys; native Godot Translation backend.
 const ZH := {
+	"Steam ward": "水闸回响",
+	"Ward ready": "就绪",
+	"Ward active": "防护中",
+	"Ward cooling": "冷却中",
+	"Ward locked": "未解锁",
+	"Steam blocked": "已抵挡蒸汽",
+	"E / CLAIM THE SLUICE ECHO": "E / 获取水闸回响",
+	"SLUICE ECHO ACQUIRED": "已获得 · 水闸回响",
+	"Block one steam plume. Enemy attacks still hurt.": "抵挡一轮蒸汽喷流，无法抵挡敌人攻击。",
+	"L: ward for 1.5s. Blocks one steam plume; cooldown 5s.": "按 L 防护1.5秒，抵挡一轮喷流；冷却5秒。",
 	"Flow valve locked / Climb the Sluice Shaft": "流量阀未开启 / 攀登水闸井取得阀印",
 	"Pressure valve locked / Explore the Lower Pump": "压力阀未开启 / 深入下层泵房取得阀印",
 	"14 / SLUICE SHAFT": "14 / 水闸井",

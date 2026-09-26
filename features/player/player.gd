@@ -11,6 +11,8 @@ enum State { MOVE, ATTACK, HURT, DEAD, DASH }
 @onready var health: HealthComponent = $Health
 @onready var attack_box: Hitbox = $AttackBox
 @onready var slash: Node2D = $Visual/Slash
+@onready var steam_ward: SteamWard = $SteamWard
+var ward_held := false
 var state := State.MOVE
 var facing := 1.0
 var coyote_left := 0.0
@@ -39,9 +41,14 @@ func _physics_process(delta: float) -> void:
 	_publish_dash_status()
 	if state == State.DEAD:
 		return
+	steam_ward.advance(delta)
 	# Discrete actions require a fresh press after menus, even if held during resume.
 	if not input_armed:
-		input_armed = not Input.is_action_pressed("jump") and not Input.is_action_pressed("attack") and not Input.is_action_pressed("dash")
+		input_armed = not Input.is_action_pressed("jump") and not Input.is_action_pressed("attack") and not Input.is_action_pressed("dash") and not Input.is_action_pressed("steam_ward")
+	var ward_pressed := input_armed and Input.is_action_pressed("steam_ward") and not ward_held
+	ward_held = Input.is_action_pressed("steam_ward")
+	if ward_pressed and state != State.HURT:
+		steam_ward.activate()
 	var dash_pressed := input_armed and Input.is_action_pressed("dash") and not dash_held
 	dash_held = Input.is_action_pressed("dash")
 	dash_cooldown_left = maxf(0.0, dash_cooldown_left - delta)
@@ -160,6 +167,7 @@ func _on_damaged(_amount: int, origin: Vector2) -> void:
 	Audio.play_sound("hit")
 
 func _on_died() -> void:
+	steam_ward.cancel()
 	cancel_dash()
 	state = State.DEAD
 	cancel_attack()
@@ -168,6 +176,7 @@ func _on_died() -> void:
 	died.emit()
 
 func revive(at: Vector2) -> void:
+	steam_ward.cancel(true)
 	global_position = at
 	velocity = Vector2.ZERO
 	state = State.MOVE
@@ -189,6 +198,7 @@ func cancel_attack() -> void:
 	slash.hide()
 
 func reset_input() -> void:
+	ward_held = Input.is_action_pressed("steam_ward")
 	buffer_left = 0
 	input_armed = false
 	jump_held = Input.is_action_pressed("jump")

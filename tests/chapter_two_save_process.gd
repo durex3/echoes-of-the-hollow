@@ -9,14 +9,25 @@ func _initialize() -> void:
 			quit(1)
 			return
 		print("CHAPTER_TWO_SAVE_WRITE_OK")
+		data.flags.erase("cistern_heart")
+		data.abilities.append("steam_ward")
+		if SaveRepository.write(PATH+".new",data) != OK:
+			quit(1)
+			return
 	else:
 		var data := SaveRepository.read(PATH)
 		if data.is_empty() or data.checkpoint_room != "echo_vault" or data.visited.size() != 8 or "cistern_restored" not in data.flags or "flow_seal" not in data.flags or "pressure_seal" not in data.flags or "cistern_heart" not in data.flags:
 			push_error("Chapter II cross-process restore failed")
 			quit(1)
 			return
-		for suffix: String in ["", ".tmp", ".bak"]:
-			if FileAccess.file_exists(PATH+suffix):
-				DirAccess.remove_absolute(PATH+suffix)
+		var fresh := SaveRepository.read(PATH+".new")
+		if "steam_ward" not in data.abilities or fresh.is_empty() or "steam_ward" not in fresh.abilities or "cistern_heart" in fresh.flags:
+			push_error("Steam ward new/legacy cross-process restore failed")
+			quit(1)
+			return
+		for path: String in [PATH,PATH+".new"]:
+			for suffix: String in ["", ".tmp", ".bak"]:
+				if FileAccess.file_exists(path+suffix):
+					DirAccess.remove_absolute(path+suffix)
 		print("CHAPTER_TWO_SAVE_READ_OK")
 	quit()
