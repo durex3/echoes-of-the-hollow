@@ -2,6 +2,8 @@ class_name GameUI
 extends CanvasLayer
 
 signal start_requested(load_save: bool)
+signal challenge_requested(chapter: int)
+signal title_requested
 signal resume_requested
 signal quit_requested
 signal map_closed
@@ -39,10 +41,10 @@ var ward_seconds := 0
 var controls: Label
 var map_progress: Label
 var map_objective: Label
-var boss_hint: Label
 var boss_name := "HOLLOW WARDEN"
 var confirmation: ConfirmationDialog
 var chapter_button: Button
+var challenge_chapter := 0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -109,7 +111,7 @@ func _ready() -> void:
 	boss_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
 	boss_panel.offset_left = -170
 	boss_panel.offset_right = 170
-	boss_panel.offset_top = 70
+	boss_panel.offset_top = 35
 	boss_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hud.add_child(boss_panel)
 	boss_title = label("HOLLOW WARDEN / I",14,Color("efce8e"))
@@ -126,9 +128,6 @@ func _ready() -> void:
 	boss_bar.add_theme_stylebox_override("background",bar_background)
 	boss_bar.add_theme_stylebox_override("fill",bar_fill)
 	boss_panel.add_child(boss_bar)
-	boss_hint = label("", 12, Color("94e4ce"))
-	boss_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	boss_panel.add_child(boss_hint)
 	boss_panel.hide()
 	modal = PanelContainer.new()
 	modal.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
@@ -147,7 +146,7 @@ func _ready() -> void:
 	modal.add_theme_stylebox_override("panel", style)
 	root.add_child(modal)
 	menu = VBoxContainer.new()
-	menu.add_theme_constant_override("separation", 8)
+	menu.add_theme_constant_override("separation", 4)
 	modal.add_child(menu)
 	hud.hide()
 	modal.hide()
@@ -208,8 +207,12 @@ func _ready() -> void:
 	Session.bindings.changed.connect(_refresh_bindings)
 	_refresh_bindings()
 
-func show_map(room_id: String) -> void:
+func show_map(room_id: String, door_target := "") -> void:
 	world_map.configure(room_id,Session.visited,Session.checkpoint_room,Session.flags,Session.abilities)
+	world_map.door_target = door_target
+	if door_target == "ember_quay" and room_id == "heart_chamber":
+		world_map.chapter = 2
+	world_map.queue_redraw()
 	_refresh_map_page()
 	map_objective.text = TextCatalog.text(JourneyProgress.objective(Session.abilities,Session.flags,Session.visited))
 	modal.hide()
@@ -235,6 +238,10 @@ func label(text: String, font_size: int, color: Color) -> Label:
 func show_menu(mode: String, can_continue := false) -> void:
 	menu_mode = mode
 	menu_can_continue = can_continue
+	modal.offset_top = -160 if mode == "challenge_select" else -138
+	modal.offset_bottom = 160 if mode == "challenge_select" else 138
+	if mode == "challenge_complete":
+		hud.hide()
 	for child: Node in menu.get_children():
 		menu.remove_child(child)
 		child.queue_free()
@@ -242,12 +249,20 @@ func show_menu(mode: String, can_continue := false) -> void:
 	var heading := "HOLLOW RESTORED" if mode == "finale" else ("ECHOES OF THE HOLLOW" if mode == "title" else ("ECHO RESTORED" if mode == "win" else "PAUSED"))
 	if mode == "chapter_two":
 		heading = "CISTERN RESTORED"
+	elif mode == "challenge_select":
+		heading = "BOSS CHALLENGE"
+	elif mode == "challenge_complete":
+		heading = "BOSS DEFEATED"
 	var title := label(heading, 24, Color("efce8e"))
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	menu.add_child(title)
 	var subtitle := label("The warden rests. The grove remembers your journey." if mode == "finale" else "A small journey through the forgotten grove", 12, Color("b4c6c2"))
 	if mode == "chapter_two":
 		set_text(subtitle,"Steam vents are now safe throughout Chapter II")
+	elif mode == "challenge_select":
+		set_text(subtitle,"Choose a chapter boss")
+	elif mode == "challenge_complete":
+		set_text(subtitle,"Practice complete")
 	subtitle.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	menu.add_child(subtitle)
@@ -260,10 +275,21 @@ func show_menu(mode: String, can_continue := false) -> void:
 		if can_continue:
 			button("Continue from checkpoint", func() -> void: start_requested.emit(true))
 		button("New journey", request_new_journey)
+		button("Boss challenge", func() -> void: show_menu("challenge_select", menu_can_continue))
 		if can_continue:
 			menu.add_child(label("New journey replaces progress on the next save.", 12, Color("b4c6c2")))
+	elif mode == "challenge_select":
+		button("Chapter I / Hollow Warden", func() -> void: challenge_requested.emit(1))
+		button("Chapter II / Furnace Keeper", func() -> void: challenge_requested.emit(2))
+		button("Back", func() -> void: title_requested.emit())
+	elif mode == "challenge_complete":
+		button("Challenge again", func() -> void: challenge_requested.emit(challenge_chapter))
+		button("Choose boss", func() -> void: show_menu("challenge_select", menu_can_continue))
+		button("Main menu", func() -> void: title_requested.emit())
 	else:
 		button("Continue exploring" if mode in ["win","finale","chapter_two"] else "Resume", func() -> void: resume_requested.emit())
+		if mode == "pause" and challenge_chapter != 0:
+			button("Main menu", func() -> void: title_requested.emit())
 	button("Settings", func() -> void:
 		modal.hide()
 		settings_panel.open())
@@ -317,6 +343,7 @@ func show_boss(current: int, maximum: int, title := "HOLLOW WARDEN") -> void:
 	update_boss_phase(1)
 	reward_notice.remaining = 0
 	boss_panel.show()
+	controls.hide()
 
 func update_boss_health(current: int, maximum: int) -> void:
 	boss_bar.max_value = maximum
@@ -327,6 +354,7 @@ func update_boss_phase(phase: int) -> void:
 
 func hide_boss() -> void:
 	boss_panel.hide()
+	controls.show()
 
 func notify(message: String) -> void:
 	set_text(toast,message)
@@ -386,9 +414,6 @@ func update_ward_status(value: String, seconds: int) -> void:
 	ward_label.visible = value != "Ward locked"
 	reward_notice.offset_top = 84 if ward_label.visible else 64
 	ward_label.text = Session.bindings.hint("steam_ward") + " / " + TextCatalog.text("Steam ward") + ": " + TextCatalog.text(value) + (" %ds" % seconds if seconds > 0 else "")
-
-func update_boss_cue(value: String) -> void:
-	set_text(boss_hint, value)
 
 func _refresh_bindings() -> void:
 	_refresh_text(root_control)

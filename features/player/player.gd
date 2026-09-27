@@ -10,7 +10,8 @@ enum State { MOVE, ATTACK, HURT, DEAD, DASH }
 @onready var visual: Node2D = $Visual
 @onready var health: HealthComponent = $Health
 @onready var attack_box: Hitbox = $AttackBox
-@onready var slash: Node2D = $Visual/Slash
+@onready var slash: PlayerSlash = $Visual/Slash
+@onready var effects: PlayerVisualEffects = $VisualEffects
 @onready var steam_ward: SteamWard = $SteamWard
 var ward_held := false
 var state := State.MOVE
@@ -20,6 +21,9 @@ var buffer_left := 0.0
 var state_left := 0.0
 var air_jump_used := false
 var attack_elapsed := 0.0
+var attack_variant := 0
+var next_attack_variant := 0
+var attack_buffer_left := 0.0
 var attack_phase := AttackProfile.Phase.FINISHED
 var input_armed := true
 var attack_held := false
@@ -55,6 +59,9 @@ func _physics_process(delta: float) -> void:
 	dash_cooldown_left = maxf(0.0, dash_cooldown_left - delta)
 	var jump_pressed := input_armed and Input.is_action_pressed("jump") and not jump_held
 	var attack_pressed := input_armed and Input.is_action_pressed("attack") and not attack_held
+	attack_buffer_left = maxf(0.0, attack_buffer_left - delta)
+	if attack_pressed and state == State.ATTACK and attack_phase == AttackProfile.Phase.RECOVERY:
+		attack_buffer_left = config.attack_buffer_seconds
 	var jump_released := jump_held and not Input.is_action_pressed("jump")
 	jump_held = Input.is_action_pressed("jump")
 	attack_held = Input.is_action_pressed("attack")
@@ -97,7 +104,8 @@ func _physics_process(delta: float) -> void:
 		attack_elapsed += delta
 		attack_phase = config.attack.phase_at(attack_elapsed)
 		if attack_phase == AttackProfile.Phase.FINISHED:
-			cancel_attack()
+			attack_box.end_swing()
+			slash.hide()
 			state = State.MOVE
 	if state != State.HURT:
 		if state == State.MOVE and direction != 0:
@@ -111,8 +119,11 @@ func _physics_process(delta: float) -> void:
 				_jump(true)
 		if jump_released and velocity.y < 0:
 			velocity.y *= 0.45
-		if state == State.MOVE and attack_pressed:
+		if state == State.MOVE and (attack_pressed or attack_buffer_left > 0.0):
 			state = State.ATTACK
+			attack_buffer_left = 0.0
+			attack_variant = next_attack_variant
+			next_attack_variant = 1 - next_attack_variant
 			attack_elapsed = 0.0
 			attack_phase = AttackProfile.Phase.WINDUP
 			attack_box.damage = config.attack.damage
@@ -139,14 +150,14 @@ func _update_animation() -> void:
 	visual.scale.x = facing
 	slash.visible = attack_box.active
 	if slash.visible:
-		slash.rotation = config.attack.phase_progress(attack_elapsed) * 1.2 - 0.6
+		slash.present(config.attack.phase_progress(attack_elapsed), attack_variant)
 	visual.modulate.a = 0.45 if not Session.reduce_flashes and health.invulnerability_left > 0 and int(health.invulnerability_left * 18) % 2 else 1.0
 	match state:
 		State.DASH:
 			sprite.play("run")
 		State.ATTACK:
-			# Poses and hit window share phase boundaries, including custom timings.
-			sprite.play("attack")
+			# A separate press chooses the other hand; recovery poses join cleanly.
+			sprite.play("attack_return" if attack_variant == 1 else "attack")
 			sprite.pause()
 			match attack_phase:
 				AttackProfile.Phase.WINDUP: sprite.frame = 0
@@ -160,6 +171,7 @@ func _update_animation() -> void:
 				sprite.play("run" if absf(velocity.x) > 8 else "idle")
 
 func _on_damaged(_amount: int, origin: Vector2) -> void:
+	effects.clear()
 	cancel_dash()
 	state = State.HURT
 	state_left = 0.24
@@ -168,6 +180,7 @@ func _on_damaged(_amount: int, origin: Vector2) -> void:
 	Audio.play_sound("hit")
 
 func _on_died() -> void:
+	effects.clear()
 	steam_ward.cancel()
 	cancel_dash()
 	state = State.DEAD
@@ -177,6 +190,9 @@ func _on_died() -> void:
 	died.emit()
 
 func revive(at: Vector2) -> void:
+	effects.clear()
+	attack_variant = 0
+	next_attack_variant = 0
 	steam_ward.cancel(true)
 	global_position = at
 	velocity = Vector2.ZERO
@@ -194,11 +210,13 @@ func revive(at: Vector2) -> void:
 	visual.modulate = Color.WHITE
 
 func cancel_attack() -> void:
+	attack_buffer_left = 0.0
 	attack_box.end_swing()
 	attack_phase = AttackProfile.Phase.FINISHED
 	slash.hide()
 
 func reset_input() -> void:
+	attack_buffer_left = 0.0
 	ward_held = Input.is_action_pressed("steam_ward")
 	buffer_left = 0
 	input_armed = false
@@ -206,19 +224,14 @@ func reset_input() -> void:
 	attack_held = Input.is_action_pressed("attack")
 	dash_held = Input.is_action_pressed("dash")
 
-func cancel_dash() -> void:
+func cancel_dash(clear_trails := false) -> void:
+	if clear_trails:
+		effects.clear()
 	dash_left = 0
 	queue_redraw()
 	if state == State.DASH:
 		state = State.MOVE
 		velocity.x = facing * config.run_speed
-
-func _draw() -> void:
-	if state != State.DASH:
-		return
-	for i: int in range(3):
-		var y := -12.0 - i * 11.0
-		draw_line(Vector2(-facing * 16,y),Vector2(-facing * (38 + i*7),y),Color(0.58,0.89,0.81,0.65),2)
 
 func _publish_dash_status() -> void:
 	var value := "Dash ready"

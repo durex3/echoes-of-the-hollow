@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="WardenConfig" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="WardenConfig" load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://features/enemies/warden_config.gd" id="1"]
 [ext_resource type="Script" path="res://features/combat/attack_profile.gd" id="2"]
@@ -17,7 +17,15 @@ active_seconds = 0.5
 recovery = 1.2
 damage = 1
 
+[sub_resource type="Resource" id="Charged"]
+script = ExtResource("2")
+windup = 1.3
+active_seconds = 0.24
+recovery = 1.35
+damage = 1
+
 [resource]
 script = ExtResource("1")
 sweep = SubResource("Sweep")
 rush = SubResource("Rush")
+charged = SubResource("Charged")

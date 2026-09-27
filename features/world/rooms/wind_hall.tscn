@@ -65,7 +65,7 @@ position = Vector2(810, 480)
 [node name="Shrine" type="Node2D" parent="Interactions" unique_id=807273291]
 position = Vector2(165, 480)
 script = ExtResource("4_xqoui")
-prompt = "E / REST & SAVE"
+prompt = "E / SAVE PROGRESS"
 
 [node name="Sprite" type="AnimatedSprite2D" parent="Interactions/Shrine" unique_id=679849370]
 position = Vector2(0, -20)

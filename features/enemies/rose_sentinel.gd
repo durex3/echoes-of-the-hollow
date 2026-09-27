@@ -119,6 +119,7 @@ func _enter(next: State) -> void:
 
 func _clip(animation: StringName, duration := 0.0) -> void:
 	sprite.stop()
+	sprite.offset.x = config.stride_sprite_offset if animation == &"step" else 0.0
 	sprite.speed_scale = 1.0
 	if duration > 0:
 		sprite.speed_scale = sprite.sprite_frames.get_frame_count(animation)/(sprite.sprite_frames.get_animation_speed(animation)*duration)
@@ -128,9 +129,11 @@ func _on_damaged(_amount: int, _at: Vector2) -> void:
 	flash_left = 0.08
 	if health.current > 0:
 		_enter(State.RECOVER)
+		_clip("hurt",timer)
 
 func _on_died() -> void:
 	_enter(State.DEAD)
+	$ContactBox.end_swing()
 	$Hurtbox.set_deferred("monitorable",false)
 	defeated.emit()
 
@@ -138,9 +141,8 @@ func _draw() -> void:
 	if state == State.DEAD:
 		return
 	if state == State.WARNING:
-		draw_line(Vector2(0,-70),Vector2(0,-60),Color("ff9bcc"),3)
-		draw_circle(Vector2(0,-55),2,Color("ff9bcc"))
-		draw_line(Vector2(facing*18,-3),Vector2(facing*112,-3),Color("ff9bcc"),2)
+		draw_line(Vector2(0,-101),Vector2(0,-91),Color("f1c47b"),3)
+		draw_circle(Vector2(0,-86),2,Color("f1c47b"))
 	if health.current < health.maximum:
-		draw_rect(Rect2(-16,-51,32,3),Color("28383e"))
-		draw_rect(Rect2(-16,-51,32.0*health.current/health.maximum,3),Color("ff9bcc"))
+		draw_rect(Rect2(-16,-67,32,3),Color("28383e"))
+		draw_rect(Rect2(-16,-67,32.0*health.current/health.maximum,3),Color("f1c47b"))

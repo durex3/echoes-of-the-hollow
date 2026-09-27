@@ -26,6 +26,7 @@ const CHAPTER_TWO := {
 const SECOND_LINKS := [["heart_chamber","ember_quay"],["ember_quay","valve_gallery"],["ember_quay","cistern_archive"],["ember_quay","furnace_core"],["valve_gallery","sluice_shaft"],["sluice_shaft","echo_vault"],["cistern_archive","pump_chamber"],["sluice_shaft","cistern_archive"],["ember_quay","pump_chamber"]]
 var chapter := 1
 var current_room := "forest"
+var door_target := ""
 var visited: Array[String] = []
 var checkpoint_room := "forest"
 var flags: Array[String] = []
@@ -43,6 +44,10 @@ func configure(current: String, explored: Array[String], checkpoint: String, pro
 func revealed(id: String) -> bool:
 	if id in visited:
 		return true
+	if id == "furnace_core" and "ember_quay" in visited and "flow_seal" in flags and "pressure_seal" in flags:
+		return true
+	if id == door_target:
+		return true
 	if id == "sanctuary":
 		return "forest" in visited and "double_jump" in abilities
 	if id in CHAPTER_TWO and id != "heart_chamber" and "journey_restored" not in flags:
@@ -53,8 +58,7 @@ func revealed(id: String) -> bool:
 	return false
 
 func room_label(id: String) -> String:
-	var data: Dictionary = ROOMS[id] if ROOMS.has(id) else CHAPTER_TWO[id]
-	return TextCatalog.text(data.title if id in visited else "UNEXPLORED")
+	return TextCatalog.room_name(id) if id in visited or id == door_target or id == "furnace_core" and revealed(id) else TextCatalog.text("UNEXPLORED")
 
 func mark_summary() -> String:
 	var parts: Array[String] = []
@@ -123,7 +127,9 @@ func _draw() -> void:
 			continue
 		var a: Vector2 = rooms[pair[0]].at + Vector2(75,26)
 		var b: Vector2 = rooms[pair[1]].at + Vector2(75,26)
-		draw_line(a,b,Color("526d64"),2)
+		var selected := current_room in pair and door_target in pair
+		var boss_route: bool = chapter == 2 and pair[0] == "ember_quay" and pair[1] == "furnace_core" and target_room() == "furnace_core"
+		draw_line(a,b,Color("efce8e") if selected or boss_route else Color("526d64"),3 if selected or boss_route else 2)
 		var requirement := gate_requirement(pair[0], pair[1])
 		if not requirement.is_empty():
 			var center := (a + b) / 2.0
@@ -141,11 +147,11 @@ func _draw() -> void:
 		if not revealed(id):
 			continue
 		var at: Vector2 = rooms[id].at
-		var tint := Color("94e4ce") if id == current_room or id == target_room() else Color("526d64")
+		var tint := Color("efce8e") if id == door_target or id == "furnace_core" and id == target_room() else Color("94e4ce") if id == current_room or id == target_room() else Color("526d64")
 		draw_rect(Rect2(at,Vector2(150,52)),Color("10292c") if id in visited else Color("131f28"))
 		draw_rect(Rect2(at,Vector2(150,52)),tint,false,2 if id == current_room else 1)
 		_draw_label(font, at+Vector2(8,19), room_label(id), 136, 12, Color("e9d4a3"), scale_factor)
-		var status := TextCatalog.text("HERE" if id == current_room else ("VISITED" if id in visited else "?"))
+		var status := TextCatalog.text("DOOR" if id == door_target else "HERE" if id == current_room else "BOSS" if id == "furnace_core" and id == target_room() else ("VISITED" if id in visited else "?"))
 		if id == checkpoint_room:
 			status += " / " + TextCatalog.text("SAVE")
 		if id == "sanctuary" and "heart_bloom" in flags:

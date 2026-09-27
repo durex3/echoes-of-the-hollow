@@ -1,5 +1,7 @@
 # Skill 如何落实到工程
 
+2026-09-27：create-game-assets用于外部骑士的许可/摘要、接触表和实景比例审核；godot-animation将原图动作绑定到伤害阶段并保留逐次按键左右手交替；godot-shaders用于蓄力染色、轮廓光和残影，校验Nearest与暗部细节；godot-physics核对身体接触、护盾去重、薄墙扫掠和火墙高台判定。game-ai与level-design用于两种独立Boss节奏、固定战斗房及门/地图一致性。工程经验已归入[执行规则](../AGENTS.md)与[开发复盘](development_lessons.md)。
+
 0.14.0：`level-design` 用现有玩家跳高与速度限定低裂焰、标记预警和休整窗口；`game-ai` 用有限状态明确预警/施法/泄压/转阶段，保证反击读得懂；`create-game-assets` 核验同课程图源、登记摘要和游戏内选帧；`godot-animation` 将动作帧速度匹配状态时间；`godot-gdscript` 与 `godot-nodes-scenes` 保证物理帧状态、独立原生场景、父场景接线。验证使用真实碰撞、两条正常输入主线、隔离存档和视觉截图。
 
 0.10.1：`create-game-assets` 用于先核对课程图集、记录统一素材与独立章节风格、选区/来源/游戏内截图验收；`godot-tilemap` 将第二关砌石地表与无碰撞建筑背景保存在独立原生层，不在运行时重建地图。没有使用其他包的3D素材或生成图片。
@@ -30,7 +32,7 @@
 | prototype-fast | 把首版限定为一个可验证探索闭环 | M1 门禁；后续实验单独隔离 |
 | godot-export | Windows 预设、固定引擎、CLI 检查 | 导出包测试尚待执行 |
 
-安装了但暂未使用的 Godot Shader 等技能不强行加入工程；需求出现时再读取和应用。
+其他已安装但与当前任务无关的技能不强行加入工程；需求出现时再读取和应用。
 
 0.13.1：godot-gdscript为Hurtbox定义明确的IGNORED/DAMAGED/BLOCKED结果，Hitbox对挡住的同次挥击去重；godot-signals-groups保持Player组合并接入自身防护回调、damage_blocked表示已发生的抵挡、伤害反馈仅在实际扣血时发出。粉焰剑士/宝箱/墨弹真实场景验证，不以检查技能函数返回值替代玩法回归。
 

@@ -1268,7 +1268,7 @@ region_rect = Rect2(0, 0, 32, 32)
 [node name="Shrine" type="Node2D" parent="Interactions" unique_id=763450514]
 position = Vector2(180, 480)
 script = ExtResource("11_ulqu0")
-prompt = "E / REST & SAVE"
+prompt = "E / SAVE PROGRESS"
 
 [node name="Sprite" type="AnimatedSprite2D" parent="Interactions/Shrine" unique_id=950369790]
 position = Vector2(0, -20)
@@ -1281,7 +1281,7 @@ autoplay = "idle"
 position = Vector2(480, 480)
 script = ExtResource("11_ulqu0")
 kind = "sign"
-prompt = "Pink flame steps back, then slashes. Jump or interrupt it."
+prompt = "The knight steps back, then lunges. Jump or interrupt him."
 
 [node name="Shortcut" type="Node2D" parent="Interactions" unique_id=1354880224]
 position = Vector2(1240, 480)

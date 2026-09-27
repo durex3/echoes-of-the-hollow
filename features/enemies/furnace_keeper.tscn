@@ -1,21 +1,32 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=10 format=3]
 [ext_resource type="Script" path="res://features/enemies/furnace_keeper.gd" id="1"]
 [ext_resource type="Resource" path="res://features/enemies/furnace_config.tres" id="2"]
-[ext_resource type="SpriteFrames" path="res://features/enemies/rose_frames.tres" id="3"]
+[ext_resource type="SpriteFrames" path="res://features/enemies/furnace_frames.tres" id="3"]
 [ext_resource type="Script" path="res://features/combat/health.gd" id="4"]
 [ext_resource type="Script" path="res://features/combat/hurtbox.gd" id="5"]
+[ext_resource type="Script" path="res://features/combat/hitbox.gd" id="6"]
+[ext_resource type="Script" path="res://features/enemies/furnace_visual.gd" id="7"]
 [sub_resource type="RectangleShape2D" id="shape"]
 size = Vector2(32,60)
+[sub_resource type="RectangleShape2D" id="dash_shape"]
+size = Vector2(75,50)
+[sub_resource type="RectangleShape2D" id="contact_shape"]
+size = Vector2(30,58)
 [node name="FurnaceKeeper" type="CharacterBody2D" groups=["enemies"]]
 collision_layer = 4
 collision_mask = 1
 script = ExtResource("1")
 config = ExtResource("2")
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
-position = Vector2(0,-60)
-scale = Vector2(1.5,1.5)
+z_index = 2
+position = Vector2(0,-57.142857)
+scale = Vector2(1.4285714,1.4285714)
+texture_filter = 1
 sprite_frames = ExtResource("3")
 animation = &"idle"
+[node name="VisualEffects" type="Node2D" parent="."]
+script = ExtResource("7")
+sprite_path = NodePath("../Sprite")
 [node name="Body" type="CollisionShape2D" parent="."]
 position = Vector2(0,-30)
 shape = SubResource("shape")
@@ -31,4 +42,22 @@ health = NodePath("../Health")
 [node name="Shape" type="CollisionShape2D" parent="Hurtbox"]
 position = Vector2(0,-30)
 shape = SubResource("shape")
+[node name="ContactBox" type="Area2D" parent="."]
+position = Vector2(0,-30)
+collision_layer = 0
+collision_mask = 8
+monitorable = false
+script = ExtResource("6")
+starts_active = true
+reset_when_empty = true
+[node name="Shape" type="CollisionShape2D" parent="ContactBox"]
+shape = SubResource("contact_shape")
 [node name="Flames" type="Node2D" parent="."]
+[node name="DashHitbox" type="Area2D" parent="."]
+position = Vector2(-47,-28)
+collision_layer = 0
+collision_mask = 8
+monitorable = false
+script = ExtResource("6")
+[node name="Shape" type="CollisionShape2D" parent="DashHitbox"]
+shape = SubResource("dash_shape")

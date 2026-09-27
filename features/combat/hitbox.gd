@@ -5,8 +5,13 @@ extends Area2D
 signal landed
 signal impact(at: Vector2, defeated: bool)
 @export var damage := 1
+@export var starts_active := false
+@export var reset_when_empty := false
 var active := false
 var hit_ids: Array[int] = []
+
+func _ready() -> void:
+	active = starts_active
 
 func begin_swing() -> void:
 	hit_ids.clear()
@@ -18,6 +23,8 @@ func end_swing() -> void:
 func _physics_process(_delta: float) -> void:
 	if not active:
 		return
+	if reset_when_empty and get_overlapping_areas().is_empty():
+		hit_ids.clear()
 	for area: Area2D in get_overlapping_areas():
 		if area is Hurtbox and area.get_instance_id() not in hit_ids:
 			# Start at the body, since the forward attack area can cross a thin wall.

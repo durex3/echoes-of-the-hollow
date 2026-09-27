@@ -62,7 +62,7 @@ prompt = "E / RETURN TO THE HIGH GROVE"
 [node name="Shrine" type="Node2D" parent="Interactions" unique_id=1981213881]
 position = Vector2(165, 480)
 script = ExtResource("4_k6kvr")
-prompt = "E / REST & SAVE"
+prompt = "E / SAVE PROGRESS"
 
 [node name="Sprite" type="AnimatedSprite2D" parent="Interactions/Shrine" unique_id=309618162]
 position = Vector2(0, -20)
@@ -70,12 +70,6 @@ scale = Vector2(0.5, 0.5)
 sprite_frames = ExtResource("5_gduev")
 animation = &"idle"
 autoplay = "idle"
-
-[node name="Hint" type="Node2D" parent="Interactions" unique_id=1278635289]
-position = Vector2(215, 480)
-script = ExtResource("4_k6kvr")
-kind = "sign"
-prompt = "Above the roots, a heart still blooms."
 
 [node name="HeartBloom" type="Node2D" parent="Interactions" unique_id=1731325893]
 position = Vector2(705, 288)

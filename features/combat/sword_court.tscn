@@ -1,0 +1,5 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://features/combat/sword_court.gd" id="1"]
+[node name="SwordCourt" type="Node2D"]
+top_level = true
+script = ExtResource("1")

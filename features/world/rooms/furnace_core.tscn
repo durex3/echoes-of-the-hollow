@@ -10,6 +10,19 @@
 [ext_resource type="PackedScene" path="res://features/world/steam_vent.tscn" id="12_bwesx"]
 [ext_resource type="Script" path="res://features/world/steam_vent.gd" id="13_i0scw"]
 [ext_resource type="Resource" path="res://features/world/steam_config.tres" id="14_o6iuf"]
+[ext_resource type="Script" path="res://features/world/furnace_arena_gate.gd" id="15_arena_gate"]
+
+[sub_resource type="Gradient" id="BrazierLightGradient"]
+offsets = PackedFloat32Array(0, 0.35, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.45, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="BrazierLightTexture"]
+gradient = SubResource("BrazierLightGradient")
+width = 512
+height = 512
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_88ont"]
 texture = ExtResource("2_anesh")
@@ -1090,6 +1103,12 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="Boundary"]
 size = Vector2(32, 640)
 
+[sub_resource type="RectangleShape2D" id="ArenaGateShape"]
+size = Vector2(12, 480)
+
+[sub_resource type="RectangleShape2D" id="BossLedgeShape"]
+size = Vector2(112, 12)
+
 [node name="FurnaceCore" type="Node2D" unique_id=601705271]
 script = ExtResource("1_v5g1k")
 room_id = "furnace_core"
@@ -1097,6 +1116,30 @@ display_name = "13 / FURNACE CORE"
 music_track = "dungeon"
 
 [node name="CastleArt" type="Node2D" parent="." unique_id=1443608758]
+
+[node name="LeftBrazierLight" type="PointLight2D" parent="CastleArt"]
+position = Vector2(496, 414)
+color = Color(1, 0.43, 0.12, 1)
+energy = 0.65
+texture = SubResource("BrazierLightTexture")
+texture_scale = 0.85
+blend_mode = 0
+
+[node name="MiddleBrazierLight" type="PointLight2D" parent="CastleArt"]
+position = Vector2(720, 414)
+color = Color(1, 0.43, 0.12, 1)
+energy = 0.65
+texture = SubResource("BrazierLightTexture")
+texture_scale = 0.85
+blend_mode = 0
+
+[node name="RightBrazierLight" type="PointLight2D" parent="CastleArt"]
+position = Vector2(944, 414)
+color = Color(1, 0.43, 0.12, 1)
+energy = 0.65
+texture = SubResource("BrazierLightTexture")
+texture_scale = 0.85
+blend_mode = 0
 
 [node name="DeepInterior" type="Polygon2D" parent="CastleArt" unique_id=327750700]
 color = Color(0.1254902, 0.09019608, 0.11372549, 1)
@@ -1184,6 +1227,36 @@ tile_map_data = PackedByteArray("AAAGAA4A//////////8RAA4A//////////8aAA4A///////
 tile_set = ExtResource("4_g4d56")
 collision_enabled = false
 
+[node name="BossLedges" type="Node2D" parent="."]
+
+[node name="LeftLedge" type="StaticBody2D" parent="BossLedges"]
+position = Vector2(638, 326)
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape2D" parent="BossLedges/LeftLedge"]
+shape = SubResource("BossLedgeShape")
+one_way_collision = true
+
+[node name="Wood" type="Sprite2D" parent="BossLedges/LeftLedge"]
+texture = ExtResource("2_anesh")
+region_enabled = true
+region_rect = Rect2(512, 192, 128, 16)
+scale = Vector2(0.875, 0.75)
+
+[node name="RightLedge" type="StaticBody2D" parent="BossLedges"]
+position = Vector2(1080, 326)
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape2D" parent="BossLedges/RightLedge"]
+shape = SubResource("BossLedgeShape")
+one_way_collision = true
+
+[node name="Wood" type="Sprite2D" parent="BossLedges/RightLedge"]
+texture = ExtResource("2_anesh")
+region_enabled = true
+region_rect = Rect2(512, 192, 128, 16)
+scale = Vector2(0.875, 0.75)
+
 [node name="Bounds" type="StaticBody2D" parent="." unique_id=1358145428]
 collision_mask = 0
 
@@ -1192,16 +1265,26 @@ position = Vector2(-16, 256)
 shape = SubResource("Boundary")
 
 [node name="Right" type="CollisionShape2D" parent="Bounds" unique_id=1364135426]
-position = Vector2(1296, 256)
+position = Vector2(1140, 256)
 shape = SubResource("Boundary")
+
+[node name="ArenaGate" type="StaticBody2D" parent="."]
+position = Vector2(580, 480)
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("15_arena_gate")
+
+[node name="Shape" type="CollisionShape2D" parent="ArenaGate"]
+position = Vector2(0, -240)
+shape = SubResource("ArenaGateShape")
 
 [node name="Spawns" type="Node2D" parent="." unique_id=22093897]
 
 [node name="entry" type="Marker2D" parent="Spawns" unique_id=1960617491]
-position = Vector2(100, 480)
+position = Vector2(620, 480)
 
 [node name="checkpoint" type="Marker2D" parent="Spawns" unique_id=2147063028]
-position = Vector2(180, 480)
+position = Vector2(620, 480)
 
 [node name="Enemies" type="Node2D" parent="." unique_id=1963065800]
 
@@ -1210,31 +1293,27 @@ position = Vector2(930, 480)
 
 [node name="Interactions" type="Node2D" parent="." unique_id=1839794500]
 
-[node name="Return" type="Node2D" parent="Interactions" unique_id=148134834]
-position = Vector2(48, 480)
+[node name="Lesson" type="Node2D" parent="Interactions" unique_id=1571092593]
+position = Vector2(700, 480)
+script = ExtResource("11_buwmc")
+kind = "sign"
+prompt = "Jump the dash. Leave the slam; jump from ledges over flame walls. Strike during recovery."
+
+[node name="Return" type="Node2D" parent="Interactions"]
+position = Vector2(608, 480)
 script = ExtResource("11_buwmc")
 kind = "exit"
+visible_after_flag = "furnace_keeper_defeated"
+required_flags = Array[String](["furnace_keeper_defeated"])
 target_room = "ember_quay"
 target_spawn = "core_return"
 prompt = "E / RETURN TO EMBER QUAY"
 
-[node name="ForgeDoor" type="Sprite2D" parent="Interactions/Return" unique_id=2038114553]
-position = Vector2(0, -32)
-scale = Vector2(2, 2)
-texture = ExtResource("11_g4d56")
-region_enabled = true
-region_rect = Rect2(0, 0, 32, 32)
-
-[node name="Lesson" type="Node2D" parent="Interactions" unique_id=1571092593]
-position = Vector2(200, 480)
-script = ExtResource("11_buwmc")
-kind = "sign"
-prompt = "Jump over low flame. Leave pink marks. Strike during pressure release."
-
 [node name="CoreEcho" type="Node2D" parent="Interactions" unique_id=1234373319]
-position = Vector2(1200, 480)
+position = Vector2(1080, 480)
 script = ExtResource("11_buwmc")
 kind = "chapter_end"
+visible_after_flag = "furnace_keeper_defeated"
 stable_id = "cistern_restored"
 prompt = "E / RESTORE THE CISTERN CORE"
 

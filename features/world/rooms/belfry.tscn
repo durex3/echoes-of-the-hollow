@@ -80,7 +80,7 @@ config = ExtResource("9_1gf1f")
 [node name="Shrine" type="Node2D" parent="Interactions" unique_id=948029339]
 position = Vector2(165, 480)
 script = ExtResource("10_7angi")
-prompt = "E / REST & SAVE"
+prompt = "E / SAVE PROGRESS"
 
 [node name="Sprite" type="AnimatedSprite2D" parent="Interactions/Shrine" unique_id=1058500237]
 position = Vector2(0, -20)

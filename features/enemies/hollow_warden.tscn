@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://features/enemies/hollow_warden.gd" id="1"]
 [ext_resource type="SpriteFrames" path="res://features/enemies/warden_frames.tres" id="2"]
@@ -13,15 +13,19 @@ size = Vector2(32, 68)
 size = Vector2(34, 68)
 [sub_resource type="RectangleShape2D" id="Attack"]
 size = Vector2(72, 46)
+[sub_resource type="RectangleShape2D" id="ChargedAttack"]
+size = Vector2(150, 58)
+[sub_resource type="RectangleShape2D" id="Contact"]
+size = Vector2(30, 64)
 
 [node name="HollowWarden" type="CharacterBody2D" groups=["enemies"]]
 collision_layer = 4
-collision_mask = 1
+collision_mask = 3
 script = ExtResource("1")
 config = ExtResource("6")
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
-position = Vector2(0, -64)
-scale = Vector2(2, 2)
+position = Vector2(0, -70)
+scale = Vector2(1.4285714, 1.4285714)
 texture_filter = 1
 sprite_frames = ExtResource("2")
 animation = &"idle"
@@ -41,6 +45,15 @@ health = NodePath("../Health")
 [node name="Shape" type="CollisionShape2D" parent="Hurtbox"]
 position = Vector2(0, -34)
 shape = SubResource("Hurt")
+[node name="ContactBox" type="Area2D" parent="."]
+position = Vector2(0, -34)
+collision_layer = 0
+collision_mask = 8
+monitorable = false
+script = ExtResource("5")
+damage = 1
+[node name="Shape" type="CollisionShape2D" parent="ContactBox"]
+shape = SubResource("Contact")
 [node name="AttackBox" type="Area2D" parent="."]
 position = Vector2(-44, -25)
 collision_layer = 0
@@ -49,3 +62,11 @@ monitorable = false
 script = ExtResource("5")
 [node name="Shape" type="CollisionShape2D" parent="AttackBox"]
 shape = SubResource("Attack")
+[node name="ChargedBox" type="Area2D" parent="."]
+position = Vector2(-77, -32)
+collision_layer = 0
+collision_mask = 8
+monitorable = false
+script = ExtResource("5")
+[node name="Shape" type="CollisionShape2D" parent="ChargedBox"]
+shape = SubResource("ChargedAttack")

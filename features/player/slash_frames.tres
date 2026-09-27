@@ -1,0 +1,39 @@
+[gd_resource type="SpriteFrames" load_steps=10 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/effects/weapon_smears.png" id="1"]
+
+[sub_resource type="AtlasTexture" id="smear_0"]
+atlas = ExtResource("1")
+region = Rect2(15, 39, 92, 39)
+
+[sub_resource type="AtlasTexture" id="smear_1"]
+atlas = ExtResource("1")
+region = Rect2(143, 39, 92, 39)
+
+[sub_resource type="AtlasTexture" id="smear_2"]
+atlas = ExtResource("1")
+region = Rect2(271, 39, 92, 39)
+
+[sub_resource type="AtlasTexture" id="smear_3"]
+atlas = ExtResource("1")
+region = Rect2(399, 39, 92, 39)
+
+[sub_resource type="AtlasTexture" id="smear_4"]
+atlas = ExtResource("1")
+region = Rect2(527, 39, 92, 39)
+
+[sub_resource type="AtlasTexture" id="smear_5"]
+atlas = ExtResource("1")
+region = Rect2(655, 39, 92, 39)
+
+[sub_resource type="AtlasTexture" id="smear_6"]
+atlas = ExtResource("1")
+region = Rect2(783, 39, 92, 39)
+
+[sub_resource type="AtlasTexture" id="smear_7"]
+atlas = ExtResource("1")
+region = Rect2(911, 39, 92, 39)
+
+[resource]
+animations = [{"name": &"swing", "loop": false, "speed": 30.0, "frames": [{"duration": 1.0, "texture": SubResource("smear_0")}, {"duration": 1.0, "texture": SubResource("smear_1")}, {"duration": 1.0, "texture": SubResource("smear_2")}, {"duration": 1.0, "texture": SubResource("smear_3")}]},
+{"name": &"return_swing", "loop": false, "speed": 30.0, "frames": [{"duration": 1.0, "texture": SubResource("smear_4")}, {"duration": 1.0, "texture": SubResource("smear_5")}, {"duration": 1.0, "texture": SubResource("smear_6")}, {"duration": 1.0, "texture": SubResource("smear_7")}]}]

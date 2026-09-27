@@ -1,7 +1,7 @@
 extends Node
 ## Components use isolated positioning; chapter_two_route covers real full battles.
 
-func setup(h: Node, game: Node, at := Vector2(700,480)) -> FurnaceKeeper:
+func setup(h: Node, game: Node, at := Vector2(850,480)) -> FurnaceKeeper:
 	Session.flags.erase("furnace_keeper_defeated")
 	Session.flags.erase("cistern_restored")
 	game.load_room("furnace_core","entry")
@@ -21,14 +21,27 @@ func until(h: Node, boss: FurnaceKeeper, state: FurnaceKeeper.State, limit := 30
 
 func run(h: Node, game: Node) -> void:
 	var player: Player = game.player
-	var boss := await setup(h,game,Vector2(200,480))
+	var boss := await setup(h,game,Vector2(620,480))
+	player.revive(Vector2(620,480))
+	await h.frames(2)
+	h.check(game.room.get_node("ArenaGate").closed and game.room.nearby_exit_target().is_empty() and not game.room.get_node("Interactions/Return").visible and not game.room.get_node("Interactions/CoreEcho").visible, "Keeper room hides both exits until victory")
+	h.check(game.camera.position == Vector2(860,330), "Keeper camera starts at its fixed combat position")
+	Input.action_press("move_left")
+	await h.frames(24)
+	Input.action_release("move_left")
+	h.check(player.position.x >= 590 and game.room.room_id == "furnace_core", "Player cannot move out of the fixed keeper chamber before combat")
+	h.check(game.camera.position == Vector2(860,330), "Keeper camera does not pan when the player moves")
+	player.revive(Vector2(700,480))
+	await h.frames(2)
 	Session.set_language("zh_CN")
-	h.check(boss.state == FurnaceKeeper.State.DORMANT and not game.ui.boss_panel.visible and game.ui.prompt.text.contains("裂焰"), "Keeper entrance is safe and teaches both counters before activation")
+	h.check(boss.state == FurnaceKeeper.State.DORMANT and not game.ui.boss_panel.visible and game.ui.prompt.text.contains("突进"), "Keeper entrance is safe and teaches both counters before activation")
 	h.check(game.room.get_node("Enemies").get_child_count() == 1, "Furnace contains an independent keeper instead of the old mixed mobs")
 	await h.shot("98_keeper_lesson_zh")
 	player.revive(Vector2(850,480))
 	await h.frames(3)
 	h.check(boss.state == FurnaceKeeper.State.INTRO and game.ui.boss_title.text.contains("炉心监守者"), "Crossing arena boundary awakens keeper and its own translated boss bar")
+	var gate := game.room.get_node("ArenaGate") as FurnaceArenaGate
+	h.check(gate.closed and not gate.get_node("Shape").disabled, "Boss awakening seals the left entrance")
 	var vents_off := true
 	for vent: SteamVent in game.room.get_node("Hazards").get_children():
 		vents_off = vents_off and not vent.enabled
@@ -45,13 +58,13 @@ func run(h: Node, game: Node) -> void:
 	var locked := boss.facing
 	player.revive(Vector2(1010,480))
 	await h.frames(2)
-	h.check(boss.facing == locked, "Wave direction stays committed after player crosses behind")
+	h.check(boss.facing == locked, "Dash direction stays committed after player crosses behind")
 	player.revive(Vector2(850,480))
 	await until(h,boss,FurnaceKeeper.State.CAST)
 	await h.frames(2)
 	await h.shot("100_keeper_wave_active")
 	await h.frames(13)
-	h.check(player.health.current == player.health.maximum-1, "Actual low flame collision deals one damage")
+	h.check(player.health.current == player.health.maximum-1, "Actual dash slash collision deals one damage")
 	await until(h,boss,FurnaceKeeper.State.RECOVER)
 	player.revive(boss.position-Vector2(40,0))
 	player.facing = 1
@@ -60,58 +73,187 @@ func run(h: Node, game: Node) -> void:
 	await h.press("attack",14)
 	h.check(boss.health.current == hp-1 and boss.state == FurnaceKeeper.State.RECOVER, "Real mapped sword damages keeper during uninterrupted pressure release")
 	await h.shot("101_keeper_recovery")
-	# Normal jump alone clears the measured 38px low flame.
+	# Normal jump clears the committed ground slash.
 	boss = await setup(h,game,Vector2(850,480))
+	gate = game.room.get_node("ArenaGate") as FurnaceArenaGate
 	await until(h,boss,FurnaceKeeper.State.WARNING)
 	while boss.timer > 0.18:
 		await h.frames(1)
 	Input.action_press("jump")
 	await h.frames(37)
 	Input.action_release("jump")
-	h.check(player.health.current == player.health.maximum, "Normal input jump clears keeper flame without shield or invulnerability")
-	# Second attack locks a marker and waits the same full 0.9s warning.
+	h.check(player.health.current == player.health.maximum, "Normal input jump clears keeper dash without shield or invulnerability")
+	# Short hop repositions; the following slam rises above both ledges.
 	await until(h,boss,FurnaceKeeper.State.RECOVER)
 	player.revive(Vector2(850,480))
 	await until(h,boss,FurnaceKeeper.State.WARNING)
-	h.check(not boss.wave_attack and boss.flames.get_child_count() == 1, "First phase introduces a single locked eruption after its low wave")
-	var mark := boss.flames.get_child(0) as FurnaceFlame
-	var mark_at := mark.global_position
-	Input.action_press("move_left")
-	await h.frames(30)
-	Input.action_release("move_left")
-	h.check(mark.global_position == mark_at and player.health.current == player.health.maximum, "Warning is harmless and eruption marker does not follow moving player")
-	await h.shot("102_keeper_eruption_mark")
-	await h.frames(26)
-	await h.shot("102b_keeper_eruption_active")
-	await h.frames(24)
-	h.check(player.health.current == player.health.maximum, "Walking clear of the mark avoids eruption")
-	# Force only HP for transition boundary coverage; timers and attacks remain real.
+	h.check(boss.attack == FurnaceKeeper.Attack.HOP, "Second pattern is a distinct short hop")
+	var hop_start := boss.position
+	await until(h,boss,FurnaceKeeper.State.CAST)
+	await h.frames(12)
+	h.check(boss.position.y < hop_start.y-40 and absf(boss.position.x-hop_start.x)>20, "Short hop has real vertical and horizontal travel")
 	await until(h,boss,FurnaceKeeper.State.RECOVER)
+	player.revive(Vector2(638,320))
+	await until(h,boss,FurnaceKeeper.State.WARNING)
+	h.check(boss.attack == FurnaceKeeper.Attack.SLAM and absf(boss.position.y-270)<1, "Slam hovers 210px above the floor, well above the ledges")
+	var hover_at := boss.position
+	while boss.timer > boss.config.hover_seconds*0.75:
+		await h.frames(1)
+	await h.shot("102p_keeper_charge_first_peak")
+	await h.frames(6)
+	h.check(boss.position.distance_to(hover_at)<1 and boss.flames.get_child_count()==0, "Hover holds its physical position without premature flames")
+	var visual := boss.get_node("VisualEffects")
+	var frozen_ages: Array = visual.ages.duplicate()
+	var frozen_radius: float = visual.glow.material.get_shader_parameter("radius")
+	get_tree().paused = true
+	await h.frames(8)
+	h.check(visual.ages == frozen_ages and visual.glow.material.get_shader_parameter("radius") == frozen_radius, "Pause freezes charge pulses and captured trails")
+	get_tree().paused = false
+	await h.shot("102_keeper_high_hover")
+	while boss.timer > boss.config.hover_seconds*0.25:
+		await h.frames(1)
+	await h.shot("102q_keeper_charge_second_peak")
+	await until(h,boss,FurnaceKeeper.State.LANDING)
+	await h.frames(5)
+	h.check(boss.position.y > hover_at.y+50 and absf(boss.position.x-hover_at.x)<1, "Slam descends rapidly and vertically")
+	await h.shot("102a_keeper_slam")
+	await until(h,boss,FurnaceKeeper.State.IMPACT)
+	h.check(boss.sprite.animation == &"eruption_cast" and boss.pressure_guard(), "Landing release plays the source casting animation before recovery")
+	await h.frames(1)
+	var core := boss.flames.get_child(0) as FurnaceFlame
+	var frozen_burst := core.elapsed
+	get_tree().paused = true
+	await h.frames(5)
+	h.check(core.elapsed == frozen_burst, "Pause freezes the visible central impact and its damage lifetime")
+	get_tree().paused = false
+	await h.shot("102c0_keeper_impact_flash")
+	await h.frames(7)
+	await h.shot("102c_keeper_release_animation")
+	await until(h,boss,FurnaceKeeper.State.RECOVER)
+	h.check(boss.flames.get_child_count()==2 and not is_instance_valid(core) and absf(boss.position.y-480)<1, "Central burst expires with its art while both traveling flames remain")
+	var left := boss.flames.get_child(0) as FurnaceFlame
+	var right := boss.flames.get_child(1) as FurnaceFlame
+	var left_x := left.position.x
+	var right_x := right.position.x
+	await h.frames(12)
+	h.check(left.position.x < left_x-50 and right.position.x > right_x+50, "Flame walls propagate away from the landing point in both directions")
+	await h.shot("102b_keeper_outward_flames")
+	await h.frames(36)
+	h.check(player.health.current==player.health.maximum-1, "Visible upper flame wall damages a player standing on a ledge once")
+	# Force only HP; transition still waits for the natural recovery boundary.
 	boss.health.invulnerability_left = 0
 	boss.health.take_damage(8,boss.position)
-	h.check(boss.phase == 1 and boss.state == FurnaceKeeper.State.RECOVER, "Half-health never cuts the current recovery short")
+	h.check(boss.phase==1 and boss.state==FurnaceKeeper.State.RECOVER, "Half health never cuts recovery short")
 	await until(h,boss,FurnaceKeeper.State.TRANSITION)
-	h.check(boss.phase == 2 and boss.timer > 1.1, "Phase two has a separate safe transition")
+	h.check(boss.phase==2 and boss.timer>1.1, "Phase two has a safe transition")
 	await h.shot("103_keeper_phase_two")
-	await until(h,boss,FurnaceKeeper.State.WARNING)
-	await until(h,boss,FurnaceKeeper.State.RECOVER)
-	player.revive(Vector2(850,480))
-	await until(h,boss,FurnaceKeeper.State.WARNING)
-	h.check(not boss.wave_attack and boss.flames.get_child_count() == 2 and boss.timer > 0.8, "Phase two combines two spaced marks without shortening warning")
-	var a := boss.flames.get_child(0) as FurnaceFlame
-	var b := boss.flames.get_child(1) as FurnaceFlame
-	h.check(absf(a.position.x-b.position.x) == 120 and absf(a.position.x-b.position.x)-66 >= 54, "Twin marks leave a body-width safe gap and movement space")
-	await h.shot("104_keeper_twin_marks")
-	player.revive(Vector2(420,480))
+	player.revive(Vector2(620,480))
+	Input.action_press("move_left")
+	await h.frames(35)
+	Input.action_release("move_left")
+	h.check(player.position.x >= gate.position.x+15 and boss.state != FurnaceKeeper.State.DORMANT and gate.closed, "Leftward movement cannot leave or reset an active boss fight")
+	boss.reset_encounter()
+	gate.set_closed(false)
 	await h.frames(3)
-	h.check(boss.state == FurnaceKeeper.State.DORMANT and boss.health.current == 14 and boss.flames.get_child_count() == 0 and not game.ui.boss_panel.visible, "Retreat resets boss and clears pending hazards without awarding progress")
+	h.check(boss.health.current == 14 and boss.flames.get_child_count() == 0 and not visual.glow.visible and visual.ghosts.all(func(ghost: Sprite2D) -> bool: return not ghost.visible), "Encounter reset clears hazards and visual trails")
 	# Isolated real cast verifies shield, pause and expiry through the normal hurtbox.
 	player.revive(Vector2(850,480))
 	boss.set_physics_process(false)
+	Session.unlock("double_jump")
+	var edge_left := boss.config.arena_min_x
+	var edge_right := boss.config.arena_max_x
+	var edge_reached := [false,false]
+	for side: float in [-1.0,1.0]:
+		var sweep := preload("res://features/combat/furnace_flame.tscn").instantiate() as FurnaceFlame
+		sweep.config = boss.config
+		sweep.outward = true
+		sweep.instant = true
+		sweep.direction = side
+		boss.flames.add_child(sweep)
+		sweep.global_position = Vector2(edge_left+65 if side < 0 else edge_right-65,480)
+		var index := 0 if side < 0 else 1
+		for frame: int in range(20):
+			await h.frames(1)
+			if is_instance_valid(sweep):
+				edge_reached[index] = edge_reached[index] or (sweep.global_position.x <= edge_left+6 if side < 0 else sweep.global_position.x >= edge_right-6)
+	h.check(edge_reached[0] and edge_reached[1], "Air slam flame walls physically sweep to both arena boundaries")
+	boss.clear_flames()
+	# Full-height walls can be cleared with a normal jump from either real ledge.
+	for side: float in [-1.0,1.0]:
+		var ledge_x := 638.0 if side < 0 else 1080.0
+		player.revive(Vector2(ledge_x,320))
+		await h.frames(3)
+		var wall := preload("res://features/combat/furnace_flame.tscn").instantiate() as FurnaceFlame
+		wall.config = boss.config
+		wall.outward = true
+		wall.direction = side
+		boss.flames.add_child(wall)
+		wall.global_position = Vector2(ledge_x-side*110,480)
+		Input.action_press("jump")
+		var foot_peak := player.position.y
+		for tick: int in range(24):
+			await h.frames(1)
+			foot_peak = minf(foot_peak,player.position.y)
+		Input.action_release("jump")
+		await h.frames(20)
+		h.check(player.health.current == player.health.maximum and foot_peak < 480-boss.config.outward_height-20, "Mapped ledge jump clears full-height flame wall in direction " + str(side))
+		boss.clear_flames()
+		await h.frames(2)
+	for ledge_x: float in [638.0,1080.0]:
+		player.revive(Vector2(ledge_x,480))
+		await h.frames(3)
+		Input.action_press("jump")
+		await h.frames(20)
+		var peak_y := player.position.y
+		Input.action_release("jump")
+		await h.frames(2)
+		Input.action_press("jump")
+		for tick: int in range(20):
+			await h.frames(1)
+			peak_y = minf(peak_y,player.position.y)
+		Input.action_release("jump")
+		await h.frames(50)
+		h.check(player.is_on_floor() and absf(player.position.y-320) < 1, "Mapped double jump lands on boss ledge at " + str(ledge_x) + " (peak=" + str(peak_y) + ", y=" + str(player.position.y) + ")")
+	# Isolate the new ground patterns, retaining their real windup and hitboxes.
+	boss.set_physics_process(true)
+	boss.attack_count = 3
+	player.revive(boss.position+Vector2(64,0))
+	boss.start_attack()
+	await until(h,boss,FurnaceKeeper.State.WARNING)
+	h.check(boss.attack == FurnaceKeeper.Attack.MELEE and not boss.dash_hitbox.active, "Basic melee approaches and visibly winds up before damage")
+	await h.shot("110_keeper_melee_warning")
+	await until(h,boss,FurnaceKeeper.State.CAST)
+	var melee_at := boss.position.x
+	await h.frames(5)
+	h.check(player.health.current == player.health.maximum-1 and absf(boss.position.x-melee_at)<1, "Basic melee hits once without turning into a dash")
+	await until(h,boss,FurnaceKeeper.State.RECOVER)
+	player.revive(Vector2(700,480))
+	await until(h,boss,FurnaceKeeper.State.WARNING)
+	h.check(boss.attack == FurnaceKeeper.Attack.COMBO and boss.timer > 0.85 and not boss.dash_hitbox.active, "Ground combo begins with a full visible charge and no early damage")
+	await h.frames(13)
+	await h.shot("111_keeper_ground_charge")
+	for strike: int in range(boss.config.combo_strikes):
+		player.revive(boss.position+Vector2(boss.facing*52,0))
+		await until(h,boss,FurnaceKeeper.State.CAST)
+		var committed := boss.facing
+		await h.frames(5)
+		h.check(player.health.current == player.health.maximum-1, "Charged combo strike " + str(strike+1) + " uses its own real damage window")
+		player.revive(boss.position-Vector2(committed*100,0))
+		await h.frames(2)
+		h.check(boss.facing == committed, "Combo strike stays committed when player crosses behind")
+		if strike == 0:
+			await h.shot("112_keeper_combo_slash")
+		while boss.state == FurnaceKeeper.State.CAST:
+			await h.frames(1)
+		h.check(not boss.dash_hitbox.active and boss.state == (FurnaceKeeper.State.WARNING if strike < boss.config.combo_strikes-1 else FurnaceKeeper.State.RECOVER), "Combo pauses between strikes and recovers after its final strike")
+	h.check(boss.timer >= boss.config.recovery_seconds-0.1 and not boss.pressure_guard(), "Full combo recovery opens a reliable counterattack window")
+	boss.reset_encounter()
+	boss.set_physics_process(false)
+	player.revive(Vector2(850,480))
 	Session.unlock("steam_ward")
 	await h.frames(3)
 	boss.spawn_flame(player.position,false)
-	mark = boss.flames.get_child(0)
+	var mark := boss.flames.get_child(0) as FurnaceFlame
 	var frozen := mark.warning_left
 	get_tree().paused = true
 	await h.frames(5)
@@ -119,10 +261,10 @@ func run(h: Node, game: Node) -> void:
 	game.resume()
 	await h.frames(3)
 	await h.press("steam_ward",2)
-	await h.frames(75)
+	await h.frames(115)
 	h.check(player.health.current == player.health.maximum and player.steam_ward.active_left == 0 and boss.flames.get_child_count() == 0, "Shield consumes one full eruption and no later plume frame damages player")
 	boss.spawn_flame(player.position,false)
-	await h.frames(75)
+	await h.frames(115)
 	h.check(player.health.current == player.health.maximum-1, "Unshielded eruption damages once and expires")
 	boss.spawn_flame(player.position,false)
 	player.health.invulnerability_left = 0
@@ -152,6 +294,11 @@ func run(h: Node, game: Node) -> void:
 	boss.health.take_damage(99,boss.position)
 	await h.frames(3)
 	h.check("furnace_keeper_defeated" in Session.flags and not game.ui.reward_notice.save_succeeded and player.health.current == player.health.maximum, "Keeper victory heals and retains progress even if save fails")
+	player.revive(Vector2(650,480))
+	game.ui.reward_notice.remaining = 0
+	await h.frames(3)
+	await h.shot("105a_keeper_central_door")
+	h.check(not (game.room.get_node("ArenaGate") as FurnaceArenaGate).closed and game.room.get_node("Interactions/Return").visible and game.room.get_node("Interactions/CoreEcho").visible and game.room.get_node("Interactions/CoreEcho").position.x == 1080, "Boss defeat opens the left run-out and reveals the right chapter door")
 	Session.save_path = save_path
 	await h.shot("105_keeper_reward_save_failure")
 	await h.frames(65)
@@ -167,7 +314,7 @@ func run(h: Node, game: Node) -> void:
 	Session.set_flag("cistern_restored")
 	Session.commit()
 	game.load_room("furnace_core","entry")
-	h.check(game.room.is_cleared() and not game.room.get_node("Interactions/CoreEcho").visible, "Old chapter-complete save bypasses new boss and keeps its ending")
+	h.check(game.room.is_cleared() and game.room.get_node("Interactions/CoreEcho").visible, "Old chapter-complete save bypasses the boss and keeps a central exit")
 	var snapshot := Session.snapshot()
 	var bytes := FileAccess.get_file_as_string(Session.save_path)
 	player.revive(Vector2(290,480))

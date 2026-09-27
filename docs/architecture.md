@@ -1,8 +1,42 @@
 # 架构与编码规范
 
+## 无招式文字与保存不回血（2026-09-27）
+
+GameUI不再创建boss_hint，Main不把两个首领的cue_changed接到HUD；血条、阶段名称及源动画/材质/音效仍由原系统管理。检查点交互和前庭/炉心入口自动存档仅更新检查点并commit，不调用Health.restore_full，成功统一显示Progress saved。重复保存及失败不改变当前生命。复活、领取独立奖励与击败Boss的回血仍属于各自事件，不属于保存行为。未更改存档schema，当前HP仍不持久化，继续游戏与复活规则保持原样。
+
+## 第二关骑士素材与蓄力清晰度（2026-09-27）
+
+第二关普通敌人保留RoseSentinel/RoseConfig及原生场景路径，替换为Hero Knight 2铁盔剑士图集，避免改动地图实例和存档标识。tools/import_helm_knight.py仅更新该敌人的帧资源与来源记录，不重建Boss或地图。素材140px格、脚底y=83；10/7倍精灵×1.4倍镜头对应2倍源像素。Run图的躯干偏置由只读stride_sprite_offset校正，仅改变Sprite.offset。伤害仍由原状态与Hitbox管理；受击进入原RECOVER并播放独立hurt片段，不改变恢复时长、碰撞层或接触伤害。源包的纯白受击帧排除，运行时闪白遵循减少闪光选项。
+
+粉色Boss的charge_tint取消红色最低亮度，保留原图暗线与明度层次；角色轮廓光缩为4px采样半径、0.7强度和(1.12,1.06)脉冲扩张，glow/ghost显式最近邻。不改变全身闪红、蓄力时长或物理碰撞。
+
+## 王之剑庭与主角战斗特效（2026-09-27）
+
+HollowWarden 的 CHARGED 仅在1.5秒召唤期间进入SWORD_COURT，通过Hurtbox.damage_guard阻挡真实剑击；该状态有金色蓄力调制，不显示文字招式提示。SwordCourt的summon_finished在第一轮进入LOCK时发出，首领立即解除保护、进入CHASE并清空普通攻击等待，不等第一柄飞剑发射。已生成的剑阵使用世界坐标保持独立；首领照常追击、横扫和突进，不由每轮飞剑事件改写身体动画。cast_finished仅清理引用并开始10秒再召唤冷却，不改变首领当前状态、动作或剩余计时。活动剑阵存在时禁止重复召唤，之后还需满足两次普通攻击门槛。
+
+SwordCourtConfig保存只读配置：副剑360px/s、转向2.2rad/s，中央王剑400px/s、转向1.8rad/s，最长飞行2.2秒。每轮0.55秒（王剑0.7秒）无害瞄准保留清晰起始方向；FLIGHT每物理帧读取目标最新位置，以有上限的角速度改变飞行方向，并同步旋转精灵及ShapeCast2D。飞剑可追踪，但不会瞬间掉头或无限绕场。上一轮危险飞行结束后间隔0.18秒开下一轮，首领本体完全不等这套轮次时钟。暂停、目标死亡、首领死亡与换房清理仍由原父节点接线处理。
+
+RoyalSword 使用用户提供的 IceButMelted Cast Spell 102 长剑图集，原PNG逐字节复制。召唤1–12、悬停13–17、飞行17、接触21–22、消散23–31；排除空白格。源图18–20含巨大烘焙挥砍光片，实机检查后排除；使用已落定剑身与碎光作为无害接触反馈，并保持来剑方向，触墙时将剑尖锚到实际接触点。真正飞剑使用稳定帧配合物理扫掠。ShapeCast2D 检测初始重叠和整段位移，World 优先阻挡；只有 FLIGHT 有伤害，同轮副剑共用已处理Hurtbox ID，下一轮另建列表。伤害同步触发死亡时尊重已退休状态，不复活消散图形。副剑和王剑在1.4倍固定镜头下分别对应1倍与2倍源像素。国王召唤使用attack2的0→1蓄力姿势；结束后立即交还正常动画控制，不再按每轮飞剑播放court_release。只有真实普通攻击生效时播放对应刀光。旧RoyalEcho/Earth素材留档，首领运行入口不再引用。
+
+PlayerSlash 从已有课程 weapon_smears 图集读取真实刀光，Player 在攻击 ACTIVE 内调用 present，不使用独立播放时钟。每次独立攻击交替使用 hero 31→32→33 与34→35→36 的完整动作，对应刀光0–3与4–7；实例保存交替索引，复活重置，未新增自动连击。PlayerVisualEffects 用固定容量的 Sprite2D 池保存当前姿势的世界变换，生成青绿残影与轮廓光；材质仅影响像素，PlayerVfxConfig 只保存视觉数值。光晕采样限制在对应帧，纹理区域预留透明边缘。暂停继承玩家暂停；受伤、死亡、复活立即清空，切房通过 cancel_dash(true) 清空，正常冲刺结束允许短暂淡出。不修改剑击 Hitbox、移动配置、冲刺距离、伤害、无敌或存档。
+
+800×450内部视口使用整数倍窗口缩放，默认1600×900，Canvas变换像素对齐。两个Boss精灵使用最近邻，Sprite倍率10/7与固定1.4倍镜头相乘得到2倍源像素显示；物理碰撞不缩放。charge_tint通过vertex varying保存调制色，避免fragment中重复乘入纹理使本体变暗。
+
+左右手交替的输入语义：一次新按键只播放一手，下一次新按键换另一手；单按和长按均不会自动出第二手。PlayerConfig.attack_buffer_seconds默认为0.12秒，仅收招期间的新按键可缓冲一次续招；下一手在本手完整收招结束后开始。输入缓冲属于实例，受伤、死亡、复活、切房和菜单reset_input清空。两段末姿与下一段准备姿一致，连续出招不穿插idle。每手原有AttackProfile和伤害去重不变。
+
+WingedChest在扑咬时让身体接触与咬击共享hit_ids，直到扑咬结束且两个区域均与玩家分离后恢复普通接触去重。护盾可挡住整个扑咬，不增加全局无敌；再次接触或下一次攻击仍会伤害。
+
+默认与完整测试入口均运行 sword_court_suite / player_vfx_suite。截图126–133覆盖剑庭召唤、瞄准、飞行、裁决、落点与同时进行的普通攻击；117–125保留主角双手刀光与冲刺检查。royal_echo_suite仅保留旧UID兼容入口，实际转到新剑庭套件；完整回归范围见verification.md。
+
+## 独立 Boss 挑战
+
+主菜单经 GameUI 信号选择章节，Main 在内存中重置 Session 并授予测试能力，直接加载原生 Boss 房间。GameRoom 的 rehearsal 标记使已击败首领仍可实例化，并隐藏场内回忆交互。Main 在挑战中屏蔽房间交互及通关保存，死亡重载所选房间，胜利只打开再战菜单。返回标题时从原玩家存档恢复 Session；挑战期间不调用 commit。测试使用独立的 user://test_* 存档核对原始字节不变。
+
 ## 炉心监守者（0.14.0）
 
-FurnaceKeeper 是独立 CharacterBody2D，组合 Health/Hurtbox 和只读 FurnaceConfig，物理帧状态机管理入场、预警、施法、泄压、转阶段及死亡。FurnaceFlame 是首领子节点 Area2D，负责低裂焰移动、喷发地面预警、单次命中和释放；命中走 Hurtbox.resolve_hit，继承护盾抵挡语义。视觉 Sprite 与碰撞形状分离。GameRoom 在加载时按 furnace_keeper_defeated 或旧 cistern_restored 过滤首领，并向 Main 转发事件；Main 负责血条、唯一击败标记、保存及通关交互。完成旧档可用 challenge 交互开启回忆战，rehearsal 状态只在当前房间实例中存在，不写存档。schema仍为2，新增稳定 flag；地形 TileMapLayer 与桌面素材未重建或修改。
+2026-09-27补充：攻击循环包含近身普攻和地面蓄力三连斩。空中WARNING在真实升空位置悬停2.2秒，VisualEffects仅推进轮廓光晕、世界残影与全身红色材质，不改变物理位置；减少闪光设置使用稳定低强度红色。下砸中心与双墙共享实例级已处理目标列表，图形结束同步关闭中心伤害。火墙高210px，站在平台仍可受伤，登台起跳才可越过。
+
+FurnaceKeeper 是独立 CharacterBody2D，组合 Health/Hurtbox 和只读 FurnaceConfig，物理帧状态机管理锁向突进斩、短跳换位、升空悬停、垂直下砸、泄压和转阶段。独立 DashHitbox 复用单次挥击去重和护盾处理。FurnaceFlame 是首领子节点 Area2D，负责落点爆发、双向焰浪横移、单次命中和释放；命中走 Hurtbox.resolve_hit，继承护盾抵挡语义。视觉 Sprite 与碰撞形状分离。GameRoom 在加载时按 furnace_keeper_defeated 或旧 cistern_restored 过滤首领，并向 Main 转发事件；Main 负责血条、唯一击败标记、保存及通关交互。完成旧档可用 challenge 交互开启回忆战，rehearsal 状态只在当前房间实例中存在，不写存档。schema仍为2，新增稳定 flag；地形 TileMapLayer 与桌面素材未重建或修改。
 
 ## 基线
 
@@ -21,7 +55,7 @@ SteamVent在真实ACTIVE重叠时尝试消耗一次充能；成功后仅记录�
 SettingsRepository校验原配置类型后，InputBindings.with_ward_defaults为旧设置中被占用的L/LB选择空闲设备槽；不改旧动作。显式技能绑定仍遵守冲突检测。Session正常保存时持久化补齐后的配置，HUD和领奖说明均显示实际映射。
 
 - Godot 4.7.2 标准版 / GDScript / Compatibility / 60 Hz 物理。
-- 640×360 基准视口、1280×720 初始窗口；像素纹理使用最近邻。
+- 800×450 基准视口、1440×810 初始窗口；像素纹理使用最近邻，普通房间与 Boss 房间均使用 1.4 倍镜头。
 - 场景与脚本按功能放在一起；配置 `.tres` 与原生 `.tscn` 可在编辑器修改。
 - 默认无第三方运行依赖。Python 工具只用标准库；PowerShell 提供 Windows 入口。
 
@@ -153,16 +187,16 @@ InputBindings 为 Session 持有的 RefCounted，捕获工程默认 InputMap；�
 
 SettingsPanel 为独立原生 PanelContainer + ScrollContainer，与原菜单分别显示，滚动随焦点；Main 在捕获期间阻断玩法/地图/静音快捷键。退出设置返回调用菜单且不解除暂停；新游戏用 ConfirmationDialog 明确确认。settings.cfg 的 meta/version=1，保留原 accessibility/interface 字段并加入 audio/display/input；SettingsRepository 兼容无版本旧文件，校验范围/类型/映射冲突，临时文件 flush 后备份有效主档再替换，损坏回退 .bak。Windows 不承诺绝对原子替换，游戏进度 schema 2 不变。
 
-Music/SFX 分别应用线性音量转 dB，0 使用 bus mute；全屏仅生产主场景启动或用户操作时应用，测试保存设置不触碰玩家配置。现有 WAV 通过不同 pitch/gain 复用为 Boss 预警、转阶段、胜利声音，没有新增素材。cue_changed 仅驱动 Boss 文字，dash_status_changed 由玩家实例状态变化驱动 HUD；VitalityPips 由 health.changed 驱动。不通过 UI 改物理位置。
+Music/SFX 分别应用线性音量转 dB，0 使用 bus mute；全屏仅生产主场景启动或用户操作时应用，测试保存设置不触碰玩家配置。现有 WAV 通过不同 pitch/gain 复用为 Boss 预警、转阶段、胜利声音，没有新增素材。cue_changed保留为首领事件，但不再显示为HUD文字；dash_status_changed 由玩家实例状态变化驱动 HUD；VitalityPips 由 health.changed 驱动。不通过 UI 改物理位置。
 
 WorldMap 从既有 flags/abilities/visited 推导三印进度、目标和门槛；只有已知来源房间的门槛显示，未知名称仍隐藏。普通铠甲独立 SpriteFrames 采用与已核对图集一致的帧段，配置和碰撞不变。tests/chapter_route 仅通过 InputMap 行动，开局/读档外不修改运行时玩法状态。
 
 ### 首领与最终回响（0.8.0）
 
-HollowWarden 为独立 CharacterBody2D，组合现有 Health/Hitbox/Hurtbox；不继承普通铠甲逻辑。WardenConfig 与两个 AttackProfile 为只读资源，阶段、计时、朝向、攻击次数均为实例状态。交替横扫/突进，风格和判定共用阶段计时；命中不缩短预警和收招。半血只在收招结束后转入 1.2s 无伤害阶段提示，二阶段仅增加追击速度、收招乘 0.85，不缩短预警。
+HollowWarden 为独立 CharacterBody2D，组合现有 Health/Hitbox/Hurtbox；不继承普通铠甲逻辑。WardenConfig 与三个 AttackProfile 为只读资源，阶段、计时、朝向、攻击次数均为实例状态。第一阶段交替横扫/突进；第二阶段循环蓄力重斩、横扫、突进。重斩使用国王 attack2 动画与独立宽命中区，蓄力全身红色提示；只有挥剑窗口造成伤害。半血只在收招结束后转入无伤害阶段提示，二阶段增加追击速度、收招乘 0.85，不缩短预警。
 Main 注入 Player，接 awakened/health.changed/phase_changed 驱动原生首领栏；击败信号延迟到安全时机，并核对房间实例、玩家仍活着与标记唯一性，再回血、保存和显示奖励。玩家死亡关闭血条，Boss 下一物理帧关闭攻击；切房释放整个实例。双方同帧死亡按失败重试，旧房间延迟胜利不影响新房间。
-进入 heart_chamber 前把 checkpoint 固定到 atrium/checkpoint 并尝试保存；保存失败显示原提示，会话检查点仍可重试。首领房仅 640px 宽，Main 固定 Camera2D 到 (320,396)，全场可见且跳跃不推动镜头；其他房间维持原跟随方式。西门允许主动撤退，返回前庭 boss_return。
-GameRoom 在装载时移除已有 warden_defeated 标记的首领；finale 交互仅在击败且尚无 journey_restored 时可见，Main 再检查前置和清场。结局按实际保存结果展示成功/失败，菜单支持继续探索、语言切换及地图往返。重复交互不重复播放；保存失败后可到祭坛重试。
+进入 heart_chamber 前把 checkpoint 固定到 atrium/checkpoint 并尝试保存；保存失败显示原提示，会话检查点仍可重试。两个首领房都使用固定单屏镜头；进场后入口实体边界保持封闭，战斗中不显示返回门，击败首领后只显示中央出口。
+GameRoom 在装载时移除已有 warden_defeated 标记的首领；Boss 房战斗期间不显示出口，击败后第一关显示左侧返回前庭与右侧第二关门，第二关显示左侧返回渡口与右侧章节出口。结局按实际保存结果展示成功/失败，菜单支持继续探索、语言切换及地图往返。重复交互不重复播放；保存失败后可到祭坛重试。
 schema 2 不变，增加 heart_chamber 与 warden_defeated/journey_restored 白名单。completed 仍表示旧高台事件，绝不自动迁移成新结局；主线结局以 journey_restored 为准。不持久化首领半血或攻击阶段，未击败则重入满血。
 heart_chamber.tscn 是原生 640×576 房间，连续平地 y=480；tools/build_heart_chamber.tscn 只首次创建并拒绝覆盖。复用原铠甲PNG与图块，无新增 Autoload、外部素材或依赖。
 0.8.1守门者改用独立warden_frames.tres修正选帧，_play_clip按实际片段帧数/fps匹配阶段时间，每次显式从头播放。待机/入场/转阶段使用循环idle；2倍最近邻显示仅影响Sprite，脚底y=0，Body/Hurtbox/AttackBox与配置不改，普通铠甲共用资源不改。

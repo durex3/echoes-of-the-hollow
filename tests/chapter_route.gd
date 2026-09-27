@@ -67,13 +67,19 @@ func walk_to(at: Vector2, combat := true, limit := 1800) -> bool:
 					target = enemy
 					break
 		if target:
-			var distance := target.position.x - p.position.x
-			direction = signf(distance) if absf(distance) > 42 else 0.0
-			if absf(distance) <= 65:
-				if p.state == Player.State.MOVE:
-					# Facing is established by directional input before a fresh attack.
-					direction = signf(distance)
-				Input.action_press("attack") if i % 26 < 15 else Input.action_release("attack")
+			if not target is Slime:
+				if not await fight_enemy(target):
+					return false
+				continue
+			# Keep traversal's jump steering on tiered slime platforms, but stop
+			# pushing into contact while swinging at a target already in reach.
+			var dx := target.position.x-p.position.x
+			var in_reach := absf(dx) <= 60 and absf(target.position.y-p.position.y) < 30
+			direction = signf(dx) if absf(dx) > 52 else -signf(dx) if absf(dx) < 38 else 0.0
+			var turn_first := in_reach and p.facing != signf(dx) and p.state == Player.State.MOVE
+			if turn_first:
+				direction = signf(dx)
+			hold("attack",in_reach and not turn_first and p.state == Player.State.MOVE)
 		else:
 			Input.action_release("attack")
 		hold("move_right", direction > 0)
@@ -82,6 +88,8 @@ func walk_to(at: Vector2, combat := true, limit := 1800) -> bool:
 			Input.action_press("jump")
 		elif p.velocity.y >= 0:
 			Input.action_release("jump")
+		if p.is_on_floor() and incoming_bolt(p):
+			Input.action_press("jump")
 		# A second press extends an ascent to the authored high-root ledge.
 		if difference.y < -105 and "double_jump" in Session.abilities and not p.is_on_floor() and not p.air_jump_used and p.velocity.y > -80:
 			Input.action_release("jump")
@@ -93,9 +101,68 @@ func walk_to(at: Vector2, combat := true, limit := 1800) -> bool:
 	release()
 	return fail("Traversal timeout %s at %s toward %s" % [game.room.room_id, p.position, at])
 
+func incoming_bolt(p: Player) -> bool:
+	for bolt: InkBolt in game.room.projectiles.get_children():
+		var delta_x := bolt.position.x - p.position.x
+		if not bolt.spent and delta_x * bolt.direction.x < 0 and absf(delta_x) < 125 and absf(bolt.position.y - (p.position.y - 22)) < 42:
+			return true
+	return false
+
+func fight_enemy(enemy: Node2D) -> bool:
+	var p: Player = game.player
+	var drop_direction := 0.0
+	release()
+	for tick: int in range(1500):
+		if p.state == Player.State.DEAD:
+			release()
+			return fail("Died in combat: " + game.room.room_id)
+		if not is_instance_valid(enemy) or enemy.health.current <= 0:
+			release()
+			return true
+		var dx := enemy.position.x - p.position.x
+		var distance := absf(dx)
+		var direction := signf(dx) if distance > 52 else -signf(dx) if distance < 38 else 0.0
+		var ready_to_hit := absf(enemy.position.y - p.position.y) < 30 and distance <= 62
+		var target_below := enemy.position.y - p.position.y > 55
+		if target_below:
+			# A knockback or wall jump can put the player on a shelf above a slime.
+			# Keep walking off that shelf instead of oscillating over its x position.
+			if drop_direction == 0:
+				drop_direction = signf(dx) if distance > 1 else p.facing
+			direction = drop_direction
+		else:
+			drop_direction = 0.0
+		if enemy is LivingArmor and enemy.state in [LivingArmor.State.WINDUP, LivingArmor.State.STRIKE]:
+			direction = -signf(dx) if distance < 105 else 0.0
+			ready_to_hit = false
+		var jump := (incoming_bolt(p) or p.is_on_wall() and distance > 60) if p.is_on_floor() else Input.is_action_pressed("jump") and p.velocity.y < 0
+		if target_below:
+			jump = false
+		if jump:
+			ready_to_hit = false
+		if ready_to_hit and p.state == Player.State.MOVE and p.facing != signf(dx):
+			# Turn using one frame of input, then plant feet for the actual stroke.
+			direction = signf(dx)
+			ready_to_hit = false
+		hold("move_left",direction < 0)
+		hold("move_right",direction > 0)
+		hold("jump",jump)
+		hold("attack",ready_to_hit and p.state == Player.State.MOVE)
+		await frame()
+	release()
+	return fail("Combat timeout: %s hp=%s state=%s enemy=%s player=%s facing=%s player_state=%s" % [enemy.name,enemy.health.current,enemy.state,enemy.position,p.position,p.facing,p.state])
+
 func clear_room() -> bool:
 	for enemy: Node2D in game.room.get_node("Enemies").get_children():
 		if not is_instance_valid(enemy) or enemy.health.current <= 0:
+			continue
+		if enemy is DoomScribe or enemy is LivingArmor or enemy is Slime or enemy is RoseSentinel or enemy is WingedChest:
+			var side := -1.0 if game.player.position.x < enemy.position.x else 1.0
+			if not await walk_to(enemy.position + Vector2(side * 60,0)) or not await fight_enemy(enemy):
+				return false
+			if game.room.room_id == "scriptorium" and enemy.name == &"ScribeSolo":
+				if not await use("Rest"):
+					return false
 			continue
 		for attempt: int in range(10):
 			if not is_instance_valid(enemy) or enemy.health.current <= 0:
@@ -153,11 +220,12 @@ func wind_branch() -> bool:
 func boss_fight() -> bool:
 	var boss: HollowWarden = game.room.get_node("Enemies/Warden")
 	var p: Player = game.player
+	var saw_verdict := false
 	for i: int in range(18000):
 		if "warden_defeated" in Session.flags:
 			release()
 			await wait_frames(40)
-			return true
+			return saw_verdict or fail("Boss route skipped the new sword court")
 		if p.state == Player.State.DEAD:
 			release()
 			return fail("Died during input-only boss battle")
@@ -176,10 +244,22 @@ func boss_fight() -> bool:
 			HollowWarden.State.STRIKE:
 				jump = boss.rush_attack
 			HollowWarden.State.RECOVER, HollowWarden.State.TRANSITION:
-				direction = signf(dx) if absf(dx) > 40 else 0.0
-				if absf(dx) < 60:
-					direction = signf(dx)
-					attack = i % 25 < 14
+				direction = signf(dx) if absf(dx) > 55 else 0.0
+				if absf(dx) < 66 and p.state == Player.State.MOVE:
+					if p.facing != signf(dx):
+						direction = signf(dx)
+					else:
+						attack = absf(p.position.y - boss.position.y) < 35
+			HollowWarden.State.SWORD_COURT:
+				var court_goal := 180.0 if p.position.x < boss.position.x else 480.0
+				direction = signf(court_goal-p.position.x) if absf(court_goal-p.position.x) > 5 else 0.0
+		if is_instance_valid(boss.sword_court):
+			saw_verdict = saw_verdict or boss.sword_court.round_index == 3
+			for sword: RoyalSword in boss.sword_court.swords:
+				if is_instance_valid(sword) and sword.dangerous() and sword.global_position.distance_to(p.position) < 220:
+					jump = jump or p.is_on_floor()
+			if not p.is_on_floor() and Input.is_action_pressed("jump") and p.velocity.y < 0:
+				jump = true
 		hold("move_left", direction < 0)
 		hold("move_right", direction > 0)
 		hold("jump", jump)
@@ -197,9 +277,13 @@ func run() -> void:
 		add_child(game)
 		game.start_game(false)
 		game.player.died.connect(func() -> void: deaths += 1)
-		game.player.health.damaged.connect(func(_amount: int, _origin: Vector2) -> void:
+		game.player.health.damaged.connect(func(_amount: int, origin: Vector2) -> void:
 			hurt_events += 1
-			samples.append({"route": run_name, "event": "damage", "room": game.room.room_id, "seconds": snappedf(ticks/60.0, 0.01), "hp": game.player.health.current}))
+			var nearby: Array[Dictionary] = []
+			for enemy: Node2D in game.room.get_node("Enemies").get_children():
+				if enemy.position.distance_to(game.player.position) < 320:
+					nearby.append({"enemy": str(enemy.name), "position": str(enemy.position), "state": enemy.state, "hp": enemy.health.current})
+			samples.append({"route": run_name, "event": "damage", "room": game.room.room_id, "seconds": snappedf(ticks/60.0, 0.01), "hp": game.player.health.current, "position": str(game.player.position), "origin": str(origin), "nearby": nearby}))
 		await wait_frames(5)
 		if not await use("Shrine") or not await walk_to(Vector2(1200,480)) or not await use("EastDoor") or not await use("Shrine"):
 			break

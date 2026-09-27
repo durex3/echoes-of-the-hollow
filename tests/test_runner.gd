@@ -18,7 +18,8 @@ func _ready() -> void:
 	Session.sfx_volume = 1.0
 	Session.fullscreen = false
 	Session.set_language("en")
-	get_tree().create_timer(210.0, true, false, true).timeout.connect(func() -> void:
+	# Includes both complete chapters plus the isolated boss/player VFX scenarios.
+	get_tree().create_timer(300.0, true, false, true).timeout.connect(func() -> void:
 		push_error("Integration test timeout")
 		get_tree().quit(1))
 	_run.call_deferred()
@@ -218,6 +219,16 @@ func _run() -> void:
 	check(player.health.current == 4, "Damage decreases health")
 	player.health.take_damage(1,Vector2(0,0))
 	check(player.health.current == 4, "Invulnerability rejects repeated contact")
+	await frames(18)
+	await press("interact",2)
+	check(player.health.current == 4 and Session.checkpoint_room == "ruins" and Repository.read(Session.save_path).get("checkpoint_room") == "ruins", "A real damaged-player checkpoint interaction saves without healing")
+	await press("interact",2)
+	check(player.health.current == 4, "Repeated checkpoint saves cannot refill health")
+	var checkpoint_save_path := Session.save_path
+	Session.save_path = "user://missing_checkpoint_test_directory/save.json"
+	await press("interact",2)
+	check(player.health.current == 4 and game.ui.toast.text == TextCatalog.text("Save failed / Progress remains in this session"), "Failed checkpoint saves neither heal nor claim success")
+	Session.save_path = checkpoint_save_path
 	player.health.invulnerability_left = 0
 	player.health.take_damage(10,Vector2(0,0))
 	await frames(70)
@@ -308,6 +319,7 @@ func _run() -> void:
 	invalid.checkpoint_room = "missing"
 	check(not Repository.validate(invalid), "Unknown room ID rejected")
 	check(Repository.write("user://missing_test_directory/save.json",Session.snapshot()) != OK, "Unwritable target reports failure")
+	await _run_effect_suites()
 	for suffix: String in ["", ".tmp", ".bak"]:
 		if FileAccess.file_exists(Session.save_path + suffix):
 			DirAccess.remove_absolute(Session.save_path + suffix)
@@ -326,6 +338,11 @@ func _run_current() -> void:
 	game = preload("res://app/main.tscn").instantiate()
 	add_child(game)
 	await frames(4)
+	var challenge_suite := preload("res://tests/boss_challenge_suite.gd").new()
+	add_child(challenge_suite)
+	await challenge_suite.run(self,game)
+	challenge_suite.queue_free()
+	await _run_effect_suites()
 	game.start_game(false)
 	await frames(4)
 	Session.set_flag("flow_seal")
@@ -346,3 +363,13 @@ func _run_current() -> void:
 				DirAccess.remove_absolute(path + suffix)
 	print("TEST_RESULT: %d checks, %d failures" % [checks,failures.size()])
 	get_tree().quit(0 if failures.is_empty() else 1)
+
+func _run_effect_suites() -> void:
+	var echo_suite := preload("res://tests/sword_court_suite.gd").new()
+	add_child(echo_suite)
+	await echo_suite.run(self,game)
+	echo_suite.queue_free()
+	var player_vfx_suite := preload("res://tests/player_vfx_suite.gd").new()
+	add_child(player_vfx_suite)
+	await player_vfx_suite.run(self,game)
+	player_vfx_suite.queue_free()

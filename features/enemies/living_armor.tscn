@@ -11,6 +11,8 @@ size = Vector2(22, 46)
 size = Vector2(24, 46)
 [sub_resource type="RectangleShape2D" id="Contact"]
 size = Vector2(52, 42)
+[sub_resource type="RectangleShape2D" id="BodyContact"]
+size = Vector2(22, 42)
 [node name="LivingArmor" type="CharacterBody2D" groups=["enemies"]]
 collision_layer = 4
 collision_mask = 1
@@ -37,6 +39,16 @@ health = NodePath("../Health")
 [node name="Shape" type="CollisionShape2D" parent="Hurtbox"]
 position = Vector2(0, -23)
 shape = SubResource("Hurt")
+[node name="ContactBox" type="Area2D" parent="."]
+position = Vector2(0, -23)
+collision_layer = 0
+collision_mask = 8
+monitorable = false
+script = ExtResource("5")
+starts_active = true
+reset_when_empty = true
+[node name="Shape" type="CollisionShape2D" parent="ContactBox"]
+shape = SubResource("BodyContact")
 [node name="AttackBox" type="Area2D" parent="."]
 position = Vector2(34, -24)
 collision_layer = 0

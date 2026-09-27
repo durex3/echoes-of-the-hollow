@@ -8,9 +8,13 @@
 [ext_resource type="Script" path="res://features/enemies/hollow_warden.gd" id="6_rx887"]
 [ext_resource type="Resource" path="res://features/enemies/warden_config.tres" id="7_kfdnq"]
 [ext_resource type="Script" path="res://features/world/interaction.gd" id="8_qpmqr"]
+[ext_resource type="Script" path="res://features/world/furnace_arena_gate.gd" id="9_arena_gate"]
 
 [sub_resource type="RectangleShape2D" id="Boundary"]
 size = Vector2(32, 640)
+
+[sub_resource type="RectangleShape2D" id="ArenaGateShape"]
+size = Vector2(12, 480)
 
 [node name="HeartChamber" type="Node2D" unique_id=601705271]
 script = ExtResource("1_okc37")
@@ -44,8 +48,18 @@ position = Vector2(-16, 256)
 shape = SubResource("Boundary")
 
 [node name="Right" type="CollisionShape2D" parent="Bounds" unique_id=1364135426]
-position = Vector2(656, 256)
+position = Vector2(608, 256)
 shape = SubResource("Boundary")
+
+[node name="ArenaGate" type="StaticBody2D" parent="."]
+position = Vector2(68, 480)
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("9_arena_gate")
+
+[node name="Shape" type="CollisionShape2D" parent="ArenaGate"]
+position = Vector2(0, -240)
+shape = SubResource("ArenaGateShape")
 
 [node name="Spawns" type="Node2D" parent="." unique_id=22093897]
 
@@ -68,22 +82,25 @@ config = ExtResource("7_kfdnq")
 
 [node name="Interactions" type="Node2D" parent="." unique_id=1839794500]
 
-[node name="Return" type="Node2D" parent="Interactions" unique_id=393206268]
-position = Vector2(48, 480)
-script = ExtResource("8_qpmqr")
-kind = "exit"
-target_room = "atrium"
-target_spawn = "boss_return"
-prompt = "E / RETURN TO THE ANTECHAMBER"
-
 [node name="Lesson" type="Node2D" parent="Interactions" unique_id=1275901765]
 position = Vector2(145, 480)
 script = ExtResource("8_qpmqr")
 kind = "sign"
 prompt = "Amber: step away. Mint: jump the rush. Strike after."
 
+[node name="Return" type="Node2D" parent="Interactions"]
+position = Vector2(48, 480)
+script = ExtResource("8_qpmqr")
+kind = "exit"
+visible_after_flag = "warden_defeated"
+required_flags = Array[String](["warden_defeated"])
+target_room = "atrium"
+target_spawn = "boss_return"
+prompt = "E / RETURN TO THE ANTECHAMBER"
+
 [node name="FinalEcho" type="Node2D" parent="Interactions" unique_id=1433380123]
 position = Vector2(560, 480)
+modulate = Color(1, 1, 1, 0)
 script = ExtResource("8_qpmqr")
 kind = "finale"
 required_flag = "warden_defeated"
@@ -91,13 +108,11 @@ stable_id = "journey_restored"
 prompt = "E / RESTORE THE FINAL ECHO"
 
 [node name="ChapterDoor" type="Node2D" parent="Interactions"]
-position = Vector2(604, 480)
+position = Vector2(560, 480)
 script = ExtResource("8_qpmqr")
 kind = "exit"
-visible_after_flag = "journey_restored"
-interaction_radius = 32.0
-required_flags = Array[String](["journey_restored"])
-missing_flag_prompts = Array[String](["Restore the final echo before entering Chapter II"])
+visible_after_flag = "warden_defeated"
+required_flags = Array[String](["warden_defeated"])
 target_room = "ember_quay"
 target_spawn = "entry"
 prompt = "E / CHAPTER II - EMBER CISTERN"

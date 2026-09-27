@@ -1,0 +1,62 @@
+[gd_resource type="SpriteFrames" load_steps=15 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/effects/royal_earth_wall.png" id="1"]
+
+[sub_resource type="AtlasTexture" id="earth_1"]
+atlas = ExtResource("1")
+region = Rect2(61, 14, 18, 25)
+
+[sub_resource type="AtlasTexture" id="earth_2"]
+atlas = ExtResource("1")
+region = Rect2(109, 14, 18, 25)
+
+[sub_resource type="AtlasTexture" id="earth_3"]
+atlas = ExtResource("1")
+region = Rect2(157, 14, 18, 25)
+
+[sub_resource type="AtlasTexture" id="earth_4"]
+atlas = ExtResource("1")
+region = Rect2(13, 62, 18, 25)
+
+[sub_resource type="AtlasTexture" id="earth_5"]
+atlas = ExtResource("1")
+region = Rect2(61, 62, 18, 25)
+
+[sub_resource type="AtlasTexture" id="earth_6"]
+atlas = ExtResource("1")
+region = Rect2(109, 62, 18, 25)
+
+[sub_resource type="AtlasTexture" id="earth_7"]
+atlas = ExtResource("1")
+region = Rect2(157, 62, 18, 25)
+
+[sub_resource type="AtlasTexture" id="earth_8"]
+atlas = ExtResource("1")
+region = Rect2(13, 110, 18, 25)
+
+[sub_resource type="AtlasTexture" id="earth_9"]
+atlas = ExtResource("1")
+region = Rect2(61, 110, 18, 25)
+
+[sub_resource type="AtlasTexture" id="earth_10"]
+atlas = ExtResource("1")
+region = Rect2(109, 110, 18, 25)
+
+[sub_resource type="AtlasTexture" id="earth_11"]
+atlas = ExtResource("1")
+region = Rect2(157, 110, 18, 25)
+
+[sub_resource type="AtlasTexture" id="earth_12"]
+atlas = ExtResource("1")
+region = Rect2(13, 158, 18, 25)
+
+[sub_resource type="AtlasTexture" id="earth_13"]
+atlas = ExtResource("1")
+region = Rect2(61, 158, 18, 25)
+
+[resource]
+animations = [
+{"name": &"charge", "loop": false, "speed": 12.0, "frames": [{"duration": 1.0, "texture": SubResource("earth_1")}, {"duration": 1.0, "texture": SubResource("earth_1")}, {"duration": 1.0, "texture": SubResource("earth_2")}]},
+{"name": &"burst", "loop": false, "speed": 12.0, "frames": [{"duration": 1.0, "texture": SubResource("earth_3")}, {"duration": 1.0, "texture": SubResource("earth_4")}, {"duration": 1.0, "texture": SubResource("earth_5")}, {"duration": 1.0, "texture": SubResource("earth_6")}]},
+{"name": &"settle", "loop": false, "speed": 12.0, "frames": [{"duration": 1.0, "texture": SubResource("earth_7")}, {"duration": 1.0, "texture": SubResource("earth_8")}, {"duration": 1.0, "texture": SubResource("earth_9")}, {"duration": 1.0, "texture": SubResource("earth_10")}, {"duration": 1.0, "texture": SubResource("earth_11")}, {"duration": 1.0, "texture": SubResource("earth_12")}, {"duration": 1.0, "texture": SubResource("earth_13")}]}
+]

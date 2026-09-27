@@ -1,0 +1,174 @@
+[gd_resource type="SpriteFrames" load_steps=41 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/characters/rose_sentinel.png" id="pink"]
+
+[sub_resource type="AtlasTexture" id="pink_0"]
+atlas = ExtResource("pink")
+region = Rect2(0, 0, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_1"]
+atlas = ExtResource("pink")
+region = Rect2(80, 0, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_2"]
+atlas = ExtResource("pink")
+region = Rect2(160, 0, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_3"]
+atlas = ExtResource("pink")
+region = Rect2(240, 0, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_4"]
+atlas = ExtResource("pink")
+region = Rect2(320, 0, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_5"]
+atlas = ExtResource("pink")
+region = Rect2(400, 0, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_14"]
+atlas = ExtResource("pink")
+region = Rect2(480, 80, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_15"]
+atlas = ExtResource("pink")
+region = Rect2(560, 80, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_16"]
+atlas = ExtResource("pink")
+region = Rect2(0, 160, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_17"]
+atlas = ExtResource("pink")
+region = Rect2(80, 160, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_18"]
+atlas = ExtResource("pink")
+region = Rect2(160, 160, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_19"]
+atlas = ExtResource("pink")
+region = Rect2(240, 160, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_21"]
+atlas = ExtResource("pink")
+region = Rect2(400, 160, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_22"]
+atlas = ExtResource("pink")
+region = Rect2(480, 160, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_23"]
+atlas = ExtResource("pink")
+region = Rect2(560, 160, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_24"]
+atlas = ExtResource("pink")
+region = Rect2(0, 240, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_25"]
+atlas = ExtResource("pink")
+region = Rect2(80, 240, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_26"]
+atlas = ExtResource("pink")
+region = Rect2(160, 240, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_27"]
+atlas = ExtResource("pink")
+region = Rect2(240, 240, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_28"]
+atlas = ExtResource("pink")
+region = Rect2(320, 240, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_29"]
+atlas = ExtResource("pink")
+region = Rect2(400, 240, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_30"]
+atlas = ExtResource("pink")
+region = Rect2(480, 240, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_31"]
+atlas = ExtResource("pink")
+region = Rect2(560, 240, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_32"]
+atlas = ExtResource("pink")
+region = Rect2(0, 320, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_33"]
+atlas = ExtResource("pink")
+region = Rect2(80, 320, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_34"]
+atlas = ExtResource("pink")
+region = Rect2(160, 320, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_35"]
+atlas = ExtResource("pink")
+region = Rect2(240, 320, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_36"]
+atlas = ExtResource("pink")
+region = Rect2(320, 320, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_37"]
+atlas = ExtResource("pink")
+region = Rect2(400, 320, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_38"]
+atlas = ExtResource("pink")
+region = Rect2(480, 320, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_39"]
+atlas = ExtResource("pink")
+region = Rect2(560, 320, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_40"]
+atlas = ExtResource("pink")
+region = Rect2(0, 400, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_41"]
+atlas = ExtResource("pink")
+region = Rect2(80, 400, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_42"]
+atlas = ExtResource("pink")
+region = Rect2(160, 400, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_43"]
+atlas = ExtResource("pink")
+region = Rect2(240, 400, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_44"]
+atlas = ExtResource("pink")
+region = Rect2(320, 400, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_45"]
+atlas = ExtResource("pink")
+region = Rect2(400, 400, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_46"]
+atlas = ExtResource("pink")
+region = Rect2(480, 400, 80, 80)
+
+[sub_resource type="AtlasTexture" id="pink_47"]
+atlas = ExtResource("pink")
+region = Rect2(560, 400, 80, 80)
+
+[resource]
+animations = [
+{"name": &"idle", "loop": true, "speed": 10.0, "frames": [{"duration": 1.0, "texture": SubResource("pink_0")}, {"duration": 1.0, "texture": SubResource("pink_1")}, {"duration": 1.0, "texture": SubResource("pink_2")}, {"duration": 1.0, "texture": SubResource("pink_3")}, {"duration": 1.0, "texture": SubResource("pink_4")}, {"duration": 1.0, "texture": SubResource("pink_5")}]},
+{"name": &"wave_warning", "loop": false, "speed": 10.0, "frames": [{"duration": 1.0, "texture": SubResource("pink_21")}, {"duration": 1.0, "texture": SubResource("pink_22")}]},
+{"name": &"wave_cast", "loop": false, "speed": 10.0, "frames": [{"duration": 1.0, "texture": SubResource("pink_23")}, {"duration": 1.0, "texture": SubResource("pink_24")}]},
+{"name": &"wave_recover", "loop": false, "speed": 10.0, "frames": [{"duration": 1.0, "texture": SubResource("pink_25")}, {"duration": 1.0, "texture": SubResource("pink_26")}, {"duration": 1.0, "texture": SubResource("pink_27")}, {"duration": 1.0, "texture": SubResource("pink_0")}, {"duration": 1.0, "texture": SubResource("pink_1")}, {"duration": 1.0, "texture": SubResource("pink_2")}]},
+{"name": &"takeoff", "loop": false, "speed": 10.0, "frames": [{"duration": 1.0, "texture": SubResource("pink_14")}, {"duration": 1.0, "texture": SubResource("pink_15")}, {"duration": 1.0, "texture": SubResource("pink_16")}, {"duration": 1.0, "texture": SubResource("pink_17")}]},
+{"name": &"eruption_warning", "loop": false, "speed": 10.0, "frames": [{"duration": 1.0, "texture": SubResource("pink_29")}, {"duration": 1.0, "texture": SubResource("pink_30")}, {"duration": 1.0, "texture": SubResource("pink_31")}]},
+{"name": &"eruption_cast", "loop": false, "speed": 10.0, "frames": [{"duration": 1.0, "texture": SubResource("pink_32")}, {"duration": 1.0, "texture": SubResource("pink_33")}, {"duration": 1.0, "texture": SubResource("pink_34")}, {"duration": 1.0, "texture": SubResource("pink_35")}]},
+{"name": &"landing", "loop": false, "speed": 10.0, "frames": [{"duration": 1.0, "texture": SubResource("pink_18")}, {"duration": 1.0, "texture": SubResource("pink_19")}]},
+{"name": &"eruption_recover", "loop": false, "speed": 10.0, "frames": [{"duration": 1.0, "texture": SubResource("pink_28")}, {"duration": 1.0, "texture": SubResource("pink_0")}, {"duration": 1.0, "texture": SubResource("pink_1")}, {"duration": 1.0, "texture": SubResource("pink_2")}, {"duration": 1.0, "texture": SubResource("pink_3")}, {"duration": 1.0, "texture": SubResource("pink_4")}]},
+{"name": &"transition", "loop": false, "speed": 10.0, "frames": [{"duration": 1.0, "texture": SubResource("pink_29")}, {"duration": 1.0, "texture": SubResource("pink_30")}, {"duration": 1.0, "texture": SubResource("pink_31")}, {"duration": 1.0, "texture": SubResource("pink_32")}, {"duration": 1.0, "texture": SubResource("pink_33")}, {"duration": 1.0, "texture": SubResource("pink_34")}, {"duration": 1.0, "texture": SubResource("pink_35")}]},
+{"name": &"death", "loop": false, "speed": 10.0, "frames": [{"duration": 1.0, "texture": SubResource("pink_36")}, {"duration": 1.0, "texture": SubResource("pink_37")}, {"duration": 1.0, "texture": SubResource("pink_38")}, {"duration": 1.0, "texture": SubResource("pink_39")}, {"duration": 1.0, "texture": SubResource("pink_40")}, {"duration": 1.0, "texture": SubResource("pink_41")}, {"duration": 1.0, "texture": SubResource("pink_42")}, {"duration": 1.0, "texture": SubResource("pink_43")}, {"duration": 1.0, "texture": SubResource("pink_44")}, {"duration": 1.0, "texture": SubResource("pink_45")}, {"duration": 1.0, "texture": SubResource("pink_46")}, {"duration": 1.0, "texture": SubResource("pink_47")}]},
+]

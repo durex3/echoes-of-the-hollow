@@ -71,7 +71,7 @@ func point(room: Node, id: String, kind: String, at: Vector2, prompt: String) ->
 	return result
 
 func checkpoint(room: Node, id: String, at: Vector2, marker: String) -> void:
-	var shrine := point(room,id,"checkpoint",at,"E / RECOVER & SAVE")
+	var shrine := point(room,id,"checkpoint",at,"E / SAVE PROGRESS")
 	shrine.checkpoint_spawn = marker
 	var sprite := AnimatedSprite2D.new()
 	sprite.name = "Sprite"

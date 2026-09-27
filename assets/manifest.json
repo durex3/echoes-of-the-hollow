@@ -175,5 +175,185 @@
     "source_relative_path": "ch_06_boss_battles/ch_06_boss_battles/sprites/pink_box_effects.png",
     "sha256": "a2bf19e9c51d08f2d1e989b9c046e0bc2c113e4a007a3b9175488a58c85bd791",
     "license_status": "Not supplied in extracted chapter pack; verify before distribution."
+  },
+  {
+    "file": "assets/characters/warden_idle.png",
+    "source_pack": "Medieval King Pack 2",
+    "source_relative_path": "Sprites/Idle.png",
+    "source_url": "https://luizmelo.itch.io/medieval-king-pack-2",
+    "sha256": "a4cc1dd50e49d9537de10b2c7003b885ccdafb2a017c6d64c88ee31d40ac6750",
+    "license_status": "CC0; see assets/licenses/warden_license.txt"
+  },
+  {
+    "file": "assets/characters/warden_attack1.png",
+    "source_pack": "Medieval King Pack 2",
+    "source_relative_path": "Sprites/Attack1.png",
+    "source_url": "https://luizmelo.itch.io/medieval-king-pack-2",
+    "sha256": "79412a7ce6f9ed64f34bc48b27bc5e083298749baa9b75afb9284f8951ca1e6d",
+    "license_status": "CC0; see assets/licenses/warden_license.txt"
+  },
+  {
+    "file": "assets/characters/warden_death.png",
+    "source_pack": "Medieval King Pack 2",
+    "source_relative_path": "Sprites/Death.png",
+    "source_url": "https://luizmelo.itch.io/medieval-king-pack-2",
+    "sha256": "81dc221ed956e6a8cce5a6ef561169b84c6843b00cf83e20fa3a0f907d09dc98",
+    "license_status": "CC0; see assets/licenses/warden_license.txt"
+  },
+  {
+    "file": "assets/characters/rose_idle.png",
+    "source_pack": "Medieval Warrior Pack 2",
+    "source_relative_path": "Sprites/Idle.png",
+    "source_url": "https://luizmelo.itch.io/medieval-warrior-pack-2",
+    "sha256": "453576b77c79e9c6500f40294dce184bb9478db00e12cad785bbc145d5c29798",
+    "license_status": "CC0; see assets/licenses/rose_license.txt"
+  },
+  {
+    "file": "assets/characters/rose_run.png",
+    "source_pack": "Medieval Warrior Pack 2",
+    "source_relative_path": "Sprites/Run.png",
+    "source_url": "https://luizmelo.itch.io/medieval-warrior-pack-2",
+    "sha256": "13ddccd250196ea8f2b5f72cc5c1fccad76e07740d4a3ffcaefb66f28cd61fe4",
+    "license_status": "CC0; see assets/licenses/rose_license.txt"
+  },
+  {
+    "file": "assets/characters/rose_death.png",
+    "source_pack": "Medieval Warrior Pack 2",
+    "source_relative_path": "Sprites/Death.png",
+    "source_url": "https://luizmelo.itch.io/medieval-warrior-pack-2",
+    "sha256": "ec5c102bf73ff2c21e8491aa2197d2808fd1a6ada5da333e39a2ca656bb327f4",
+    "license_status": "CC0; see assets/licenses/rose_license.txt"
+  },
+  {
+    "file": "assets/characters/warden_run.png",
+    "source_pack": "Medieval King Pack 2",
+    "source_relative_path": "Sprites/Run.png",
+    "source_url": "https://luizmelo.itch.io/medieval-king-pack-2",
+    "sha256": "7293778a98df7658eaa9aa229b655d78cacd64fbe4cc685a8464b0e35da2b352",
+    "license_status": "CC0; see assets/licenses/warden_license.txt"
+  },
+  {
+    "file": "assets/characters/warden_attack3.png",
+    "source_pack": "Medieval King Pack 2",
+    "source_relative_path": "Sprites/Attack3.png",
+    "source_url": "https://luizmelo.itch.io/medieval-king-pack-2",
+    "sha256": "1f45f901594130c5d34aca486db1cac1b0c510c7911be241f7866b38878c2062",
+    "license_status": "CC0; see assets/licenses/warden_license.txt"
+  },
+  {
+    "file": "assets/licenses/warden_license.txt",
+    "source_pack": "Medieval King Pack 2",
+    "source_relative_path": "License.txt",
+    "source_url": "https://luizmelo.itch.io/medieval-king-pack-2",
+    "sha256": "e58bbed1eac2fd4947ba64ef62a4a11c070a574ffa0e27711b84183e664b9d13",
+    "license_status": "Original license declaration supplied with pack (CC0)"
+  },
+  {
+    "file": "assets/characters/rose_attack3.png",
+    "source_pack": "Medieval Warrior Pack 2",
+    "source_relative_path": "Sprites/Attack3.png",
+    "source_url": "https://luizmelo.itch.io/medieval-warrior-pack-2",
+    "sha256": "32feb3f325d2415dbce4aa7fd3778d0ce2534f21b31165d94a7fc3fb88bc61d3",
+    "license_status": "CC0; see assets/licenses/rose_license.txt"
+  },
+  {
+    "file": "assets/licenses/rose_license.txt",
+    "source_pack": "Medieval Warrior Pack 2",
+    "source_relative_path": "License.txt",
+    "source_url": "https://luizmelo.itch.io/medieval-warrior-pack-2",
+    "sha256": "0ead16d6e7eaaf95a0126b997a8a23827d824af4cf0331602ef9bc498ad22f7b",
+    "license_status": "Original license declaration supplied with pack (CC0)"
+  },
+  {
+    "file": "assets/effects/royal_earth_bump.png",
+    "source_pack": "Earth Spell Effect 02 by Pimen",
+    "source_relative_path": "Earth Effect 02/Earth Bump.png",
+    "source_url": "https://pimen.itch.io/earth-spell-effect-2",
+    "source_sha256": "f5559a016c5288c65b252f8ea1fb38a56238738e69605b4116bfea970fe0d167",
+    "sha256": "f23eba81015d8472148fef8b5c8ceb2f9b0cf1c5031d7d298a520c08f1a9687b",
+    "modifications": "Five-color remap to cool stone and warm highlights. Dimensions, alpha, anchors and frame geometry unchanged.",
+    "license_status": "Author-page terms allow use and modification in personal/commercial projects; no standalone resale or redistribution. See assets/licenses/royal_earth_source.txt."
+  },
+  {
+    "file": "assets/effects/royal_earth_wall.png",
+    "source_pack": "Earth Spell Effect 02 by Pimen",
+    "source_relative_path": "Earth Effect 02/Earth Wall.png",
+    "source_url": "https://pimen.itch.io/earth-spell-effect-2",
+    "source_sha256": "b267243c8c4c557a75b11203c58ed5f8f449409be6210939f6ed68293a2cc5b6",
+    "sha256": "2947a040e651ca6c022752d47c99a711791f8a00459912067df138d90fa06844",
+    "modifications": "Five-color remap to cool stone and warm highlights. Dimensions, alpha, anchors and frame geometry unchanged.",
+    "license_status": "Author-page terms allow use and modification in personal/commercial projects; no standalone resale or redistribution. See assets/licenses/royal_earth_source.txt."
+  },
+  {
+    "file": "assets/licenses/royal_earth_source.txt",
+    "source_pack": "Project provenance note for Earth Spell Effect 02 by Pimen",
+    "source_relative_path": "Author-page terms paraphrased; not an archive license file",
+    "source_url": "https://pimen.itch.io/earth-spell-effect-2",
+    "sha256": "0c639ac208e953feb92ccb3052273927f57cbbd5716afcba2d8837395e8f0cb1",
+    "license_status": "Project-authored attribution, permitted uses and restrictions summary."
+  },
+  {
+    "file": "assets/effects/royal_sword.png",
+    "source_pack": "Cast Spell : Summon Sword by IceButMelted",
+    "source_relative_path": "Twin Sword PNG/Cast Spell 102-DownCut All.png",
+    "source_url": "https://icebutmelted.itch.io/cast-spell-summon-sword",
+    "sha256": "e968017ea547bfd9d4e01b6402416699712e6c7e18b85c0741dfd9dfa7d02c9c",
+    "license_status": "Author permits game use and modification, no standalone resale or redistribution; see assets/licenses/royal_sword_source.txt."
+  },
+  {
+    "file": "assets/licenses/royal_sword_source.txt",
+    "source_pack": "Cast Spell : Summon Sword by IceButMelted",
+    "source_relative_path": "Project-authored provenance note",
+    "source_url": "https://icebutmelted.itch.io/cast-spell-summon-sword",
+    "sha256": "7129d6d225f7ec8d94ee2373e6c70e93874ab315742b73c811606312974cd09a",
+    "license_status": "Author permits game use and modification, no standalone resale or redistribution; see assets/licenses/royal_sword_source.txt."
+  },
+  {
+    "file": "assets/characters/helm_knight_idle.png",
+    "source_pack": "Hero Knight 2 by LuizMelo",
+    "source_relative_path": "Sprites/Idle.png",
+    "source_url": "https://luizmelo.itch.io/hero-knight-2",
+    "sha256": "5ff0cb3854aa2e4407026877c8ef81757140c4cc36b649a0049ae6dc78d28249",
+    "license_status": "CC0; original declaration in assets/licenses/helm_knight_license.txt"
+  },
+  {
+    "file": "assets/characters/helm_knight_run.png",
+    "source_pack": "Hero Knight 2 by LuizMelo",
+    "source_relative_path": "Sprites/Run.png",
+    "source_url": "https://luizmelo.itch.io/hero-knight-2",
+    "sha256": "7338bb221de019bfa34e358cdbace912c5c4989e7128377f6e2f0408b645f28f",
+    "license_status": "CC0; original declaration in assets/licenses/helm_knight_license.txt"
+  },
+  {
+    "file": "assets/characters/helm_knight_attack.png",
+    "source_pack": "Hero Knight 2 by LuizMelo",
+    "source_relative_path": "Sprites/Attack.png",
+    "source_url": "https://luizmelo.itch.io/hero-knight-2",
+    "sha256": "2eca91fb2a35c8ef06ed79f80b159d61a574a5525693dd74ea0bb866a44370d7",
+    "license_status": "CC0; original declaration in assets/licenses/helm_knight_license.txt"
+  },
+  {
+    "file": "assets/characters/helm_knight_take_hit.png",
+    "source_pack": "Hero Knight 2 by LuizMelo",
+    "source_relative_path": "Sprites/Take Hit.png",
+    "source_url": "https://luizmelo.itch.io/hero-knight-2",
+    "sha256": "60abb06e171d98fd73f11c6a8ec9101d315648a45b93fdef529e1cfd9ff94387",
+    "license_status": "CC0; original declaration in assets/licenses/helm_knight_license.txt"
+  },
+  {
+    "file": "assets/characters/helm_knight_death.png",
+    "source_pack": "Hero Knight 2 by LuizMelo",
+    "source_relative_path": "Sprites/Death.png",
+    "source_url": "https://luizmelo.itch.io/hero-knight-2",
+    "sha256": "7b0879de812bef7010464b963420254193c70a9af8f05d4c86dc3139ed227314",
+    "license_status": "CC0; original declaration in assets/licenses/helm_knight_license.txt"
+  },
+  {
+    "file": "assets/licenses/helm_knight_license.txt",
+    "source_pack": "Hero Knight 2 by LuizMelo",
+    "source_relative_path": "License.txt",
+    "source_url": "https://luizmelo.itch.io/hero-knight-2",
+    "sha256": "86bc4419c54ffa22138811af0f75762095a9b8396901ab80fb33849567f12a52",
+    "license_status": "Original CC0 declaration; commercial and non-commercial use permitted"
   }
 ]

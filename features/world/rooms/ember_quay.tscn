@@ -1410,7 +1410,7 @@ region_rect = Rect2(0, 0, 32, 32)
 [node name="Shrine" type="Node2D" parent="Interactions" unique_id=771480108]
 position = Vector2(180, 480)
 script = ExtResource("5_of04d")
-prompt = "E / REST & SAVE"
+prompt = "E / SAVE PROGRESS"
 
 [node name="Sprite" type="AnimatedSprite2D" parent="Interactions/Shrine" unique_id=158242216]
 position = Vector2(0, -20)
@@ -1452,12 +1452,6 @@ scale = Vector2(2, 2)
 texture = ExtResource("6_jpr8r")
 region_enabled = true
 region_rect = Rect2(0, 0, 32, 32)
-
-[node name="RouteHint" type="Node2D" parent="Interactions" unique_id=1937098327]
-position = Vector2(980, 480)
-script = ExtResource("5_of04d")
-kind = "sign"
-prompt = "Explore beyond the gallery and archive. Valves open return routes."
 
 [node name="CoreDoor" type="Node2D" parent="Interactions" unique_id=266682489]
 position = Vector2(1160, 480)

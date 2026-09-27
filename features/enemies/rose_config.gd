@@ -13,3 +13,5 @@ extends Resource
 @export var recovery_seconds := 1.0
 @export var gravity := 1600.0
 @export var damage := 1
+## The source run sheet places the torso ten pixels ahead of its idle pivot.
+@export var stride_sprite_offset := -10.0

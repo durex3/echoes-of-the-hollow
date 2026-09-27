@@ -40,7 +40,7 @@ func _ready() -> void:
 	var door := point(room,"Return","exit",Vector2(48,480),"E / RETURN TO THE GROVE")
 	door.target_room = "forest"
 	door.target_spawn = "atrium_return"
-	var shrine := point(room,"Shrine","checkpoint",Vector2(240,480),"E / REST & SAVE")
+	var shrine := point(room,"Shrine","checkpoint",Vector2(240,480),"E / SAVE PROGRESS")
 	var sprite := AnimatedSprite2D.new()
 	sprite.name = "Sprite"
 	sprite.position.y = -20

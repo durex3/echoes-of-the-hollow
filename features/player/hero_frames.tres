@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=40 format=3]
+[gd_resource type="SpriteFrames" load_steps=42 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/characters/hero.png" id="1"]
 
@@ -154,11 +154,20 @@ region = Rect2(800, 240, 80, 80)
 atlas = ExtResource("1")
 region = Rect2(880, 240, 80, 80)
 
+[sub_resource type="AtlasTexture" id="Frame_32"]
+atlas = ExtResource("1")
+region = Rect2(0, 160, 80, 80)
+
+[sub_resource type="AtlasTexture" id="Frame_33"]
+atlas = ExtResource("1")
+region = Rect2(80, 160, 80, 80)
+
 [resource]
 animations = [{"name": &"idle", "speed": 10, "loop": true, "frames": [{"duration": 1.0, "texture": SubResource("Frame_0")}, {"duration": 1.0, "texture": SubResource("Frame_1")}, {"duration": 1.0, "texture": SubResource("Frame_2")}, {"duration": 1.0, "texture": SubResource("Frame_3")}, {"duration": 1.0, "texture": SubResource("Frame_4")}, {"duration": 1.0, "texture": SubResource("Frame_5")}, {"duration": 1.0, "texture": SubResource("Frame_6")}, {"duration": 1.0, "texture": SubResource("Frame_7")}, {"duration": 1.0, "texture": SubResource("Frame_8")}, {"duration": 1.0, "texture": SubResource("Frame_9")}, {"duration": 1.0, "texture": SubResource("Frame_10")}, {"duration": 1.0, "texture": SubResource("Frame_11")}]},
 {"name": &"run", "speed": 12, "loop": true, "frames": [{"duration": 1.0, "texture": SubResource("Frame_12")}, {"duration": 1.0, "texture": SubResource("Frame_13")}, {"duration": 1.0, "texture": SubResource("Frame_14")}, {"duration": 1.0, "texture": SubResource("Frame_15")}, {"duration": 1.0, "texture": SubResource("Frame_16")}, {"duration": 1.0, "texture": SubResource("Frame_17")}, {"duration": 1.0, "texture": SubResource("Frame_18")}, {"duration": 1.0, "texture": SubResource("Frame_19")}]},
 {"name": &"jump", "speed": 1, "loop": true, "frames": [{"duration": 1.0, "texture": SubResource("Frame_22")}]},
 {"name": &"fall", "speed": 1, "loop": true, "frames": [{"duration": 1.0, "texture": SubResource("Frame_25")}]},
-{"name": &"attack", "speed": 20, "loop": false, "frames": [{"duration": 1.0, "texture": SubResource("Frame_30")}, {"duration": 1.0, "texture": SubResource("Frame_31")}, {"duration": 1.0, "texture": SubResource("Frame_34")}, {"duration": 1.0, "texture": SubResource("Frame_35")}, {"duration": 1.0, "texture": SubResource("Frame_36")}, {"duration": 1.0, "texture": SubResource("Frame_0")}]},
+{"name": &"attack", "speed": 20, "loop": false, "frames": [{"duration": 1.0, "texture": SubResource("Frame_36")}, {"duration": 1.0, "texture": SubResource("Frame_31")}, {"duration": 1.0, "texture": SubResource("Frame_32")}, {"duration": 1.0, "texture": SubResource("Frame_32")}, {"duration": 1.0, "texture": SubResource("Frame_33")}, {"duration": 1.0, "texture": SubResource("Frame_33")}]},
+{"name": &"attack_return", "speed": 20, "loop": false, "frames": [{"duration": 1.0, "texture": SubResource("Frame_33")}, {"duration": 1.0, "texture": SubResource("Frame_34")}, {"duration": 1.0, "texture": SubResource("Frame_35")}, {"duration": 1.0, "texture": SubResource("Frame_35")}, {"duration": 1.0, "texture": SubResource("Frame_36")}, {"duration": 1.0, "texture": SubResource("Frame_36")}]},
 {"name": &"hurt", "speed": 1, "loop": true, "frames": [{"duration": 1.0, "texture": SubResource("Frame_47")}]},
 {"name": &"death", "speed": 15, "loop": false, "frames": [{"duration": 1.0, "texture": SubResource("Frame_50")}, {"duration": 1.0, "texture": SubResource("Frame_51")}, {"duration": 1.0, "texture": SubResource("Frame_52")}, {"duration": 1.0, "texture": SubResource("Frame_53")}, {"duration": 1.0, "texture": SubResource("Frame_54")}, {"duration": 1.0, "texture": SubResource("Frame_55")}, {"duration": 1.0, "texture": SubResource("Frame_56")}, {"duration": 1.0, "texture": SubResource("Frame_57")}, {"duration": 1.0, "texture": SubResource("Frame_58")}, {"duration": 1.0, "texture": SubResource("Frame_59")}]}]

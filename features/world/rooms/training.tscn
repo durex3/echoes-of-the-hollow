@@ -119,7 +119,7 @@ prompt = "Watch the amber warning. Step back, then strike."
 position = Vector2(710, 480)
 script = ExtResource("9_yghw8")
 checkpoint_spawn = "rest"
-prompt = "E / RECOVER & SAVE"
+prompt = "E / SAVE PROGRESS"
 
 [node name="Sprite" type="AnimatedSprite2D" parent="Interactions/Rest" unique_id=80385812]
 position = Vector2(0, -20)

@@ -2,13 +2,13 @@ class_name RewardNotice
 extends PanelContainer
 ## Informational overlay: never captures input or pauses gameplay.
 const REWARDS := {
-	"furnace_keeper_defeated": ["FURNACE KEEPER DEFEATED", "The pressure has fallen. The core awaits.", "All vitality restored. Claim the core echo on your right."],
+	"furnace_keeper_defeated": ["FURNACE KEEPER DEFEATED", "The pressure has fallen. The core awaits.", "All vitality restored. Enter the central door to awaken the core."],
 	"steam_ward": ["SLUICE ECHO ACQUIRED", "Block one hit from enemies or steam.", "L: shield for 1.5s. One hit; cooldown 5s from activation."],
 	"flow_seal": ["FLOW SEAL ACQUIRED", "Archive service passage opened", "All vitality restored. Explore the high alcove or the passage below."],
 	"pressure_seal": ["PRESSURE SEAL ACQUIRED", "Quay maintenance shortcut opened", "All vitality restored. The east door returns directly to the quay."],
 	"cistern_heart": ["CISTERN HEART ACQUIRED", "Maximum vitality +1 permanently", "All vitality restored."],
 	"cistern_restored": ["CISTERN RESTORED", "Steam vents are now safe throughout Chapter II", "Both chapters remain open to explore."],
-	"warden_defeated": ["HOLLOW WARDEN DEFEATED", "The final echo is now within reach", "All vitality restored. Claim the echo on your right."],
+	"warden_defeated": ["HOLLOW WARDEN DEFEATED", "The final echo is now within reach", "All vitality restored. Enter the central door for Chapter II."],
 	"double_jump": ["SKY ECHO ACQUIRED", "Double jump unlocked", "Press SPACE again in the air."],
 	"dash": ["WIND ECHO ACQUIRED", "Wind dash unlocked", "K / Right shoulder to dash. No invincibility."],
 	"heart_bloom": ["HEART BLOOM ACQUIRED", "Maximum vitality +1 permanently", "All vitality restored."],

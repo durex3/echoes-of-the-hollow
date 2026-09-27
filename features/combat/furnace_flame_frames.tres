@@ -1,0 +1,62 @@
+[gd_resource type="SpriteFrames" load_steps=15 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/effects/furnace_flame.png" id="flame"]
+
+[sub_resource type="AtlasTexture" id="flame_0"]
+atlas = ExtResource("flame")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="flame_1"]
+atlas = ExtResource("flame")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="flame_2"]
+atlas = ExtResource("flame")
+region = Rect2(256, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="flame_3"]
+atlas = ExtResource("flame")
+region = Rect2(384, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="flame_4"]
+atlas = ExtResource("flame")
+region = Rect2(512, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="flame_5"]
+atlas = ExtResource("flame")
+region = Rect2(0, 128, 128, 128)
+
+[sub_resource type="AtlasTexture" id="flame_6"]
+atlas = ExtResource("flame")
+region = Rect2(128, 128, 128, 128)
+
+[sub_resource type="AtlasTexture" id="flame_7"]
+atlas = ExtResource("flame")
+region = Rect2(256, 128, 128, 128)
+
+[sub_resource type="AtlasTexture" id="flame_8"]
+atlas = ExtResource("flame")
+region = Rect2(384, 128, 128, 128)
+
+[sub_resource type="AtlasTexture" id="flame_9"]
+atlas = ExtResource("flame")
+region = Rect2(572, 128, 68, 128)
+
+[sub_resource type="AtlasTexture" id="flame_10"]
+atlas = ExtResource("flame")
+region = Rect2(60, 256, 68, 128)
+
+[sub_resource type="AtlasTexture" id="flame_11"]
+atlas = ExtResource("flame")
+region = Rect2(188, 256, 68, 128)
+
+[sub_resource type="AtlasTexture" id="flame_12"]
+atlas = ExtResource("flame")
+region = Rect2(316, 256, 68, 128)
+
+[resource]
+animations = [
+{"name": &"wave", "loop": true, "speed": 10.0, "frames": [{"duration": 1.0, "texture": SubResource("flame_9")}, {"duration": 1.0, "texture": SubResource("flame_10")}, {"duration": 1.0, "texture": SubResource("flame_11")}, {"duration": 1.0, "texture": SubResource("flame_12")}]},
+{"name": &"eruption", "loop": false, "speed": 10.0, "frames": [{"duration": 1.0, "texture": SubResource("flame_0")}, {"duration": 1.0, "texture": SubResource("flame_1")}, {"duration": 1.0, "texture": SubResource("flame_2")}, {"duration": 1.0, "texture": SubResource("flame_3")}, {"duration": 1.0, "texture": SubResource("flame_4")}]},
+{"name": &"dissipate", "loop": false, "speed": 10.0, "frames": [{"duration": 1.0, "texture": SubResource("flame_5")}, {"duration": 1.0, "texture": SubResource("flame_6")}, {"duration": 1.0, "texture": SubResource("flame_7")}, {"duration": 1.0, "texture": SubResource("flame_8")}]},
+]

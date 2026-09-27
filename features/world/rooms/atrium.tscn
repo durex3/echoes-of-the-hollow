@@ -68,7 +68,7 @@ prompt = "E / RETURN TO THE GROVE"
 [node name="Shrine" type="Node2D" parent="Interactions" unique_id=538760616]
 position = Vector2(240, 480)
 script = ExtResource("5_887n2")
-prompt = "E / REST & SAVE"
+prompt = "E / SAVE PROGRESS"
 
 [node name="Sprite" type="AnimatedSprite2D" parent="Interactions/Shrine" unique_id=1996272980]
 position = Vector2(0, -20)
@@ -76,12 +76,6 @@ scale = Vector2(0.5, 0.5)
 sprite_frames = ExtResource("6_6q307")
 animation = &"idle"
 autoplay = "idle"
-
-[node name="RestHint" type="Node2D" parent="Interactions" unique_id=2121966002]
-position = Vector2(345, 480)
-script = ExtResource("5_887n2")
-kind = "sign"
-prompt = "A quiet threshold. Rest here before going onward."
 
 [node name="InnerDoor" type="Node2D" parent="Interactions" unique_id=1747091635]
 position = Vector2(816, 352)

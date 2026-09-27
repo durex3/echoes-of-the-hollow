@@ -8,12 +8,14 @@ enum State { IDLE, WARNING, LUNGE, RECOVER, DEAD }
 @onready var health: HealthComponent = $Health
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var attack_box: Hitbox = $AttackBox
+@onready var contact_box: Hitbox = $ContactBox
 @onready var edge: RayCast2D = $Edge
 var target: Player
 var state := State.IDLE
 var facing := -1.0
 var timer := 0.0
 var flash_left := 0.0
+var shared_pounce_contact := false
 
 func _ready() -> void:
 	health.maximum = config.maximum_health
@@ -41,6 +43,11 @@ func _physics_process(delta: float) -> void:
 		if timer <= 0:
 			queue_free()
 		return
+	# Bite and the body carried by that bite count as one attack until separated.
+	if shared_pounce_contact and state != State.LUNGE and contact_box.get_overlapping_areas().is_empty() and attack_box.get_overlapping_areas().is_empty():
+		contact_box.hit_ids = []
+		contact_box.reset_when_empty = true
+		shared_pounce_contact = false
 	if state in [State.WARNING, State.LUNGE] and (not is_instance_valid(target) or target.state == Player.State.DEAD):
 		_enter(State.RECOVER)
 	velocity.y = minf(950,velocity.y + config.gravity * delta)
@@ -84,6 +91,9 @@ func _enter(next: State) -> void:
 			velocity.y = -config.hop_speed
 			attack_box.position.x = facing * 12
 			attack_box.begin_swing()
+			contact_box.hit_ids = attack_box.hit_ids
+			contact_box.reset_when_empty = false
+			shared_pounce_contact = true
 			attack_box.active = true
 			sprite.play("bite")
 			Audio.play_sound("attack",1.15,-4)
@@ -98,12 +108,13 @@ func _enter(next: State) -> void:
 
 func _on_damaged(_amount: int, _source: Vector2) -> void:
 	flash_left = 0.08
-	# Sword interrupts a pounce; no contact damage persists after interruption.
+	# Sword interrupts bite damage; ordinary body contact remains dangerous.
 	if health.current > 0:
 		_enter(State.RECOVER)
 
 func _on_died() -> void:
 	_enter(State.DEAD)
+	$ContactBox.end_swing()
 	$Hurtbox.set_deferred("monitorable",false)
 	defeated.emit()
 
@@ -114,7 +125,7 @@ func _draw() -> void:
 		var tint := Color("efb268")
 		draw_line(Vector2(0,-54),Vector2(0,-63),tint,3)
 		draw_circle(Vector2(0,-49),2,tint)
-		draw_line(Vector2(facing*22,-3),Vector2(facing*100,-3),Color(tint,0.65),2)
+		draw_arc(Vector2(0,-24),27,PI*0.15,PI*0.85,16,Color(tint,0.75),2)
 	if health.current < health.maximum:
 		draw_rect(Rect2(-16,-43,32,3),Color("263941"))
 		draw_rect(Rect2(-16,-43,32.0*health.current/health.maximum,3),Color("e0b975"))

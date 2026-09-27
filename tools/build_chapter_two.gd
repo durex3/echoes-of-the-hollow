@@ -112,7 +112,7 @@ func door(room: Node, id: String, x: float, target: String, marker: String, prom
 	return result
 
 func shrine(room: Node, x: float) -> void:
-	var result := point(room,"Shrine","checkpoint",Vector2(x,480),"E / REST & SAVE")
+	var result := point(room,"Shrine","checkpoint",Vector2(x,480),"E / SAVE PROGRESS")
 	var sprite := AnimatedSprite2D.new()
 	sprite.name = "Sprite"
 	sprite.position.y = -20

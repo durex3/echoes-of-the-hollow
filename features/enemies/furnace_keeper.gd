@@ -1,6 +1,5 @@
 class_name FurnaceKeeper
 extends CharacterBody2D
-## Stationary pressure caster: jump a low wave, leave a locked eruption marker.
 signal defeated
 signal awakened
 signal withdrawn
@@ -8,36 +7,45 @@ signal phase_changed(phase: int)
 signal cue_changed(message: String)
 signal impact(at: Vector2, killed: bool)
 const FLAME := preload("res://features/combat/furnace_flame.tscn")
-enum State { DORMANT, INTRO, WARNING, CAST, RECOVER, TRANSITION, DEAD }
+enum State { DORMANT, INTRO, WARNING, CAST, RECOVER, TRANSITION, DEAD, TAKEOFF, LANDING, IMPACT, APPROACH }
+enum Attack { DASH, HOP, SLAM, MELEE, COMBO }
 @export var config: FurnaceConfig
 @onready var health: HealthComponent = $Health
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var flames: Node2D = $Flames
+@onready var dash_hitbox: Hitbox = $DashHitbox
+@onready var contact_box: Hitbox = $ContactBox
 var target: Player
 var state := State.DORMANT
+var attack := Attack.DASH
 var phase := 1
 var timer := 0.0
 var attack_count := 0
-var wave_attack := true
 var facing := -1.0
-var locked_x := 0.0
 var flash_left := 0.0
+var combo_left := 0
+var home_position := Vector2.ZERO
 
 func _ready() -> void:
+	home_position = position
+	flames.top_level = true
 	($Hurtbox as Hurtbox).damage_guard = pressure_guard
+	dash_hitbox.impact.connect(func(at: Vector2, killed: bool) -> void: impact.emit(at,killed))
 	health.maximum = config.maximum_health
 	health.restore_full()
 	health.damaged.connect(_on_damage)
 	health.died.connect(_on_death)
 	_enter(State.DORMANT)
+	contact_box.end_swing()
 
 func _physics_process(delta: float) -> void:
 	if state == State.DEAD:
 		return
-	if not is_instance_valid(target) or target.state == Player.State.DEAD or target.position.x < config.retreat_x:
+	if not is_instance_valid(target) or target.state == Player.State.DEAD:
 		if state != State.DORMANT:
 			reset_encounter()
 		return
+	contact_box.active = state not in [State.DORMANT, State.INTRO, State.TRANSITION, State.DEAD]
 	timer = maxf(0,timer-delta)
 	flash_left = maxf(0,flash_left-delta)
 	match state:
@@ -48,77 +56,177 @@ func _physics_process(delta: float) -> void:
 		State.INTRO, State.TRANSITION:
 			if timer <= 0:
 				start_attack()
+		State.TAKEOFF:
+			if position.y <= home_position.y-config.flight_height+0.1 or is_on_ceiling():
+				_enter(State.WARNING)
 		State.WARNING:
 			if timer <= 0:
 				_enter(State.CAST)
 		State.CAST:
+			if attack in [Attack.DASH,Attack.MELEE,Attack.COMBO] and timer <= 0:
+				if attack == Attack.COMBO and combo_left > 1:
+					combo_left -= 1
+					facing = -1 if target.position.x < position.x else 1
+					_enter(State.WARNING)
+				else:
+					_enter(State.RECOVER)
+			elif attack == Attack.HOP and is_on_floor() and velocity.y >= 0:
+				_enter(State.RECOVER)
+		State.LANDING:
+			if is_on_floor():
+				_slam_impact()
+				_enter(State.IMPACT)
+		State.IMPACT:
 			if timer <= 0:
 				_enter(State.RECOVER)
 		State.RECOVER:
 			if timer <= 0:
-				if phase == 1 and health.current <= config.maximum_health/2 and attack_count >= 2:
+				if phase == 1 and health.current <= config.maximum_health/2 and attack_count >= 3:
 					phase = 2
 					phase_changed.emit(phase)
 					_enter(State.TRANSITION)
 				else:
 					start_attack()
-	velocity = Vector2(0,minf(950,velocity.y+1600*delta))
+		State.APPROACH:
+			facing = -1 if target.position.x < position.x else 1
+			if absf(target.position.x-position.x) <= config.melee_range or timer <= 0:
+				_enter(State.WARNING)
+	velocity.x = 0
+	if state == State.TAKEOFF:
+		var distance := maxf(0,position.y-(home_position.y-config.flight_height))
+		velocity.y = -minf(config.ascent_speed,distance/delta)
+		velocity.x = (config.slam_x-position.x)/maxf(distance/config.ascent_speed,delta)
+	elif state == State.WARNING and attack == Attack.SLAM:
+		velocity.y = 0
+	elif state == State.LANDING:
+		velocity.y = config.slam_speed
+	elif state == State.CAST and attack == Attack.DASH:
+		velocity.x = facing*config.dash_speed
+		velocity.y = minf(950,velocity.y+config.gravity*delta)
+	elif state == State.APPROACH:
+		velocity.x = facing*config.approach_speed
+		velocity.y = minf(950,velocity.y+config.gravity*delta)
+	elif state == State.CAST and attack == Attack.COMBO:
+		velocity.x = facing*config.combo_speed
+		velocity.y = minf(950,velocity.y+config.gravity*delta)
+	elif state == State.CAST and attack == Attack.HOP:
+		velocity.x = facing*config.hop_speed
+		velocity.y = minf(950,velocity.y+config.gravity*delta)
+	else:
+		velocity.y = minf(950,velocity.y+config.gravity*delta)
 	move_and_slide()
+	if state == State.CAST and attack == Attack.DASH and (is_on_wall() or position.x < config.arena_min_x or position.x > config.arena_max_x):
+		_enter(State.RECOVER)
 	sprite.flip_h = facing < 0
+	dash_hitbox.position.x = facing*47
 	sprite.modulate = Color(2,2,2) if flash_left > 0 and not Session.reduce_flashes else Color.WHITE
-	queue_redraw()
 
 func start_attack() -> void:
 	facing = -1 if target.position.x < position.x else 1
-	locked_x = clampf(target.position.x,config.arena_min_x+40,config.arena_max_x-40)
-	wave_attack = attack_count % 2 == 0
+	attack = [Attack.DASH,Attack.HOP,Attack.SLAM,Attack.MELEE,Attack.COMBO][attack_count % 5]
 	attack_count += 1
-	_enter(State.WARNING)
+	combo_left = config.combo_strikes if attack == Attack.COMBO else 0
+	_enter(State.TAKEOFF if attack == Attack.SLAM else State.APPROACH if attack == Attack.MELEE else State.WARNING)
 
 func _enter(next: State) -> void:
+	if state == State.CAST and attack in [Attack.DASH,Attack.MELEE,Attack.COMBO]:
+		dash_hitbox.end_swing()
 	state = next
 	match state:
 		State.DORMANT:
+			velocity = Vector2.ZERO
 			clip("idle")
 		State.INTRO, State.TRANSITION:
 			timer = config.intro_seconds if state == State.INTRO else config.transition_seconds
-			clip("idle")
-			cue_changed.emit("Keeper awakens" if state == State.INTRO else "Phase II / Twin eruption marks")
+			clip("idle" if state == State.INTRO else "transition",timer)
+			cue_changed.emit("Keeper awakens" if state == State.INTRO else "Phase II / Faster pressure")
 			Audio.play_sound("ability_acquire",0.65,-8)
+		State.TAKEOFF:
+			clip("takeoff",config.flight_height/config.ascent_speed)
+			cue_changed.emit("TAKEOFF / Watch the landing line")
+		State.APPROACH:
+			timer = config.approach_seconds
+			clip("idle")
+			cue_changed.emit("APPROACH / Watch the sword")
 		State.WARNING:
-			timer = config.warning_seconds
-			clip("warning",timer)
-			cue_changed.emit("LOW FLAME / Jump over" if wave_attack else "ERUPTION / Leave the marked ground")
-			Audio.play_sound("jump" if wave_attack else "attack",0.7,-6)
-			if not wave_attack:
-				spawn_flame(Vector2(locked_x,config.floor_y),false)
-				if phase == 2:
-					var other_x := locked_x-config.eruption_spacing*facing
-					if other_x < config.arena_min_x+40 or other_x > config.arena_max_x-40:
-						other_x = locked_x+config.eruption_spacing*facing
-					spawn_flame(Vector2(other_x,config.floor_y),false)
+			if attack == Attack.SLAM:
+				timer = config.hover_seconds
+				clip("eruption_warning",timer)
+				cue_changed.emit("HIGH SLAM / Leave the landing line")
+			elif attack == Attack.MELEE:
+				timer = config.melee_warning
+				clip("wave_warning",timer)
+				cue_changed.emit("MELEE / Step back or jump")
+			elif attack == Attack.COMBO:
+				timer = config.combo_charge if combo_left == config.combo_strikes else config.combo_gap
+				clip("wave_warning",timer)
+				cue_changed.emit("CHARGED COMBO / Three strikes, then recovery")
+				Audio.play_sound("attack",0.6,-6)
+			else:
+				timer = config.dash_warning_seconds if attack == Attack.DASH else config.hop_warning_seconds
+				clip("wave_warning" if attack == Attack.DASH else "takeoff",timer)
+				cue_changed.emit("DASH SLASH / Jump or move behind" if attack == Attack.DASH else "SHORT HOP / Watch the landing")
+			Audio.play_sound("attack",0.7,-6)
 		State.CAST:
-			timer = config.eruption_seconds
-			clip("strike",timer)
-			if wave_attack:
-				spawn_flame(Vector2(position.x+facing*45,config.floor_y),true)
+			if attack in [Attack.DASH,Attack.MELEE,Attack.COMBO]:
+				timer = config.dash_seconds if attack == Attack.DASH else config.melee_seconds if attack == Attack.MELEE else config.combo_seconds
+				clip("wave_cast",timer)
+				dash_hitbox.begin_swing()
+				dash_hitbox.active = true
+			elif attack == Attack.HOP:
+				velocity.y = config.hop_velocity
+				clip("takeoff")
+			else:
+				_enter(State.LANDING)
+		State.LANDING:
+			velocity.y = config.slam_speed
+			clip("eruption_cast")
+			cue_changed.emit("SLAM / Jump above the flame walls")
+		State.IMPACT:
+			timer = config.impact_seconds
+			velocity = Vector2.ZERO
+			clip("eruption_cast",timer)
+			cue_changed.emit("SLAM IMPACT / Flames spread outward")
 		State.RECOVER:
-			timer = config.recovery_seconds
-			clip("recover",timer)
+			timer = config.recovery_seconds if phase == 1 else config.phase_two_recovery
+			if attack == Attack.MELEE:
+				timer = config.melee_recovery
+			clip("eruption_recover" if attack == Attack.SLAM else "wave_recover",timer)
 			cue_changed.emit("PRESSURE RELEASE / Strike now")
 		State.DEAD:
 			clear_flames()
 			clip("death",1.0)
 	queue_redraw()
 
-func spawn_flame(at: Vector2, is_wave: bool) -> void:
+func _slam_impact() -> void:
+	var center := position.x
+	var burst := spawn_flame(Vector2(center,position.y),false,true,true)
+	# A shield or hit resolves the whole release once, including its two walls.
+	var cast_handled: Array[int] = []
+	burst.handled = cast_handled
+	for direction: float in [-1.0,1.0]:
+		var flame := FLAME.instantiate() as FurnaceFlame
+		flame.config = config
+		flame.outward = true
+		flame.instant = true
+		flame.direction = direction
+		flame.handled = cast_handled
+		flame.impact.connect(func(at: Vector2, killed: bool) -> void: impact.emit(at,killed))
+		flames.add_child(flame)
+		flame.global_position = Vector2(center+direction*35,position.y)
+	Audio.play_sound("attack",0.8,-3)
+
+func spawn_flame(at: Vector2, is_wave: bool, is_tall := false, instant := false) -> FurnaceFlame:
 	var flame := FLAME.instantiate() as FurnaceFlame
 	flame.config = config
 	flame.wave = is_wave
+	flame.tall = is_tall
+	flame.instant = instant
 	flame.direction = facing
-	flame.position = flames.to_local(at)
 	flame.impact.connect(func(where: Vector2, killed: bool) -> void: impact.emit(where,killed))
 	flames.add_child(flame)
+	flame.global_position = at
+	return flame
 
 func clear_flames() -> void:
 	for flame: FurnaceFlame in flames.get_children():
@@ -126,8 +234,12 @@ func clear_flames() -> void:
 
 func reset_encounter() -> void:
 	clear_flames()
+	dash_hitbox.end_swing()
+	position = home_position
+	velocity = Vector2.ZERO
 	phase = 1
 	attack_count = 0
+	combo_left = 0
 	health.restore_full()
 	_enter(State.DORMANT)
 	withdrawn.emit()
@@ -141,7 +253,6 @@ func clip(animation: StringName, duration := 0.0) -> void:
 
 func _on_damage(_amount: int, _origin: Vector2) -> void:
 	flash_left = 0.08
-	# Damage never cancels telegraphs, casts or the recovery window.
 	if state == State.DORMANT:
 		_enter(State.INTRO)
 		awakened.emit()
@@ -151,17 +262,8 @@ func pressure_guard() -> bool:
 
 func _on_death() -> void:
 	_enter(State.DEAD)
+	contact_box.end_swing()
 	$Hurtbox.set_deferred("monitorable",false)
 	defeated.emit()
 	await sprite.animation_finished
 	queue_free()
-
-func _draw() -> void:
-	if state == State.DEAD:
-		return
-	# A static pressure seal distinguishes the casting boss without extra collision.
-	if state != State.RECOVER:
-		draw_arc(Vector2(0,-35),48,0,TAU,24,Color("ff9bcc"),1)
-	if state == State.WARNING and wave_attack:
-		draw_line(Vector2(facing*24,-4),Vector2(facing*175,-4),Color("efb268"),3)
-		draw_line(Vector2(facing*165,-15),Vector2(facing*175,-4),Color("efb268"),3)

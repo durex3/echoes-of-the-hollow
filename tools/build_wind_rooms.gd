@@ -30,7 +30,7 @@ func _ready() -> void:
 		spawn(room,"entry",Vector2(110,480))
 		spawn(room,"checkpoint",Vector2(165,480))
 		spawn(room,"east",Vector2(width-150,480))
-		var shrine := point(room,"Shrine","checkpoint",165,"E / REST & SAVE")
+		var shrine := point(room,"Shrine","checkpoint",165,"E / SAVE PROGRESS")
 		var sprite := AnimatedSprite2D.new()
 		sprite.name = "Sprite"
 		sprite.position.y = -20

@@ -133,7 +133,7 @@ func make_room(index: int) -> GameRoom:
 		owned(room,room,group)
 	spawn(room,"entry",Vector2(110,floor_y))
 	spawn(room,"checkpoint",Vector2(180,floor_y))
-	var shrine := point(room,"Shrine","checkpoint",Vector2(180,floor_y),"E / REST & SAVE")
+	var shrine := point(room,"Shrine","checkpoint",Vector2(180,floor_y),"E / SAVE PROGRESS")
 	var sprite := AnimatedSprite2D.new()
 	sprite.name = "Sprite"
 	sprite.position.y = -20

@@ -13,6 +13,8 @@ extends Resource
 @export var dash_seconds := 0.18
 @export var dash_cooldown := 0.45
 @export var attack: AttackProfile = preload("res://features/player/sword_attack.tres")
+## A fresh press near recovery end queues one next hand, never a held repeat.
+@export_range(0.0, 0.2) var attack_buffer_seconds := 0.12
 
 func gravity() -> float:
 	return 2.0 * jump_height / (time_to_apex * time_to_apex)

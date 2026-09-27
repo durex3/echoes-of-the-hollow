@@ -248,10 +248,19 @@ func combat_blocks(h: Node, game: Node) -> void:
 	for vent: SteamVent in game.room.get_node("Hazards").get_children():
 		vent.deactivate()
 	player.revive(Vector2(920,352))
+	var chest: WingedChest = game.room.get_node("Enemies/WingedChest")
 	await h.frames(5)
 	await h.press("steam_ward",2)
 	await h.frames(65)
 	h.check(events.blocked == 2 and player.health.current == player.health.maximum and ward.active_left == 0, "Ward blocks real winged chest pounce for the entire bite")
+	h.check(chest.contact_box.hit_ids.has(hurt.get_instance_id()) and player.health.invulnerability_left == 0, "Blocked pounce also consumes its carried body contact without global immunity")
+	player.position.x -= 100
+	await h.frames(4)
+	h.check(not chest.shared_pounce_contact, "Separating after the pounce restores ordinary contact handling")
+	chest.target = null
+	player.position = chest.position
+	await h.frames(3)
+	h.check(player.health.current == player.health.maximum - 1, "Touching the chest again after separation still causes contact damage")
 	# Real swept projectile is consumed on shield contact, with no damage feedback.
 	game.load_room("echo_vault","checkpoint")
 	player.revive(Vector2(180,608))

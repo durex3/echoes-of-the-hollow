@@ -1,0 +1,20 @@
+Earth Spell Effect 02 - Pimen
+Source: https://pimen.itch.io/earth-spell-effect-2
+Supplied locally by the user on 2026-09-27: Earth Effect 02
+
+This is a project provenance note and a paraphrase of the author's page terms,
+not a license text supplied inside the archive. The supplied folder contains
+Earth Bump.png and Earth Wall.png, with no separate license document.
+
+The author permits personal and commercial game use and modification. Original
+assets must not be sold or redistributed as standalone assets, even if modified.
+Credit is appreciated but is not required. Retain this note and keep the author's
+restrictions when distributing the game or source project.
+
+Runtime uses Earth Wall.png, composed as three small fragments. The earlier
+Earth Bump copy is retained for comparison but is no longer referenced by the
+effect. Project copies remap five opaque colors to cold gray stone with small
+warm highlights, preserving alpha values, frame positions and silhouettes.
+The original downloads are unmodified. Wall frames 1-13 are nonempty; empty
+frames 0, 14 and 15 are excluded. Full source and imported file SHA-256 values
+are recorded in assets/manifest.json.

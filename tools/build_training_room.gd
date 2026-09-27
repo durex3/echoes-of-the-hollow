@@ -41,7 +41,7 @@ func _ready() -> void:
 	west.target_spawn = "training_return"
 	west.prompt = "E / RETURN TO THE ARCHIVE"
 	add_point(room,"Observe","sign",Vector2(220,416),"Watch the amber warning. Step back, then strike.")
-	add_point(room,"Rest","checkpoint",Vector2(710,480),"E / RECOVER & SAVE").checkpoint_spawn = "rest"
+	add_point(room,"Rest","checkpoint",Vector2(710,480),"E / SAVE PROGRESS").checkpoint_spawn = "rest"
 	var rest_spawn := Marker2D.new()
 	rest_spawn.name = "rest"
 	rest_spawn.position = Vector2(710,480)

@@ -95,7 +95,7 @@ prompt = "E / RETURN TO WATCHERS HALL"
 [node name="Shrine" type="Node2D" parent="Interactions" unique_id=1834507434]
 position = Vector2(160, 480)
 script = ExtResource("10_ux4g2")
-prompt = "E / RECOVER & SAVE"
+prompt = "E / SAVE PROGRESS"
 
 [node name="Sprite" type="AnimatedSprite2D" parent="Interactions/Shrine" unique_id=1794691181]
 position = Vector2(0, -20)
@@ -114,7 +114,7 @@ prompt = "Violet charge: jump the bolt. Cover blocks ink."
 position = Vector2(775, 480)
 script = ExtResource("10_ux4g2")
 checkpoint_spawn = "rest"
-prompt = "E / RECOVER & SAVE"
+prompt = "E / SAVE PROGRESS"
 
 [node name="Sprite" type="AnimatedSprite2D" parent="Interactions/Rest" unique_id=1482375188]
 position = Vector2(0, -20)

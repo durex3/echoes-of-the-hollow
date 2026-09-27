@@ -44,7 +44,7 @@ func run(h: Node, game: Node) -> void:
 	var duelist: RoseSentinel = await setup(h,game,Vector2(480,480))
 	Session.set_language("zh_CN")
 	await h.frames(3)
-	h.check(game.ui.prompt.text.contains("粉焰剑士"), "Archive teaches the new duelist in Chinese before close combat")
+	h.check(game.ui.prompt.text.contains("铁盔剑士"), "Archive teaches the new duelist in Chinese before close combat")
 	await h.shot("85_rose_lesson")
 	Session.set_language("en")
 	duelist = await setup(h,game)
@@ -79,13 +79,19 @@ func run(h: Node, game: Node) -> void:
 	duelist = await setup(h,game,Vector2(610,480))
 	await h.frames(47)
 	Input.action_press("jump")
-	await h.frames(35)
+	await h.frames(20)
+	h.check(player.health.current == player.health.maximum and player.position.y < 410, "Jump clears the committed slash at its peak")
+	# Land clear of the enemy body: contact damage still applies in recovery.
+	Input.action_press("move_left")
+	await h.frames(20)
+	Input.action_release("move_left")
 	Input.action_release("jump")
-	h.check(player.health.current == player.health.maximum, "Input jump evades a fully committed duelist slash")
+	h.check(player.health.current == player.health.maximum and player.health.invulnerability_left == 0, "Input jump and clear landing evade both duelist slash and body contact")
 	duelist = await setup(h,game,Vector2(625,480))
 	player.facing = 1
 	await h.press("attack",12)
-	h.check(duelist.health.current == 2 and duelist.state == RoseSentinel.State.RECOVER and not duelist.attack_box.active, "Actual sword interrupts duelist preparation")
+	h.check(duelist.health.current == 2 and duelist.state == RoseSentinel.State.RECOVER and not duelist.attack_box.active and duelist.sprite.animation == &"hurt", "Actual sword interrupts knight preparation and plays its harmless hurt reaction")
+	await h.shot("87b_knight_hurt")
 	duelist.target = null
 	await h.frames(2)
 	h.check(duelist.state == RoseSentinel.State.IDLE and not duelist.attack_box.active, "Duelist cancels combat when target is removed")
@@ -99,6 +105,8 @@ func run(h: Node, game: Node) -> void:
 	await h.frames(8)
 	h.check(not duelist.attack_box.active and duelist.sprite.animation == "death", "Duelist death disables damage and uses its own source death frames")
 	await h.shot("88_rose_death")
+	await h.frames(45)
+	await h.shot("88b_knight_fallen")
 	await h.frames(60)
 	h.check(not is_instance_valid(duelist), "Duelist releases scene after death clip")
 	# Physics world occlusion and ledge protection, independently of attack choreography.
@@ -121,6 +129,14 @@ func run(h: Node, game: Node) -> void:
 	h.check(duelist.position.x >= 635 and player.health.current == player.health.maximum, "Locked duelist dash cannot cross or hit through a world wall")
 	wall.queue_free()
 	await h.frames(2)
+	duelist = await setup(h,game,Vector2(750,480))
+	for step: int in range(90):
+		if duelist.state == RoseSentinel.State.STRIKE:
+			break
+		await h.frames(1)
+	await h.frames(5)
+	h.check(duelist.attack_box.active and not duelist.sprite.flip_h and duelist.velocity.x > 0, "Knight slash art and active attack face right when approaching from the other side")
+	await h.shot("87c_knight_slash_right")
 	game.load_room("pump_chamber","entry")
 	duelist = game.room.get_node("Enemies/RoseSentinel")
 	duelist.position = Vector2(635,480)

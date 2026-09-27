@@ -51,8 +51,10 @@ func run(h: Node, game: Node) -> void:
 	h.check(game.room.room_id == "atrium" and "heart_bloom" not in Session.flags, "Three marks enter without optional heart or high-shrine completion")
 	h.check(game.room.get_node("Enemies").get_child_count() == 0 and player.is_on_floor(), "Antechamber entry has safe authored floor and no enemies")
 	await h.press("move_right",32)
+	player.health.take_damage(1,player.position)
+	var shrine_health := player.health.current
 	await h.press("interact",2)
-	h.check(Session.checkpoint_room == "atrium" and player.health.current == player.health.maximum, "Walking to antechamber shrine saves and heals")
+	h.check(Session.checkpoint_room == "atrium" and player.health.current == shrine_health, "Walking to antechamber shrine saves without healing")
 	h.check(Session.restore() and Session.checkpoint_room == "atrium", "Antechamber checkpoint survives save restore")
 	await h.frames(30)
 	await h.shot("42_atrium_checkpoint")

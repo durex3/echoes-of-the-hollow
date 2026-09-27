@@ -1,0 +1,8 @@
+Cast Spell : Summon Sword — IceButMelted
+Source: https://icebutmelted.itch.io/cast-spell-summon-sword
+User-supplied cast spell 102, 2026-09-27. No license file in supplied folder.
+Author-page terms checked 2026-09-27 allow personal/commercial projects and modification; standalone resale or redistribution is prohibited.
+This is a project provenance note, not a license file from the archive.
+The DownCut All PNG is copied unchanged. Native atlas regions omit blank cells 0, 32 and 33.
+Source summon/hover frames form the projectile; settled release cells 21-22 and disappear cells 23-31 form harmless contact feedback.
+Large baked swing cells 18-20 are excluded from runtime clips to preserve the projectile silhouette.

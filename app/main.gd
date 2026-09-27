@@ -29,11 +29,14 @@ var running := false
 var transition_pending := false
 var map_return_paused := false
 var map_return_menu := "pause"
+var boss_challenge := 0
 
 func _ready() -> void:
 	if get_parent() == get_tree().root:
 		Session.apply_display()
 	ui.start_requested.connect(start_game)
+	ui.challenge_requested.connect(start_boss_challenge)
+	ui.title_requested.connect(return_to_title)
 	ui.resume_requested.connect(resume)
 	ui.map_closed.connect(close_map)
 	ui.quit_requested.connect(func() -> void: get_tree().quit())
@@ -44,6 +47,7 @@ func _ready() -> void:
 		start_game(false)
 
 func start_game(load_save: bool) -> void:
+	boss_challenge = 0
 	Session.reset()
 	if load_save and not Session.restore():
 		ui.notify("Save unavailable. Starting a new journey.")
@@ -60,13 +64,65 @@ func start_game(load_save: bool) -> void:
 	ui.update_health(player.health.current, player.health.maximum)
 	ui.update_progress()
 
+func start_boss_challenge(chapter: int) -> void:
+	if chapter not in [1, 2]:
+		return
+	get_tree().paused = false
+	ui.hide_map()
+	if is_instance_valid(room):
+		room_host.remove_child(room)
+		room.queue_free()
+	room = null
+	if is_instance_valid(player):
+		player.queue_free()
+	Session.reset()
+	Session.unlock("double_jump")
+	Session.unlock("dash")
+	if chapter == 2:
+		Session.unlock("steam_ward")
+	boss_challenge = chapter
+	ui.challenge_chapter = chapter
+	player = PLAYER_SCENE.instantiate() as Player
+	add_child(player)
+	player.health.changed.connect(ui.update_health)
+	player.dash_status_changed.connect(ui.update_dash_status)
+	player.steam_ward.status_changed.connect(ui.update_ward_status)
+	player.died.connect(_on_player_died)
+	player.impact.connect($Feedback.show_impact)
+	running = true
+	load_room("heart_chamber" if chapter == 1 else "furnace_core", "entry", true)
+	ui.show_hud()
+	ui.update_health(player.health.current, player.health.maximum)
+	ui.update_progress()
+	ui.set_text(ui.objective,"Defeat the boss")
+
+func return_to_title() -> void:
+	get_tree().paused = false
+	ui.hide_map()
+	$Feedback.clear()
+	ui.hide_boss()
+	if is_instance_valid(room):
+		room_host.remove_child(room)
+		room.queue_free()
+	if is_instance_valid(player):
+		player.queue_free()
+	room = null
+	player = null
+	running = false
+	boss_challenge = 0
+	ui.challenge_chapter = 0
+	Session.reset()
+	Session.restore()
+	ui.hud.hide()
+	ui.show_menu("title", not Repository.read(Session.save_path).is_empty())
+
 func load_room(room_id: String, spawn: String, rehearsal := false) -> void:
 	if not ROOMS.has(room_id):
 		push_error("Unknown room: " + room_id)
 		return
 	$Feedback.clear()
 	ui.hide_boss()
-	player.cancel_dash()
+	player.cancel_dash(true)
 	player.steam_ward.cancel()
 	player.cancel_attack()
 	if player.state == Player.State.ATTACK:
@@ -76,6 +132,7 @@ func load_room(room_id: String, spawn: String, rehearsal := false) -> void:
 		room.queue_free()
 	room = (ROOMS[room_id] as PackedScene).instantiate() as GameRoom
 	room.rehearsal = rehearsal
+	room.challenge_mode = boss_challenge != 0
 	room_host.add_child(room)
 	room.player = player
 	room.interaction_requested.connect(_on_interaction)
@@ -93,7 +150,6 @@ func load_room(room_id: String, spawn: String, rehearsal := false) -> void:
 			enemy.withdrawn.connect(ui.hide_boss)
 			enemy.health.changed.connect(ui.update_boss_health)
 			enemy.phase_changed.connect(ui.update_boss_phase)
-			enemy.cue_changed.connect(ui.update_boss_cue)
 			enemy.impact.connect($Feedback.show_impact.bind(false))
 			enemy.defeated.connect(_on_keeper_defeated.bind(room.get_instance_id()),CONNECT_DEFERRED)
 		if enemy is WingedChest or enemy is RoseSentinel:
@@ -104,7 +160,6 @@ func load_room(room_id: String, spawn: String, rehearsal := false) -> void:
 			enemy.awakened.connect(func() -> void: ui.show_boss(enemy.health.current,enemy.health.maximum))
 			enemy.health.changed.connect(ui.update_boss_health)
 			enemy.phase_changed.connect(ui.update_boss_phase)
-			enemy.cue_changed.connect(ui.update_boss_cue)
 			enemy.impact.connect($Feedback.show_impact.bind(false))
 			enemy.defeated.connect(_on_warden_defeated.bind(room.get_instance_id()),CONNECT_DEFERRED)
 		if enemy is DoomScribe:
@@ -120,7 +175,13 @@ func load_room(room_id: String, spawn: String, rehearsal := false) -> void:
 	camera.limit_top = int(room.bounds.position.y)
 	camera.limit_right = int(room.bounds.end.x)
 	camera.limit_bottom = int(room.bounds.end.y)
-	camera.position = player.position - Vector2(0, 65)
+	camera.zoom = Vector2(1.4,1.4)
+	if room_id == "heart_chamber":
+		camera.position = Vector2(320,396)
+	elif room_id == "furnace_core":
+		camera.position = Vector2(860,330)
+	else:
+		camera.position = player.position - Vector2(0,65)
 	camera.reset_smoothing()
 	ui.set_text(ui.area_label,room.display_name)
 	ui.set_text(ui.prompt,"")
@@ -129,10 +190,11 @@ func load_room(room_id: String, spawn: String, rehearsal := false) -> void:
 
 func _process(_delta: float) -> void:
 	if running and is_instance_valid(player):
+		camera.zoom = Vector2(1.4,1.4)
 		if room.room_id == "heart_chamber":
 			camera.position = Vector2(320,396)
-		elif room.room_id == "furnace_core" and ui.boss_panel.visible:
-			camera.position = Vector2(clampf(player.position.x+100,790,960),396)
+		elif room.room_id == "furnace_core":
+			camera.position = Vector2(860,330)
 		else:
 			camera.position = player.position + Vector2(player.facing * 45, -65)
 
@@ -150,7 +212,7 @@ func _input(event: InputEvent) -> void:
 		return
 	if event.is_action_pressed("mute"):
 		Audio.toggle_mute()
-	if event.is_action_pressed("world_map") and running and player.state != Player.State.DEAD:
+	if event.is_action_pressed("world_map") and running and boss_challenge == 0 and player.state != Player.State.DEAD:
 		if ui.map_panel.visible:
 			close_map()
 		else:
@@ -158,9 +220,11 @@ func _input(event: InputEvent) -> void:
 			map_return_menu = ui.menu_mode
 			player.reset_input()
 			get_tree().paused = true
-			ui.show_map(room.room_id)
+			ui.show_map(room.room_id,room.nearby_exit_target())
 		return
 	if event.is_action_pressed("pause") and running:
+		if ui.menu_mode in ["challenge_complete", "challenge_select"] and ui.modal.visible:
+			return
 		if ui.map_panel.visible:
 			close_map()
 			return
@@ -175,6 +239,8 @@ func resume() -> void:
 	player.reset_input()
 	ui.hide_map()
 	get_tree().paused = false
+	if ui.menu_mode == "chapter_two" and room.room_id == "furnace_core":
+		load_room("ember_quay", "core_return")
 	ui.show_hud()
 
 func close_map() -> void:
@@ -189,6 +255,8 @@ func close_map() -> void:
 func _on_interaction(point: WorldInteraction) -> void:
 	if transition_pending:
 		return
+	if boss_challenge != 0:
+		return
 	match point.kind:
 		"challenge":
 			if room.room_id == "furnace_core" and not room.rehearsal and ("furnace_keeper_defeated" in Session.flags or "cistern_restored" in Session.flags):
@@ -197,6 +265,8 @@ func _on_interaction(point: WorldInteraction) -> void:
 				transition_pending = true
 				ui.notify("Practice battle / Your completed journey is preserved")
 		"exit":
+			if room._boss_exit_locked(point):
+				return
 			var locked := point.locked_message(Session.abilities,Session.flags)
 			if not locked.is_empty():
 				ui.notify(locked)
@@ -204,20 +274,21 @@ func _on_interaction(point: WorldInteraction) -> void:
 			if point.target_room == "heart_chamber" and room.room_id == "atrium":
 				Session.checkpoint_room = "atrium"
 				Session.checkpoint_spawn = "checkpoint"
-				player.health.restore_full()
-				_save("Restored & saved")
+				_save("Progress saved")
 			if point.target_room == "furnace_core" and room.room_id == "ember_quay":
 				Session.checkpoint_room = "ember_quay"
 				Session.checkpoint_spawn = "checkpoint"
-				player.health.restore_full()
-				_save("Restored & saved")
+				_save("Progress saved")
+			if point.target_room == "ember_quay" and room.room_id == "heart_chamber" and "journey_restored" not in Session.flags:
+				Session.set_flag("journey_restored")
+				room.update_progress()
+				_save("Final echo restored / Chapter II opened")
 			transition_pending = true
 			load_room.call_deferred(point.target_room, point.target_spawn)
 		"checkpoint":
 			Session.checkpoint_room = room.room_id
 			Session.checkpoint_spawn = point.checkpoint_spawn
-			player.health.restore_full()
-			_save("Restored & saved")
+			_save("Progress saved")
 		"ability":
 			if point.stable_id in Session.abilities:
 				return
@@ -237,6 +308,9 @@ func _on_interaction(point: WorldInteraction) -> void:
 			_save_reward(point.stable_id)
 		"reward", "chapter_end":
 			if point.stable_id in Session.flags:
+				if point.kind == "chapter_end" and room.room_id == "furnace_core":
+					transition_pending = true
+					load_room.call_deferred("ember_quay", "core_return")
 				return
 			if not room.is_cleared():
 				ui.notify("Defeat the hall guardians to release the seal")
@@ -291,6 +365,8 @@ func _on_gate_breached(stable_id: String) -> void:
 	_save("Wind barrier opened / Route saved")
 
 func _on_player_died() -> void:
+	var fallen_player := player
+	var fallen_room := room
 	ui.hide_boss()
 	room.enabled = false
 	room.clear_projectiles()
@@ -299,11 +375,20 @@ func _on_player_died() -> void:
 			enemy.clear_flames()
 	ui.notify("Returning to the last shrine...")
 	await get_tree().create_timer(0.85, false).timeout
+	if player != fallen_player or room != fallen_room or not is_instance_valid(player) or not is_instance_valid(room):
+		return
+	if boss_challenge != 0:
+		load_room("heart_chamber" if boss_challenge == 1 else "furnace_core", "entry", true)
+		player.revive(room.spawn_position("entry"))
+		return
 	load_room(Session.checkpoint_room, Session.checkpoint_spawn)
 	player.revive(room.spawn_position(Session.checkpoint_spawn))
 
 func _on_warden_defeated(room_instance: int) -> void:
 	if not is_instance_valid(room) or room.get_instance_id() != room_instance or player.state == Player.State.DEAD or "warden_defeated" in Session.flags:
+		return
+	if boss_challenge != 0:
+		_finish_boss_challenge()
 		return
 	Session.set_flag("warden_defeated")
 	ui.hide_boss()
@@ -315,6 +400,9 @@ func _on_warden_defeated(room_instance: int) -> void:
 func _on_keeper_defeated(room_instance: int) -> void:
 	if not is_instance_valid(room) or room.get_instance_id() != room_instance or player.state == Player.State.DEAD:
 		return
+	if boss_challenge != 0:
+		_finish_boss_challenge()
+		return
 	ui.hide_boss()
 	player.health.restore_full()
 	if room.rehearsal:
@@ -325,3 +413,10 @@ func _on_keeper_defeated(room_instance: int) -> void:
 	Session.set_flag("furnace_keeper_defeated")
 	room.update_progress()
 	_save_reward("furnace_keeper_defeated")
+
+func _finish_boss_challenge() -> void:
+	ui.hide_boss()
+	player.health.restore_full()
+	player.reset_input()
+	get_tree().paused = true
+	ui.show_menu("challenge_complete")

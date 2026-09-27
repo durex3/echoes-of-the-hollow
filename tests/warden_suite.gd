@@ -18,16 +18,33 @@ func run(h: Node, game: Node) -> void:
 	game.load_room("atrium","boss_return")
 	player.revive(Vector2(816,352))
 	await h.frames(3)
+	player.health.take_damage(1,player.position)
+	var entry_health := player.health.current
 	await h.press("interact",2)
 	await h.frames(5)
-	h.check(game.room.room_id == "heart_chamber" and Session.checkpoint_room == "atrium", "Arena entrance establishes a safe antechamber retry checkpoint")
+	h.check(game.room.room_id == "heart_chamber" and Session.checkpoint_room == "atrium" and player.health.current == entry_health, "Arena entrance saves an antechamber retry checkpoint without healing")
 	var boss := game.room.get_node("Enemies/Warden") as HollowWarden
+	h.check(game.room.get_node("ArenaGate").closed and game.room.nearby_exit_target().is_empty() and not game.room.get_node("Interactions/Return").visible and not game.room.get_node("Interactions/ChapterDoor").visible, "Warden room hides both exits until victory")
+	h.check(game.camera.position == Vector2(320,396), "Warden camera starts at its fixed combat position")
+	Input.action_press("move_left")
+	await h.frames(24)
+	Input.action_release("move_left")
+	h.check(player.position.x >= 80 and game.room.room_id == "heart_chamber", "Player cannot move out of the fixed warden chamber before combat")
+	player.revive(Vector2(96,480))
 	h.check(boss.state == HollowWarden.State.DORMANT and not game.ui.boss_panel.visible, "Arena entry is safe before crossing the activation line")
+	player.revive(Vector2(380,480))
+	Input.action_press("move_right")
+	await h.frames(20)
+	Input.action_release("move_right")
+	h.check(player.position.x < boss.position.x - 18.0, "Warden body collision prevents the player from walking through its silhouette")
 	h.check(not game.room.get_node("Interactions/FinalEcho").visible, "Final echo remains hidden while the warden lives")
 	game._on_interaction(game.room.get_node("Interactions/FinalEcho"))
 	h.check("journey_restored" not in Session.flags, "Final echo cannot be claimed before boss defeat")
-	await h.frames(30)
-	h.check(boss.sprite.animation == "idle" and boss.sprite.is_playing() and boss.sprite.frame > 0, "Dormant boss uses a moving idle clip instead of a frozen recovery pose")
+	var idle_frame := boss.sprite.frame
+	await h.frames(7)
+	var idle_advanced := boss.sprite.frame != idle_frame
+	await h.frames(23)
+	h.check(boss.sprite.animation == "idle" and boss.sprite.is_playing() and idle_advanced, "Idle clip advances across time instead of freezing on a recovery pose")
 	var opaque_frames := true
 	for clip: StringName in boss.sprite.sprite_frames.get_animation_names():
 		for index: int in range(boss.sprite.sprite_frames.get_frame_count(clip)):
@@ -38,9 +55,16 @@ func run(h: Node, game: Node) -> void:
 	player.revive(Vector2(380,480))
 	await h.frames(2)
 	h.check(boss.state == HollowWarden.State.INTRO and game.ui.boss_panel.visible and game.ui.boss_bar.value == 12, "Crossing the arena starts a harmless introduction and full boss bar")
+	var arena_gate := game.room.get_node("ArenaGate") as FurnaceArenaGate
+	h.check(arena_gate.closed and not arena_gate.get_node("Shape").disabled, "Warden awakening seals the left entrance")
 	h.check(await wait_state(h,boss,HollowWarden.State.WINDUP), "Warden reaches a natural sweep windup")
+	player.revive(boss.position+Vector2(20,0))
+	player.health.invulnerability_left = 0
+	var contact_hp := player.health.current
+	await h.frames(5)
+	h.check(player.health.current == contact_hp-1, "Touching the warden body deals contact damage")
 	var warning_texture := boss.sprite.sprite_frames.get_frame_texture("windup",0) as AtlasTexture
-	h.check(boss.sprite.animation == "windup" and warning_texture.region == Rect2(256,192,64,64), "Attack warning starts on the actual raised-sword sequence")
+	h.check(boss.sprite.animation == "windup" and warning_texture.region == Rect2(0,0,160,111) and warning_texture.atlas.resource_path.ends_with("warden_attack1.png"), "King warning starts on its raised-sword preparation, not the armor sheet")
 	var hp := player.health.current
 	var direction := boss.facing
 	await h.frames(20)
@@ -50,10 +74,12 @@ func run(h: Node, game: Node) -> void:
 	h.check(boss.facing == direction, "Sweep never turns toward a player crossing behind during warning")
 	await h.shot("47_warden_sweep_warning")
 	player.revive(boss.position+Vector2(direction*60,0))
+	player.health.invulnerability_left = 0
+	hp = player.health.current
 	await h.frames(3)
 	h.check(await wait_state(h,boss,HollowWarden.State.STRIKE), "Sweep warning transitions into a real active hitbox")
 	var strike_texture := boss.sprite.sprite_frames.get_frame_texture("strike",0) as AtlasTexture
-	h.check(boss.sprite.animation == "strike" and strike_texture.region == Rect2(128,256,64,64), "Active damage uses the actual sword-sweep artwork rather than standing frames")
+	h.check(boss.sprite.animation == "strike" and strike_texture.region == Rect2(320,0,160,111), "Active damage uses the king's visible sword arc rather than windup frames")
 	await h.shot("56_warden_sweep_active")
 	await h.frames(8)
 	h.check(player.health.current == hp-1, "Standing in the sweep takes exactly one point of damage")
@@ -65,6 +91,7 @@ func run(h: Node, game: Node) -> void:
 	player.revive(boss.position+Vector2(-80,0))
 	h.check(await wait_state(h,boss,HollowWarden.State.WINDUP), "Second natural attack begins after its recovery")
 	h.check(boss.rush_attack and boss.timer > 0.9, "Second attack is a full one-second rush warning")
+	h.check(boss.sprite.animation == "rush_windup" and boss.sprite.flip_h == (boss.facing < 0), "King rush uses its own attack strip with correct left-facing artwork")
 	await h.frames(38)
 	await h.shot("55_warden_rush_warning")
 	await h.frames(10)
@@ -90,6 +117,18 @@ func run(h: Node, game: Node) -> void:
 	game.resume()
 	await h.frames(2)
 	await h.shot("49_warden_phase_two")
+	# The second phase opens the grounded sword court; detailed projectile checks
+	# live in sword_court_suite, not the old charged-melee fixture.
+	boss.position = Vector2(400,480)
+	player.revive(Vector2(150,480))
+	h.check(await wait_state(h,boss,HollowWarden.State.SWORD_COURT), "Phase two opens with the seven-sword summon")
+	h.check(boss.attack == HollowWarden.Attack.CHARGED and is_instance_valid(boss.sword_court) and not boss.charged_box.active, "Sword court replaces the old ground scar without invisible melee damage")
+	await h.frames(65)
+	await h.shot("58_warden_sword_court")
+	# Damage isolation here preserves this older suite's later wall fixtures.
+	player.health.invulnerability_left = 12
+	h.check(await wait_state(h,boss,HollowWarden.State.CHASE,90) and is_instance_valid(boss.sword_court), "Charge immediately returns the king to pursuit while swords remain")
+	boss.clear_court() # Keep the legacy thin-wall fixture exclusively melee.
 	# Dedicated thin wall isolates rush motion and the shared occluded-hit rule.
 	boss.position = Vector2(550,480)
 	player.revive(Vector2(620,480))
@@ -101,7 +140,8 @@ func run(h: Node, game: Node) -> void:
 	collision.shape = shape
 	wall.add_child(collision)
 	game.room.add_child(wall)
-	h.check(await wait_state(h,boss,HollowWarden.State.WINDUP), "Phase two returns from its transition into a telegraphed attack")
+	h.check(await wait_state(h,boss,HollowWarden.State.WINDUP), "Phase two continues into its sweep warning")
+	h.check(boss.attack == HollowWarden.Attack.SWEEP, "Charged attack does not replace the basic sweep")
 	await wait_state(h,boss,HollowWarden.State.RECOVER)
 	await wait_state(h,boss,HollowWarden.State.WINDUP)
 	h.check(boss.rush_attack and boss.timer > 0.9, "Second phase retains the full rush warning duration")
@@ -113,16 +153,14 @@ func run(h: Node, game: Node) -> void:
 	h.check(phase_changes[0] == 1 and boss.config.sweep.recovery == 0.95, "Second phase occurs once and never mutates shared attack resources")
 	wall.queue_free()
 	await h.frames(2)
-	# Withdraw to the actual west door. Re-entry creates a fresh encounter.
-	player.revive(Vector2(48,480))
-	await h.frames(3)
-	await h.press("interact",2)
-	h.check(game.room.room_id == "atrium" and not game.ui.boss_panel.visible and "warden_defeated" not in Session.flags, "Retreat removes the boss HUD without awarding victory")
-	player.revive(Vector2(816,352))
-	await h.frames(3)
-	await h.press("interact",2)
+	player.revive(Vector2(220,480))
+	Input.action_press("move_left")
+	await h.frames(20)
+	Input.action_release("move_left")
+	h.check(player.position.x >= arena_gate.position.x+15 and game.room.room_id == "heart_chamber" and boss.state != HollowWarden.State.DORMANT, "Leftward movement cannot escape an active warden fight")
+	game.load_room("heart_chamber","entry")
 	boss = game.room.get_node("Enemies/Warden") as HollowWarden
-	h.check(boss.health.current == 12 and boss.phase == 1, "Retreat and re-entry reset health and phase")
+	h.check(boss.health.current == 12 and boss.phase == 1, "Reloading an unfinished fight resets health and phase")
 	player.revive(Vector2(380,480))
 	await h.frames(3)
 	h.check(await wait_state(h,boss,HollowWarden.State.STRIKE), "Retry encounter starts attacks normally")
@@ -172,7 +210,7 @@ func run(h: Node, game: Node) -> void:
 	h.check(game.room.get_node("Enemies").get_child_count() == 0, "Defeated boss releases its scene after the death animation")
 	game.load_room("heart_chamber","entry")
 	await h.frames(4)
-	h.check(game.room.get_node("Enemies").get_child_count() == 0 and game.room.get_node("Interactions/FinalEcho").visible, "Revisiting a defeated boss keeps it absent and reveals final echo")
+	h.check(game.room.get_node("Enemies").get_child_count() == 0 and game.room.get_node("Interactions/Return").visible and game.room.get_node("Interactions/ChapterDoor").visible and game.room.get_node("Interactions/ChapterDoor").position.x == 560, "Revisiting a defeated boss reveals the left return door and right Chapter II door")
 	var camera_at: Vector2 = game.camera.position
 	await h.press("jump",20)
 	h.check(game.camera.position == camera_at, "Arena camera remains fixed while the player jumps")
@@ -200,6 +238,9 @@ func run(h: Node, game: Node) -> void:
 	h.check(Session.restore() and "journey_restored" in Session.flags, "Final ending mark survives saved-state restore")
 	# Failed finale save keeps session benefit and reports failure on the ending itself.
 	Session.flags.erase("journey_restored")
+	game.load_room("heart_chamber", "chapter_return")
+	player.revive(Vector2(560,480))
+	await h.frames(3)
 	game.room.update_progress()
 	var save_path := Session.save_path
 	Session.save_path = "user://missing_finale_test_directory/save.json"

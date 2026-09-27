@@ -12,7 +12,7 @@ extends Node2D
 @export var target_spawn := "entry"
 @export var checkpoint_spawn := "checkpoint"
 @export var stable_id := ""
-@export var prompt := "E  /  REST & SAVE"
+@export var prompt := "E / SAVE PROGRESS"
 var clock := 0.0
 
 func locked_message(abilities: Array[String], flags: Array[String]) -> String:
@@ -40,6 +40,20 @@ func _draw() -> void:
 			draw_circle(Vector2(0, -19), 26 + sin(clock * 2) * 2, Color(0.35, 0.9, 0.75, 0.07))
 		"exit":
 			if has_node("ForgeDoor"):
+				if target_room == "furnace_core":
+					var ready := locked_message(Session.abilities, Session.flags).is_empty()
+					var gold := Color("f1ce83") if ready else Color("956d53")
+					draw_rect(Rect2(-36, -70, 72, 70), Color(gold, 0.08 if ready else 0.04))
+					draw_rect(Rect2(-36, -70, 72, 70), gold, false, 3)
+					for index: int in 2:
+						var seal := "flow_seal" if index == 0 else "pressure_seal"
+						var x := -13.0 if index == 0 else 13.0
+						var seal_color := Color("f1ce83") if seal in Session.flags else Color("574c48")
+						var diamond := PackedVector2Array([Vector2(x,-90), Vector2(x+6,-83), Vector2(x,-76), Vector2(x-6,-83)])
+						draw_colored_polygon(diamond, seal_color)
+					if ready:
+						draw_arc(Vector2(0,-83), 29, 0, TAU, 32, Color(gold, 0.45 + 0.2 * sin(clock * 3)), 2)
+					return
 				var tint := Color("efb268") if not locked_message(Session.abilities,Session.flags).is_empty() else mint
 				draw_circle(Vector2(0,-77),3,tint)
 				return
@@ -47,11 +61,23 @@ func _draw() -> void:
 			draw_line(Vector2(-16, -66), Vector2(-16, -4), mint, 2)
 			draw_line(Vector2(16, -66), Vector2(16, -4), mint, 2)
 			draw_circle(Vector2(0, -34), 4, mint)
-		"sign", "challenge":
+			if target_room == "ember_quay":
+				draw_arc(Vector2(0,-39), 27, 0, TAU, 32, Color("efce8e",0.7), 2)
+		"sign":
+			draw_rect(Rect2(-8,-3,16,2), Color("34645f"))
+			draw_rect(Rect2(-2,-5,4,2), mint)
+		"challenge":
 			draw_line(Vector2(0,0), Vector2(0,-38), Color("7b827b"), 3)
-			draw_rect(Rect2(-15,-40,30,18), Color("304e52"))
-			draw_line(Vector2(-9,-32), Vector2(9,-32), mint, 2)
-		"ability", "goal", "reward", "upgrade", "finale", "chapter_end":
+			draw_rect(Rect2(-17,-44,34,24), Color("482b3b"))
+			draw_rect(Rect2(-17,-44,34,24), Color("f1ce83"), false, 1)
+			draw_line(Vector2(-9,-38), Vector2(9,-26), Color("ff9bcc"), 2)
+			draw_line(Vector2(9,-38), Vector2(-9,-26), Color("ff9bcc"), 2)
+			draw_circle(Vector2(0,-32), 2, Color("f1ce83"))
+		"chapter_end":
+			draw_style_box(_door_style(), Rect2(-24, -82, 48, 82))
+			draw_rect(Rect2(-24,-82,48,82),Color("f1ce83"),false,2)
+			draw_circle(Vector2(0,-40),9+sin(clock*2)*2,Color("f1ce83",0.75))
+		"ability", "goal", "reward", "upgrade", "finale":
 			var y := -26 + sin(clock * 2.4) * 4
 			var tint := Color("efb6bb") if kind == "upgrade" else (Color("f1ce83") if kind == "goal" else mint)
 			draw_circle(Vector2(0, y), 27, Color(tint, 0.06))

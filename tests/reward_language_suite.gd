@@ -15,7 +15,7 @@ func run(h: Node, game: Node) -> void:
 	game.load_room("belfry","checkpoint")
 	await h.frames(4)
 	h.check(ui.area_label.text == "07 / 寂静钟楼" and ui.health_label.text.begins_with("生命"), "Current room and vitality use selected Chinese language")
-	h.check(ui.prompt.text == "E / 休息并保存", "Interaction prompt is translated")
+	h.check(ui.prompt.text == "E / 保存进度", "Checkpoint prompt translates saving without promising healing")
 	Session.flags.erase("belfry_cleared")
 	game.room.update_progress()
 	for enemy: Node in game.room.get_node("Enemies").get_children():
@@ -31,7 +31,7 @@ func run(h: Node, game: Node) -> void:
 	var remaining := notice.remaining
 	await h.press("interact",2)
 	h.check(notice.remaining < remaining, "Repeated claimed reward does not restart notification")
-	ui.notify("Restored & saved")
+	ui.notify("Progress saved")
 	h.check(notice.title_label.text == "已点亮 · 风信标", "Ordinary toast cannot replace reward explanation")
 	get_tree().paused = true
 	ui.show_menu("pause")

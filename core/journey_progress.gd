@@ -5,6 +5,8 @@ extends RefCounted
 static func objective(abilities: Array[String], flags: Array[String], visited: Array[String]) -> String:
 	if "cistern_restored" in flags:
 		return "Cistern restored / Both chapters open to explore"
+	if "furnace_keeper_defeated" in flags:
+		return "Keeper defeated / Enter the central door"
 	if "journey_restored" in flags:
 		if "ember_quay" not in visited:
 			return "Chapter II / Beyond the heart chamber"
@@ -12,9 +14,9 @@ static func objective(abilities: Array[String], flags: Array[String], visited: A
 			return "Claim the flow seal / Beyond Valve Gallery"
 		if "pressure_seal" not in flags:
 			return "Claim the pressure seal / Below Cistern Archive"
-		return "Two valves ready / Enter the furnace core"
+		return "Two valves ready / Return to Ember Quay, take the rightmost gold door"
 	if "warden_defeated" in flags:
-		return "Warden defeated / Restore the final echo"
+		return "Warden defeated / Enter the central door"
 	if "double_jump" not in abilities:
 		return "Find the sky echo / Eastern archive"
 	if "training_cleared" not in flags:

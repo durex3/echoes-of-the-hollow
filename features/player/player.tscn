@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=16 format=3]
 [ext_resource type="Script" path="res://features/player/player.gd" id="1"]
 [ext_resource type="Resource" path="res://features/player/default_player.tres" id="2"]
 [ext_resource type="SpriteFrames" path="res://features/player/hero_frames.tres" id="3"]
@@ -8,6 +8,8 @@
 [ext_resource type="Script" path="res://features/player/slash.gd" id="7"]
 [ext_resource type="Script" path="res://features/player/steam_ward.gd" id="8"]
 [ext_resource type="Resource" path="res://features/player/steam_ward_config.tres" id="9"]
+[ext_resource type="Script" path="res://features/player/player_visual_effects.gd" id="10"]
+[ext_resource type="Resource" path="res://features/player/player_vfx_config.tres" id="11"]
 [sub_resource type="CapsuleShape2D" id="Body"]
 radius = 10.0
 height = 42.0
@@ -31,6 +33,10 @@ shape = SubResource("Body")
 [node name="SteamWard" type="Node2D" parent="."]
 script = ExtResource("8")
 config = ExtResource("9")
+[node name="VisualEffects" type="Node2D" parent="."]
+script = ExtResource("10")
+config = ExtResource("11")
+sprite_path = NodePath("../Visual/Sprite")
 [node name="Visual" type="Node2D" parent="."]
 [node name="Sprite" type="AnimatedSprite2D" parent="Visual"]
 position = Vector2(0, -40)
@@ -39,6 +45,7 @@ animation = &"idle"
 [node name="Slash" type="Node2D" parent="Visual"]
 visible = false
 script = ExtResource("7")
+config = ExtResource("11")
 [node name="Health" type="Node" parent="."]
 script = ExtResource("4")
 maximum = 5

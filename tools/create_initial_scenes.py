@@ -216,7 +216,7 @@ position = Vector2(1130, 480)
     for index,x in enumerate([560,850] if not ruins else [440,650,1100]):
         text+=f'\n[node name="Slime{index}" parent="Enemies" instance=ExtResource("4")]\nposition = Vector2({x}, 480)\npatrol_distance = 65.0\n'
     text+='\n[node name="Interactions" type="Node2D" parent="."]\n'
-    points=[('Shrine','checkpoint',160,480,'','entry','checkpoint','E  /  REST & SAVE')]
+    points=[('Shrine','checkpoint',160,480,'','entry','checkpoint','E / SAVE PROGRESS')]
     if ruins:
         points += [('WestDoor','exit',48,480,'forest','east','west_door','E  /  RETURN TO THE GROVE'),('Echo','ability',960,352,'','entry','double_jump','E  /  CLAIM THE SKY ECHO')]
     else:

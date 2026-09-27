@@ -100,6 +100,7 @@ func _on_damage(_amount: int, source: Vector2) -> void:
 
 func _on_death() -> void:
 	_enter(State.DEAD)
+	$ContactBox.end_swing()
 	$Hurtbox.set_deferred("monitorable", false)
 	defeated.emit()
 	queue_redraw()
