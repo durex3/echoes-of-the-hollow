@@ -1,5 +1,15 @@
 # 本机验证记录
 
+## 交接状态：玩法基线 `3ba389f`
+
+本轮文档核验：扫描根目录和docs内Markdown的本地链接，核对37个用户级skill目录与清单一致，并执行Git差异空白检查；均通过。没有执行新的游戏行为或Mac实机测试。
+
+玩法基线已提交并成功推送到GitHub的 `fix/enemy-art-separation` 分支，远程地址为 `https://github.com/durex3/echoes-of-the-hollow.git`。下方每次修复记录里的“未提交/推送”描述的是当次检查结束时的历史状态，不代表本次交接状态。GitHub Actions运行结果尚未核验。
+
+最新玩法证据仍是下节 `close_counter_full_visual_final.log` 的 Windows 全量/图形运行；本轮仅更新文档、技能迁移与下一步任务，不新增玩法验证记录，不改变现有通过数字。Mac实机、完整第三关、第三关Boss与正式进度接线均未验收。日志与截图在被忽略的 `artifacts/` 中，不随克隆传输；可在目标机器重跑对应检查生成。
+
+换机执行顺序见[开发交接](next-development.md)，实际技能来源和Boss原包迁移范围分别见[技能清单](local-skills.md)与[第三关素材清单](tasks/chapter_three_assets.md)。
+
 ## 当前修订：第三关法师贴身反击实伤
 
 - 用户明确是第三关法师“反击有动作但没伤害”。固定站位复现：左右32/42px连吃三刀后法师仍出上挑，主角保持5HP且没有damage事件；52px有真实伤害。诊断日志`artifacts/counter_damage_diagnostic.log`只有定位输出（0条断言，不作通过证明）。根因是近身选用了实体在外侧的上挑，而非抗打断令伤害失效。上轮测试在最后一刀后让主角退到58px，实伤结论仅覆盖外侧距离，确实漏掉用户的贴身情形。

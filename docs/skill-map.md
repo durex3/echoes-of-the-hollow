@@ -1,5 +1,7 @@
 # Skill 如何落实到工程
 
+本机 37 个用户级 skills 的完整名称、用途、系统/插件区别及 Mac 迁移步骤见[本机 Skills 清单与换机交接](local-skills.md)。下面记录的是工程采用方法与验证，不代表每个已安装 skill 都必须启用。后续任务顺序见[开发交接与下一步](next-development.md)。
+
 2026-09-27第三关前半段实现：create-game-assets先核对原包/许可与固定锚点，再导入12张原图并查看实际800×450左右攻击截图；godot-animation/godot-physics把状态、显示帧、凹形法术查询及身体去重统一到物理时钟；game-ai分别实现杖使双式和蝙蝠锁旧站位/低位收招；level-design根据实测把压力竖井拆成两段224px、每段3次壁跃与中继平台；godot-tilemap/godot-nodes-scenes保存五个可编辑房间、稳定门/出生点和独立试玩宿主。见[tasks/chapter_three_preview.md](tasks/chapter_three_preview.md)。没有为了套用skill引入新框架；图形初版和真人难度仍需反馈。
 
 2026-09-27第三关设计：level-design落实移动指标/白盒/能力回环与休整；game-design-theory落实新能力与生命奖励、选择和渐进掌握；game-ai约束两敌/Boss的读招、锁向和组合窗口；create-game-assets只读盘点课程素材并明确完整动作缺口；save-systems将环境修复、能力、机关、生命与Boss胜利分开。方案见[tasks/chapter_three.md](tasks/chapter_three.md)，未把设计或候选数值标成已实现。第二关旧档修复使用save-systems与godot-gdscript，验证真实旧进度的首领出场和隔离存档回归。

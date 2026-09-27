@@ -1,5 +1,11 @@
 # 架构与编码规范
 
+## 当前运行边界与后续接线
+
+正式入口 `app/main.tscn` 仍服务前两章16房间；第三关通过 `features/world/prototypes/bell_court_preview.tscn` 独立运行五房间，复用已有角色/战斗组件，但进度为内存状态。已实现 `WallEcho`、`ResonantSlab`、`BellInvoker`、`BellSkimmer` 和七类小怪的 `EnemyStagger`；第三关 Boss、完整支路/奖励、正式 Session/SaveRepository/WorldMap 接线待做。
+
+下一项为双支路与承重回桥，保持已认可的物理/地图和只读 Resource 约定。正式集成时再按[第三关设计](tasks/chapter_three.md)扩展稳定 ID 与存档白名单，不提前让不存在的房间进入主线。开发顺序与 Mac 边界见[交接](next-development.md)。下方按专题及版本保留演进记录，后续修订优先于历史实现。
+
 ## 杖使贴身反击的选招距离
 
 真人再次指出第三关法师出反击却不掉血。根因不是抗打断吞伤害：上挑原图实体与其保守源帧轮廓位于外侧，内侧32–42px站位处确实打空；此前反击测试把玩家移到58px之后才检查掉血，漏掉固定贴身站位。现在InvokerConfig.rising_minimum=52px，进入近战WARNING之前，由_choose_arc选择：距离不足52px用已有回扫（最后一帧覆盖内侧），其余保留原两式轮换。技能选好后继续锁向，不改变原图、形状、伤害数值、前摇/生效/收招，不给空白处添加隐形伤害。
@@ -26,7 +32,7 @@
 
 ## 飞行尖啸与踏壁易用性修订（2026-09-27）
 
-BellSkimmer增加SCREECH_WARNING/ACTIVE/RECOVER三个FSM状态，SkimmerConfig保存只读时长/速度/扇角；自身持有EchoPulse世界坐标子节点。三道声刃和本次接触共享hit_ids，所有世界扫掠查询先于玩家伤害查询，父敌人受伤/死亡/切房撤销实例。当前波未结束时不因离开身体重置同次接触列表。法师大小由InvokerConfig.sprite_scale统一驱动视觉与原图近战轮廓，原生场景盒子同步校准，世界脚底点不动。
+BellSkimmer增加SCREECH_WARNING/ACTIVE/RECOVER三个FSM状态，SkimmerConfig保存只读时长/速度/扇角；自身持有EchoPulse世界坐标子节点。三道声刃和本次接触共享hit_ids，所有世界扫掠查询先于玩家伤害查询；获准打断、死亡或切房时撤销实例，连续受击不再无条件取消技能，以EnemyStagger规则为准。当前波未结束时不因离开身体重置同次接触列表。法师大小由InvokerConfig.sprite_scale统一驱动视觉与原图近战轮廓，原生场景盒子同步校准，世界脚底点不动。
 
 WallEcho保留真实碰撞来源并增加限时/限距的接触记忆和向前探测：仅标记墙、未花费墙可保留早按；不会把普通墙变为壁跃面。壁跃按键可缓冲，不必在碰撞的同一帧触发；0.50秒自动向外移动、对墙接续0.18秒、离墙0.14秒，落地/受伤/菜单清理，普通跳跃主动结束辅助。共享Player只在wall_echo能力与标记墙条件下应用新规则。下方0.10秒控制保护等为初版历史，以本节及最新试玩说明为准。
 
@@ -52,7 +58,7 @@ Session.maximum_health只返回5加heart_bloom收益；cistern_heart保留为历
 
 ## 第二关旧修复档与首领进度分离（2026-09-27）
 
-GameRoom仅按furnace_keeper_defeated移除炉心监守者，cistern_restored仅保留环境修复/停喷口和既有终点交互收益。仅修复的旧档仍生成首领、锁住左右出口并隐藏回忆交互；JourneyProgress与WorldMap指向未击败的炉心。Main的chapter_end在重复标记分支之前也检查首领胜利和清场，避免旧标记绕过战斗。实际获胜新增击败标记并保存，旧能力/生命/修复标记不删，不改schema或玩家文件。真正完成后可在可见场地x=860回忆练习；练习胜利刷新门状态，不保存进度。第三关方案见[tasks/chapter_three.md](tasks/chapter_three.md)，目前未新增运行模块。
+GameRoom仅按furnace_keeper_defeated移除炉心监守者，cistern_restored仅保留环境修复/停喷口和既有终点交互收益。仅修复的旧档仍生成首领、锁住左右出口并隐藏回忆交互；JourneyProgress与WorldMap指向未击败的炉心。Main的chapter_end在重复标记分支之前也检查首领胜利和清场，避免旧标记绕过战斗。实际获胜新增击败标记并保存，旧能力/生命/修复标记不删，不改schema或玩家文件。真正完成后可在可见场地x=860回忆练习；练习胜利刷新双门，不保存进度。本节是第二关存档修订；第三关独立试玩模块现已实现，正式章节进度尚未接线。
 
 ## 无招式文字与保存不回血（2026-09-27）
 

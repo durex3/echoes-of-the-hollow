@@ -1,5 +1,7 @@
 # 工程约定
 
+当前实现与换机交接见 `docs/next-development.md`；本机 skills 清单与迁移见 `docs/local-skills.md`，具体工程应用见 `docs/skill-map.md`。历史任务文档须结合最新状态阅读，不把计划当成已完成。
+
 - 引擎固定 Godot 4.7.2 标准版，GDScript，Compatibility，Windows 为首个目标。
 - 修改前阅读 README.md 和 docs/architecture.md。不得修改桌面上的原始素材。
 - 场景/脚本/资源采用 snake_case；注册类型采用 PascalCase；信号表示已发生的事件。
