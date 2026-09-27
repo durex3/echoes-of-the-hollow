@@ -22,6 +22,10 @@ func _initialize() -> void:
 			quit(1)
 			return
 		var fresh := SaveRepository.read(PATH+".new")
+		if "furnace_keeper_defeated" in data.flags:
+			push_error("Restoring the old cistern must not invent a keeper victory")
+			quit(1)
+			return
 		if "steam_ward" not in data.abilities or fresh.is_empty() or "steam_ward" not in fresh.abilities or "cistern_heart" in fresh.flags or "furnace_keeper_defeated" not in fresh.flags:
 			push_error("Steam ward new/legacy cross-process restore failed")
 			quit(1)

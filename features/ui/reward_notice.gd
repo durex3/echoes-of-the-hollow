@@ -2,7 +2,7 @@ class_name RewardNotice
 extends PanelContainer
 ## Informational overlay: never captures input or pauses gameplay.
 const REWARDS := {
-	"furnace_keeper_defeated": ["FURNACE KEEPER DEFEATED", "The pressure has fallen. The core awaits.", "All vitality restored. Enter the central door to awaken the core."],
+	"furnace_keeper_defeated": ["FURNACE KEEPER DEFEATED", "The pressure has fallen. The core awaits.", "All vitality restored. Enter the right-hand door to awaken the core."],
 	"steam_ward": ["SLUICE ECHO ACQUIRED", "Block one hit from enemies or steam.", "L: shield for 1.5s. One hit; cooldown 5s from activation."],
 	"flow_seal": ["FLOW SEAL ACQUIRED", "Archive service passage opened", "All vitality restored. Explore the high alcove or the passage below."],
 	"pressure_seal": ["PRESSURE SEAL ACQUIRED", "Quay maintenance shortcut opened", "All vitality restored. The east door returns directly to the quay."],

@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=17 format=3]
 [ext_resource type="Script" path="res://features/player/player.gd" id="1"]
 [ext_resource type="Resource" path="res://features/player/default_player.tres" id="2"]
 [ext_resource type="SpriteFrames" path="res://features/player/hero_frames.tres" id="3"]
@@ -10,6 +10,7 @@
 [ext_resource type="Resource" path="res://features/player/steam_ward_config.tres" id="9"]
 [ext_resource type="Script" path="res://features/player/player_visual_effects.gd" id="10"]
 [ext_resource type="Resource" path="res://features/player/player_vfx_config.tres" id="11"]
+[ext_resource type="Script" path="res://features/player/wall_echo.gd" id="12"]
 [sub_resource type="CapsuleShape2D" id="Body"]
 radius = 10.0
 height = 42.0
@@ -37,6 +38,8 @@ config = ExtResource("9")
 script = ExtResource("10")
 config = ExtResource("11")
 sprite_path = NodePath("../Visual/Sprite")
+[node name="WallEcho" type="Node" parent="."]
+script = ExtResource("12")
 [node name="Visual" type="Node2D" parent="."]
 [node name="Sprite" type="AnimatedSprite2D" parent="Visual"]
 position = Vector2(0, -40)

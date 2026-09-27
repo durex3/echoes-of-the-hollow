@@ -27,6 +27,37 @@ function Invoke-CheckedGodot {
 }
 
 Invoke-CheckedGodot -Name 'import' -Arguments @('--headless','--editor','--import')
+$staggerArgs = @('--headless','--fixed-fps','60','res://tests/enemy_stagger_suite.tscn')
+if ($Visual) { $staggerArgs = @('--fixed-fps','60','--max-fps','60','res://tests/enemy_stagger_suite.tscn','--','--visual') }
+Invoke-CheckedGodot -Name 'enemy_stagger' -Arguments $staggerArgs
+$staggerLog = Get-Content -LiteralPath (Join-Path $artifacts 'enemy_stagger.log') -Raw
+if ($staggerLog -notmatch 'ENEMY_STAGGER_RESULT: \d+ checks, 0 failures') { throw 'Enemy interruption and retaliation checks must complete.' }
+Invoke-CheckedGodot -Name 'counter_damage' -Arguments @('--headless','--fixed-fps','60','res://tests/counter_damage_suite.tscn')
+$counterLog = Get-Content -LiteralPath (Join-Path $artifacts 'counter_damage.log') -Raw
+if ($counterLog -notmatch 'COUNTER_DAMAGE_RESULT: \d+ checks, 0 failures') { throw 'Stationary close-range counter damage checks must complete.' }
+$aiArgs = @('--headless','--fixed-fps','60','res://tests/bell_ai_suite.tscn')
+if ($Visual) { $aiArgs = @('--fixed-fps','60','--max-fps','60','res://tests/bell_ai_suite.tscn','--','--visual') }
+Invoke-CheckedGodot -Name 'bell_ai' -Arguments $aiArgs
+$aiLog = Get-Content -LiteralPath (Join-Path $artifacts 'bell_ai.log') -Raw
+if ($aiLog -notmatch 'BELL_AI_RESULT: \d+ checks, 0 failures') { throw 'Third-chapter enemy decision checks must complete.' }
+$chapterAiArgs = @('--headless','--fixed-fps','60','res://tests/chapter_enemy_ai_suite.tscn')
+if ($Visual) { $chapterAiArgs = @('--fixed-fps','60','--max-fps','60','res://tests/chapter_enemy_ai_suite.tscn','--','--visual') }
+Invoke-CheckedGodot -Name 'chapter_enemy_ai' -Arguments $chapterAiArgs
+$chapterAiLog = Get-Content -LiteralPath (Join-Path $artifacts 'chapter_enemy_ai.log') -Raw
+if ($chapterAiLog -notmatch 'CHAPTER_ENEMY_AI_RESULT: \d+ checks, 0 failures') { throw 'Chapter I and II enemy decision checks must complete.' }
+$wallArgs = @('--headless','--fixed-fps','60','res://tests/wall_echo_metrics.tscn')
+if ($Visual) { $wallArgs = @('--fixed-fps','60','--max-fps','60','res://tests/wall_echo_metrics.tscn','--','--visual') }
+Invoke-CheckedGodot -Name 'wall_echo' -Arguments $wallArgs
+$wallLog = Get-Content -LiteralPath (Join-Path $artifacts 'wall_echo.log') -Raw
+if ($wallLog -notmatch 'WALL_ECHO_RESULT: \d+ checks, 0 failures') { throw 'Wall echo metrics and the native teaching loop must complete.' }
+$bellArgs = @('--headless','--fixed-fps','60','res://tests/bell_court_suite.tscn')
+if ($Visual) { $bellArgs = @('--fixed-fps','60','--max-fps','60','res://tests/bell_court_suite.tscn','--','--visual') }
+Invoke-CheckedGodot -Name 'bell_court' -Arguments $bellArgs
+$bellLog = Get-Content -LiteralPath (Join-Path $artifacts 'bell_court.log') -Raw
+if ($bellLog -notmatch 'BELL_COURT_RESULT: \d+ checks, 0 failures' -or $bellLog -notmatch 'BELL_ROUTE_PASS:') { throw 'Third-chapter component and front-half route checks must complete.' }
+Invoke-CheckedGodot -Name 'bell_court_baseline' -Arguments @('--headless','--fixed-fps','60','res://tests/bell_court_suite.tscn','--','--baseline')
+$bellBaselineLog = Get-Content -LiteralPath (Join-Path $artifacts 'bell_court_baseline.log') -Raw
+if ($bellBaselineLog -notmatch 'BELL_COURT_RESULT: \d+ checks, 0 failures' -or $bellBaselineLog -notmatch 'BELL_ROUTE_PASS:.*baseline=true') { throw 'Five HP, no ward front-half route must complete.' }
 if (-not $Full) {
     if ($Visual) {
         Invoke-CheckedGodot -Name 'current_visual' -Arguments @('--fixed-fps','60','--max-fps','60','res://tests/test_runner.tscn','--','--current','--visual')

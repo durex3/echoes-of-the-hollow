@@ -7,6 +7,7 @@ enum State { IDLE, WINDUP, RELEASE, RECOVER, HURT, DEAD }
 @export var config: ScribeConfig
 @onready var health: HealthComponent = $Health
 @onready var sprite: AnimatedSprite2D = $Sprite
+@onready var stagger: EnemyStagger = $Stagger
 var target: Player
 var state := State.IDLE
 var timer := 0.0
@@ -14,8 +15,12 @@ var flash_left := 0.0
 var facing := -1.0
 var locked_direction := Vector2.LEFT
 var casts := 0
+var aim_wait := 0.0
+var recovery_after_hurt := 0.0
+var firing_shape := CircleShape2D.new()
 
 func _ready() -> void:
+	firing_shape.radius = 5.0 # Matches InkBolt's actual swept collision radius.
 	health.maximum = config.maximum_health
 	health.restore_full()
 	health.damaged.connect(_on_damage)
@@ -32,8 +37,14 @@ func can_see_target() -> bool:
 	var aim := target.global_position + Vector2(0,-24)
 	if cast_origin().distance_to(aim) > config.detection_range:
 		return false
-	var query := PhysicsRayQueryParameters2D.create(cast_origin(), aim, 1)
-	return get_world_2d().direct_space_state.intersect_ray(query).is_empty()
+	var query := PhysicsShapeQueryParameters2D.new()
+	query.shape = firing_shape
+	query.transform = Transform2D(0,cast_origin())
+	query.motion = aim-cast_origin()
+	query.collision_mask = 1
+	var space := get_world_2d().direct_space_state
+	# cast_motion ignores initial overlaps; include the muzzle before sweeping.
+	return space.intersect_shape(query,1).is_empty() and space.cast_motion(query)[0]>=1.0
 
 func _physics_process(delta: float) -> void:
 	if state == State.DEAD:
@@ -45,9 +56,14 @@ func _physics_process(delta: float) -> void:
 	match state:
 		State.IDLE:
 			if can_see_target():
-				locked_direction = (target.global_position + Vector2(0,-24) - cast_origin()).normalized()
-				facing = -1.0 if locked_direction.x < 0 else 1.0
-				_enter(State.WINDUP)
+				facing = -1.0 if target.global_position.x<global_position.x else 1.0
+				if casts>0 and not target.is_on_floor() and target.velocity.y < -config.rising_speed and aim_wait<config.aim_patience:
+					aim_wait += delta
+				else:
+					locked_direction = (target.global_position + Vector2(0,-24) - cast_origin()).normalized()
+					_enter(State.WINDUP)
+			else:
+				aim_wait = 0
 		State.WINDUP:
 			if not is_instance_valid(target) or target.state == Player.State.DEAD:
 				_enter(State.RECOVER)
@@ -64,7 +80,11 @@ func _physics_process(delta: float) -> void:
 				_enter(State.IDLE)
 		State.HURT:
 			if timer <= 0:
-				_enter(State.RECOVER)
+				if recovery_after_hurt>0:
+					_enter(State.RECOVER)
+					timer = recovery_after_hurt
+				else:
+					_enter(State.IDLE)
 	move_and_slide()
 	sprite.flip_h = facing < 0
 	sprite.modulate = Color(2,2,2) if flash_left > 0 and not Session.reduce_flashes else Color.WHITE
@@ -74,7 +94,9 @@ func _enter(next: State) -> void:
 	state = next
 	sprite.speed_scale = 1
 	match state:
-		State.IDLE: sprite.play("idle")
+		State.IDLE:
+			aim_wait = 0
+			sprite.play("idle")
 		State.WINDUP:
 			timer = config.windup_seconds
 			sprite.play("cast")
@@ -95,6 +117,9 @@ func _enter(next: State) -> void:
 
 func _on_damage(_amount: int, source: Vector2) -> void:
 	flash_left = 0.08
+	if not stagger.register_hit():
+		return
+	recovery_after_hurt = timer if state==State.RECOVER else 0.0
 	_enter(State.HURT)
 	velocity.x = 90 * (-1 if source.x > global_position.x else 1)
 

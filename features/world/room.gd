@@ -27,7 +27,7 @@ func _ready() -> void:
 			gate.set_open(gate.stable_id in Session.flags)
 			gate.breached.connect(func(id: String) -> void: gate_breached.emit(id))
 	for enemy: Node in $Enemies.get_children():
-		if enemy is FurnaceKeeper and not rehearsal and ("furnace_keeper_defeated" in Session.flags or "cistern_restored" in Session.flags):
+		if enemy is FurnaceKeeper and not rehearsal and "furnace_keeper_defeated" in Session.flags:
 			$Enemies.remove_child(enemy)
 			enemy.queue_free()
 			continue
@@ -129,13 +129,13 @@ func update_progress() -> void:
 		elif point.kind in ["reward", "upgrade", "chapter_end"]:
 			point.visible = point.stable_id not in Session.flags
 			if room_id == "furnace_core" and point.kind == "chapter_end":
-				point.visible = "furnace_keeper_defeated" in Session.flags or "cistern_restored" in Session.flags
+				point.visible = is_cleared() and "furnace_keeper_defeated" in Session.flags
 		elif point.kind == "finale":
 			point.visible = "warden_defeated" in Session.flags and point.stable_id not in Session.flags
 		elif point.kind == "challenge":
-			point.visible = not rehearsal and ("furnace_keeper_defeated" in Session.flags or "cistern_restored" in Session.flags)
+			point.visible = not rehearsal and "furnace_keeper_defeated" in Session.flags
 		if not point.visible_after_flag.is_empty():
-			point.visible = point.visible and (point.visible_after_flag in Session.flags or room_id == "furnace_core" and point.kind == "chapter_end" and "cistern_restored" in Session.flags)
+			point.visible = point.visible and point.visible_after_flag in Session.flags
 
 func is_cleared() -> bool:
 	for enemy: Node in $Enemies.get_children():

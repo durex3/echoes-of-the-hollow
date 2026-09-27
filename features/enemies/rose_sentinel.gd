@@ -9,13 +9,17 @@ enum State { IDLE, APPROACH, RETREAT, WARNING, STRIKE, RECOVER, DEAD }
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var attack_box: Hitbox = $AttackBox
 @onready var edge: RayCast2D = $Edge
+@onready var stagger: EnemyStagger = $Stagger
 var target: Player
 var state := State.IDLE
 var facing := -1.0
 var timer := 0.0
 var flash_left := 0.0
+var home_x := 0.0
+var completed_strikes := 0
 
 func _ready() -> void:
+	home_x = global_position.x
 	health.maximum = config.maximum_health
 	health.restore_full()
 	health.damaged.connect(_on_damaged)
@@ -48,24 +52,37 @@ func _physics_process(delta: float) -> void:
 		State.IDLE:
 			if is_on_floor() and can_see_target():
 				_enter(State.APPROACH)
+			elif absf(global_position.x-home_x)>8:
+				facing = signf(home_x-global_position.x)
+				if _walk(facing,config.approach_speed):
+					if sprite.animation!=&"step":
+						_clip("step")
+			else:
+				if sprite.animation!=&"idle":
+					_clip("idle")
 		State.APPROACH:
 			if not can_see_target():
 				_enter(State.IDLE)
 			else:
 				facing = -1.0 if target.global_position.x < global_position.x else 1.0
-				if absf(target.global_position.x-global_position.x) <= config.attack_range:
-					_enter(State.RETREAT)
+				var distance := absf(target.global_position.x-global_position.x)
+				if distance <= config.attack_range and absf(target.global_position.y-global_position.y)<=config.attack_vertical_range:
+					if (completed_strikes==0 or distance<config.retreat_trigger) and _safe_step(-facing):
+						_enter(State.RETREAT)
+					else:
+						_enter(State.WARNING)
 				else:
-					_walk(facing,config.approach_speed)
+					if distance>config.retreat_trigger:
+						_walk(facing,config.approach_speed)
 		State.RETREAT:
-			_walk(-facing,config.retreat_speed)
-			if timer <= 0:
+			if timer <= 0 or not _walk(-facing,config.retreat_speed):
 				_enter(State.WARNING)
 		State.WARNING:
 			if timer <= 0:
 				_enter(State.STRIKE)
 		State.STRIKE:
 			if timer <= 0 or not _walk(facing,config.strike_speed):
+				completed_strikes += 1
 				_enter(State.RECOVER)
 		State.RECOVER:
 			if timer <= 0:
@@ -76,16 +93,19 @@ func _physics_process(delta: float) -> void:
 	queue_redraw()
 
 func _walk(direction: float, speed: float) -> bool:
-	edge.position.x = direction*24
-	edge.force_raycast_update()
-	if not edge.is_colliding():
-		return false
-	velocity.x = direction*speed
-	# test_move uses the new direction, so a wall behind cannot block retreat.
-	if test_move(transform,Vector2(direction*5,0)):
+	if not _safe_step(direction):
 		velocity.x = 0
 		return false
+	velocity.x = direction*speed
 	return true
+
+func _safe_step(direction: float) -> bool:
+	edge.position.x = direction*24
+	edge.force_raycast_update()
+	if not edge.is_colliding() or absf(global_position.x+direction*24-home_x)>config.leash_distance:
+		return false
+	# test_move uses the new direction, so a wall behind cannot block retreat.
+	return not test_move(global_transform,Vector2(direction*5,0))
 
 func _enter(next: State) -> void:
 	state = next
@@ -127,9 +147,11 @@ func _clip(animation: StringName, duration := 0.0) -> void:
 
 func _on_damaged(_amount: int, _at: Vector2) -> void:
 	flash_left = 0.08
-	if health.current > 0:
+	if health.current > 0 and stagger.register_hit():
+		var remaining := timer if state==State.RECOVER else 0.0
 		_enter(State.RECOVER)
-		_clip("hurt",timer)
+		timer = maxf(config.hurt_seconds,remaining)
+		_clip("hurt",config.hurt_seconds)
 
 func _on_died() -> void:
 	_enter(State.DEAD)

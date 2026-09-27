@@ -1,6 +1,7 @@
 [
   {
     "file": "assets/characters/hero.png",
+    "usage_notes": "Original PNG unchanged. Wall-slide clip reuses frames 26/27; push-off reuses 29/24/26. These are assembled airborne poses, not a source-authored climbing animation.",
     "source_pack": "Godot 4《类银河恶魔城锻造坊》资源目录(1)",
     "source_relative_path": "ch_01_player_foundations/ch_01_player_foundations/hero.png",
     "sha256": "5b67dae534d3a66a8070e66d7d6bd10192a6c956a08945777432532ea1ca09c5",
@@ -355,5 +356,121 @@
     "source_url": "https://luizmelo.itch.io/hero-knight-2",
     "sha256": "86bc4419c54ffa22138811af0f75762095a9b8396901ab80fb33849567f12a52",
     "license_status": "Original CC0 declaration; commercial and non-commercial use permitted"
+  },
+  {
+    "file": "assets/characters/invoker_idle.png",
+    "usage_notes": "After player feedback, BellInvoker uses sprite scale 1.0 instead of 5/7 (40 percent larger), same (125,167) source feet anchor, nearest filtering. Original PNG unchanged.",
+    "source_pack": "EVil Wizard 2 by LuizMelo",
+    "source_relative_path": "Sprites/Idle.png",
+    "source_url": "https://luizmelo.itch.io/evil-wizard-2",
+    "sha256": "7f4e11902aeee4138621a1b2bd4f88709e1a3cf4239e221226e5f20a6eccc872",
+    "license_status": "CC0; see assets/licenses/invoker_license.txt"
+  },
+  {
+    "file": "assets/characters/invoker_run.png",
+    "source_pack": "EVil Wizard 2 by LuizMelo",
+    "source_relative_path": "Sprites/Run.png",
+    "source_url": "https://luizmelo.itch.io/evil-wizard-2",
+    "sha256": "7406381507b527dd6c930e3f43bdf6930520066a6c4a449e150da78638ac63a2",
+    "license_status": "CC0; see assets/licenses/invoker_license.txt"
+  },
+  {
+    "file": "assets/characters/invoker_attack1.png",
+    "usage_notes": "Original PNG unchanged. Ranged ground seal reuses frame 4 magic crop (176,48,64,97), source anchor (214,145), 5/7 scale; solid source polygon drives damage.",
+    "source_pack": "EVil Wizard 2 by LuizMelo",
+    "source_relative_path": "Sprites/Attack1.png",
+    "source_url": "https://luizmelo.itch.io/evil-wizard-2",
+    "sha256": "fba330fe3777e798c3bb9f0a980999c7cd425369912f61cb83e5a7d4cf67f0e4",
+    "license_status": "CC0; see assets/licenses/invoker_license.txt"
+  },
+  {
+    "file": "assets/characters/invoker_attack2.png",
+    "usage_notes": "Original PNG unchanged. Travelling toll reuses frame 5 magic crop (160,80,80,100), source anchor (207,131), 5/7 scale. Concave magic silhouette is decomposed before swept damage/world queries.",
+    "source_pack": "EVil Wizard 2 by LuizMelo",
+    "source_relative_path": "Sprites/Attack2.png",
+    "source_url": "https://luizmelo.itch.io/evil-wizard-2",
+    "sha256": "79fd38e6104877786e797e17bfafa578cfd60b553d03abef3e8ecfd2fc78ecec",
+    "license_status": "CC0; see assets/licenses/invoker_license.txt"
+  },
+  {
+    "file": "assets/characters/invoker_take_hit.png",
+    "source_pack": "EVil Wizard 2 by LuizMelo",
+    "source_relative_path": "Sprites/Take hit.png",
+    "source_url": "https://luizmelo.itch.io/evil-wizard-2",
+    "sha256": "222efd0919591a84e5ff6692c41b24a8ded77e8d5528969c384a559c902b3b7e",
+    "license_status": "CC0; see assets/licenses/invoker_license.txt"
+  },
+  {
+    "file": "assets/characters/invoker_death.png",
+    "source_pack": "EVil Wizard 2 by LuizMelo",
+    "source_relative_path": "Sprites/Death.png",
+    "source_url": "https://luizmelo.itch.io/evil-wizard-2",
+    "sha256": "6822972678531f06f17a0dbe2c7c68346e467d68067f3bf392f864a773c105f6",
+    "license_status": "CC0; see assets/licenses/invoker_license.txt"
+  },
+  {
+    "file": "assets/characters/skimmer_fly.png",
+    "source_pack": "Monsters Creatures Fantasy 2 by LuizMelo",
+    "source_relative_path": "Bat/fly.png",
+    "source_url": "https://luizmelo.itch.io/monsters-creatures-fantasy-2",
+    "sha256": "339a5acd82eff2dc765483dc2f75d7913247b68bed35257f43596dc3a26c7e5b",
+    "license_status": "CC0; see assets/licenses/skimmer_license.txt"
+  },
+  {
+    "file": "assets/characters/skimmer_attack.png",
+    "usage_notes": "Screech reuses attack frames 0-7 for charging and 8-9 for release. Three sound blades use original project-native drawing, not external images; the source pack does not claim a separate screech animation.",
+    "source_pack": "Monsters Creatures Fantasy 2 by LuizMelo",
+    "source_relative_path": "Bat/attack.png",
+    "source_url": "https://luizmelo.itch.io/monsters-creatures-fantasy-2",
+    "sha256": "3679999a79f26b9de02c5f9a3cbd46f9aaba8b86c4ab7b10baa7eb88dbe93e6a",
+    "license_status": "CC0; see assets/licenses/skimmer_license.txt"
+  },
+  {
+    "file": "assets/characters/skimmer_hurt.png",
+    "source_pack": "Monsters Creatures Fantasy 2 by LuizMelo",
+    "source_relative_path": "Bat/hurt.png",
+    "source_url": "https://luizmelo.itch.io/monsters-creatures-fantasy-2",
+    "sha256": "2f27932c4b665be5aae49e94660b90b89b7139f61475a0079a6c42599b69c51d",
+    "license_status": "CC0; see assets/licenses/skimmer_license.txt"
+  },
+  {
+    "file": "assets/characters/skimmer_fly_to_fall.png",
+    "source_pack": "Monsters Creatures Fantasy 2 by LuizMelo",
+    "source_relative_path": "Bat/fly-to-fall.png",
+    "source_url": "https://luizmelo.itch.io/monsters-creatures-fantasy-2",
+    "sha256": "80a577de738e270d5018136353402f0430768515396cf58c4f4a3396ca2ccda7",
+    "license_status": "CC0; see assets/licenses/skimmer_license.txt"
+  },
+  {
+    "file": "assets/characters/skimmer_fall.png",
+    "source_pack": "Monsters Creatures Fantasy 2 by LuizMelo",
+    "source_relative_path": "Bat/fall.png",
+    "source_url": "https://luizmelo.itch.io/monsters-creatures-fantasy-2",
+    "sha256": "2c49914e84ba4d0f688853f772e4ed2d23e2ce4766e83d60effcbdca52fd4b1a",
+    "license_status": "CC0; see assets/licenses/skimmer_license.txt"
+  },
+  {
+    "file": "assets/characters/skimmer_death.png",
+    "source_pack": "Monsters Creatures Fantasy 2 by LuizMelo",
+    "source_relative_path": "Bat/death.png",
+    "source_url": "https://luizmelo.itch.io/monsters-creatures-fantasy-2",
+    "sha256": "9b2a774d37ca5540cdfa16b810974e4938d7dbb90be969d3be5d3c9c1567167c",
+    "license_status": "CC0; see assets/licenses/skimmer_license.txt"
+  },
+  {
+    "file": "assets/licenses/invoker_license.txt",
+    "source_pack": "Evil Wizard 2 by LuizMelo",
+    "source_relative_path": "License.txt",
+    "source_url": "https://luizmelo.itch.io/evil-wizard-2",
+    "sha256": "87f82ace98b17a6a9cb906b525063d866a6fbe8baacf5cf73b7f90916982b626",
+    "license_status": "Original pack CC0 declaration"
+  },
+  {
+    "file": "assets/licenses/skimmer_license.txt",
+    "source_pack": "Monsters Creatures Fantasy 2",
+    "source_relative_path": "Project-authored provenance note",
+    "source_url": "https://luizmelo.itch.io/monsters-creatures-fantasy-2",
+    "sha256": "4a523bebeafa7640cd80d1a5affe757d7ae1ecd126c0ad0f1d0142bd20099525",
+    "license_status": "CC0 as stated on the original author page; provenance note"
   }
 ]

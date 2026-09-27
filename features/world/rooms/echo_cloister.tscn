@@ -1,0 +1,1066 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" path="res://features/world/room.gd" id="1_worah"]
+[ext_resource type="Script" path="res://features/world/bell_court_landmarks.gd" id="2_qwucj"]
+[ext_resource type="TileSet" path="res://features/world/cistern_tileset.tres" id="3_7hp3k"]
+[ext_resource type="Script" path="res://features/world/interaction.gd" id="4_3y5in"]
+[ext_resource type="Texture2D" path="res://assets/environment/forest.png" id="5_sf3ig"]
+[ext_resource type="Script" path="res://features/world/wall_echo_surface.gd" id="6_jea67"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dlcdf"]
+size = Vector2(32, 896)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_llk3h"]
+size = Vector2(32, 896)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2txer"]
+size = Vector2(32, 64)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nk46m"]
+size = Vector2(32, 160)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2ap13"]
+size = Vector2(32, 320)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jnaph"]
+size = Vector2(32, 320)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ycda3"]
+size = Vector2(32, 160)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qllc6"]
+size = Vector2(16, 256)
+
+[node name="EchoCloister" type="Node2D" unique_id=326941139]
+script = ExtResource("1_worah")
+room_id = "echo_cloister"
+display_name = "回音修院"
+bounds = Rect2(0, 0, 1024, 768)
+
+[node name="Sky" type="Node2D" parent="." unique_id=1183388321]
+script = ExtResource("2_qwucj")
+room_width = 1024.0
+theme = "cloister"
+z_index = -20
+
+[node name="Terrain" type="TileMapLayer" parent="." unique_id=1504415874]
+tile_map_data = PackedByteArray("AAAAABYAAAAZAAAAAAAAABcAAAAZAAIAAAABABYAAAAaAAAAAAABABcAAAAaAAIAAAACABYAAAAZAAAAAAACABcAAAAZAAIAAAADABYAAAAaAAAAAAADABcAAAAaAAIAAAAEABYAAAAZAAAAAAAEABcAAAAZAAIAAAAFABYAAAAaAAAAAAAFABcAAAAaAAIAAAAGABYAAAAZAAAAAAAGABcAAAAZAAIAAAAHABYAAAAaAAAAAAAHABcAAAAaAAIAAAAIABYAAAAZAAAAAAAIABcAAAAZAAIAAAAJABYAAAAaAAAAAAAJABcAAAAaAAIAAAAKABYAAAAZAAAAAAAKABcAAAAZAAIAAAALABYAAAAaAAAAAAALABcAAAAaAAIAAAAMABYAAAAZAAAAAAAMABcAAAAZAAIAAAANABYAAAAaAAAAAAANABcAAAAaAAIAAAAOABYAAAAZAAAAAAAOABcAAAAZAAIAAAAPABYAAAAaAAAAAAAPABcAAAAaAAIAAAAQABYAAAAZAAAAAAAQABcAAAAZAAIAAAARABYAAAAaAAAAAAARABcAAAAaAAIAAAASABYAAAAZAAAAAAASABcAAAAZAAIAAAATABYAAAAaAAAAAAATABcAAAAaAAIAAAAUABYAAAAZAAAAAAAUABcAAAAZAAIAAAAVABYAAAAaAAAAAAAVABcAAAAaAAIAAAAWABYAAAAZAAAAAAAWABcAAAAZAAIAAAAXABYAAAAaAAAAAAAXABcAAAAaAAIAAAAYABYAAAAZAAAAAAAYABcAAAAZAAIAAAAZABYAAAAaAAAAAAAZABcAAAAaAAIAAAAaABYAAAAZAAAAAAAaABcAAAAZAAIAAAAbABYAAAAaAAAAAAAbABcAAAAaAAIAAAAcABYAAAAZAAAAAAAcABcAAAAZAAIAAAAdABYAAAAaAAAAAAAdABcAAAAaAAIAAAAeABYAAAAZAAAAAAAeABcAAAAZAAIAAAAfABYAAAAaAAAAAAAfABcAAAAaAAIAAAAJABQAAAAaAAAAAAAJABUAAAAaAAIAAAAKABQAAAAZAAAAAAAKABUAAAAZAAIAAAALABQAAAAaAAAAAAALABUAAAAaAAIAAAAMABQAAAAZAAAAAAAMABUAAAAZAAIAAAANABQAAAAaAAAAAAANABUAAAAaAAIAAAAOABQAAAAZAAAAAAAOABUAAAAZAAIAAAAPABQAAAAaAAAAAAAPABUAAAAaAAIAAAAQABQAAAAZAAAAAAAQABUAAAAZAAIAAAARABQAAAAaAAAAAAARABUAAAAaAAIAAAASABQAAAAZAAAAAAASABUAAAAZAAIAAAADAA0AAAAaAAAAAAAEAA0AAAAZAAAAAAAFAA0AAAAaAAAAAAAGAA0AAAAZAAAAAAAHAA0AAAAaAAAAAAAIAA0AAAAZAAAAAAAJAA0AAAAaAAAAAAAKAA0AAAAZAAAAAAALAA0AAAAaAAAAAAAMAA0AAAAZAAAAAAANAA0AAAAaAAAAAAAIAAYAAAAZAAAAAAAJAAYAAAAaAAAAAAAKAAYAAAAZAAAAAAALAAYAAAAaAAAAAAAMAAYAAAAZAAAAAAANAAYAAAAaAAAAAAAOAAYAAAAZAAAAAAA=")
+tile_set = ExtResource("3_7hp3k")
+
+[node name="Spawns" type="Node2D" parent="." unique_id=569597304]
+
+[node name="entry" type="Marker2D" parent="Spawns" unique_id=1798551166]
+position = Vector2(96, 704)
+
+[node name="upper" type="Marker2D" parent="Spawns" unique_id=1924105136]
+position = Vector2(432, 192)
+
+[node name="checkpoint" type="Marker2D" parent="Spawns" unique_id=838279976]
+position = Vector2(176, 704)
+
+[node name="Interactions" type="Node2D" parent="." unique_id=1495721716]
+
+[node name="LowerReturn" type="Node2D" parent="Interactions" unique_id=331119285]
+position = Vector2(48, 704)
+script = ExtResource("4_3y5in")
+kind = "exit"
+target_room = "broken_bell_atrium"
+target_spawn = "cloister_lower"
+prompt = "向西 · 中庭下层"
+
+[node name="WallEcho" type="Node2D" parent="Interactions" unique_id=1900079939]
+position = Vector2(176, 704)
+script = ExtResource("4_3y5in")
+kind = "ability"
+stable_id = "wall_echo"
+prompt = "领取踏壁回响"
+
+[node name="UpperLatch" type="Node2D" parent="Interactions" unique_id=1777594553]
+position = Vector2(328, 192)
+script = ExtResource("4_3y5in")
+kind = "reward"
+stable_id = "wall_passage_open"
+prompt = "打开上层回闩"
+
+[node name="UpperReturn" type="Node2D" parent="Interactions" unique_id=1797094186]
+position = Vector2(448, 192)
+script = ExtResource("4_3y5in")
+kind = "exit"
+required_flag = "wall_passage_open"
+target_room = "broken_bell_atrium"
+target_spawn = "cloister_upper"
+prompt = "向右 · 中庭上层回桥"
+
+[node name="Lesson" type="Node2D" parent="Interactions" unique_id=594034008]
+position = Vector2(352, 640)
+script = ExtResource("4_3y5in")
+kind = "sign"
+prompt = "先跳向右侧刻槽墙，再连续点按跳跃；系统帮助蹬向对墙，不用来回切方向。宽台可休息。"
+
+[node name="Enemies" type="Node2D" parent="." unique_id=1112918216]
+
+[node name="Hazards" type="Node2D" parent="." unique_id=1579068812]
+
+[node name="Decor" type="Node2D" parent="." unique_id=1593251563]
+z_index = -2
+
+[node name="WestBoundary" type="StaticBody2D" parent="." unique_id=616172511]
+position = Vector2(-32, -64)
+
+[node name="Collision" type="CollisionShape2D" parent="WestBoundary" unique_id=2046201216]
+position = Vector2(16, 448)
+shape = SubResource("RectangleShape2D_dlcdf")
+
+[node name="Art" type="Node2D" parent="WestBoundary" unique_id=503611057]
+
+[node name="Stone0" type="Sprite2D" parent="WestBoundary/Art" unique_id=1207072802]
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone32" type="Sprite2D" parent="WestBoundary/Art" unique_id=1765237146]
+position = Vector2(0, 32)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone64" type="Sprite2D" parent="WestBoundary/Art" unique_id=171543403]
+position = Vector2(0, 64)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone96" type="Sprite2D" parent="WestBoundary/Art" unique_id=1752759587]
+position = Vector2(0, 96)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone128" type="Sprite2D" parent="WestBoundary/Art" unique_id=86459814]
+position = Vector2(0, 128)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone160" type="Sprite2D" parent="WestBoundary/Art" unique_id=656272551]
+position = Vector2(0, 160)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone192" type="Sprite2D" parent="WestBoundary/Art" unique_id=603133064]
+position = Vector2(0, 192)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone224" type="Sprite2D" parent="WestBoundary/Art" unique_id=430998971]
+position = Vector2(0, 224)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone256" type="Sprite2D" parent="WestBoundary/Art" unique_id=1521410580]
+position = Vector2(0, 256)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone288" type="Sprite2D" parent="WestBoundary/Art" unique_id=1582492366]
+position = Vector2(0, 288)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone320" type="Sprite2D" parent="WestBoundary/Art" unique_id=934732936]
+position = Vector2(0, 320)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone352" type="Sprite2D" parent="WestBoundary/Art" unique_id=807291018]
+position = Vector2(0, 352)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone384" type="Sprite2D" parent="WestBoundary/Art" unique_id=1932153177]
+position = Vector2(0, 384)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone416" type="Sprite2D" parent="WestBoundary/Art" unique_id=938891841]
+position = Vector2(0, 416)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone448" type="Sprite2D" parent="WestBoundary/Art" unique_id=1409546161]
+position = Vector2(0, 448)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone480" type="Sprite2D" parent="WestBoundary/Art" unique_id=681229238]
+position = Vector2(0, 480)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone512" type="Sprite2D" parent="WestBoundary/Art" unique_id=2018582236]
+position = Vector2(0, 512)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone544" type="Sprite2D" parent="WestBoundary/Art" unique_id=1958131364]
+position = Vector2(0, 544)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone576" type="Sprite2D" parent="WestBoundary/Art" unique_id=1395182312]
+position = Vector2(0, 576)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone608" type="Sprite2D" parent="WestBoundary/Art" unique_id=1789848540]
+position = Vector2(0, 608)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone640" type="Sprite2D" parent="WestBoundary/Art" unique_id=1117989607]
+position = Vector2(0, 640)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone672" type="Sprite2D" parent="WestBoundary/Art" unique_id=537917578]
+position = Vector2(0, 672)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone704" type="Sprite2D" parent="WestBoundary/Art" unique_id=679008522]
+position = Vector2(0, 704)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone736" type="Sprite2D" parent="WestBoundary/Art" unique_id=1089549102]
+position = Vector2(0, 736)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone768" type="Sprite2D" parent="WestBoundary/Art" unique_id=664590594]
+position = Vector2(0, 768)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone800" type="Sprite2D" parent="WestBoundary/Art" unique_id=2072291982]
+position = Vector2(0, 800)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone832" type="Sprite2D" parent="WestBoundary/Art" unique_id=516078102]
+position = Vector2(0, 832)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone864" type="Sprite2D" parent="WestBoundary/Art" unique_id=1517188356]
+position = Vector2(0, 864)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="EastBoundary" type="StaticBody2D" parent="." unique_id=385216673]
+position = Vector2(1024, -64)
+
+[node name="Collision" type="CollisionShape2D" parent="EastBoundary" unique_id=587883852]
+position = Vector2(16, 448)
+shape = SubResource("RectangleShape2D_llk3h")
+
+[node name="Art" type="Node2D" parent="EastBoundary" unique_id=634841731]
+
+[node name="Stone0" type="Sprite2D" parent="EastBoundary/Art" unique_id=1829684611]
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone32" type="Sprite2D" parent="EastBoundary/Art" unique_id=1618298468]
+position = Vector2(0, 32)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone64" type="Sprite2D" parent="EastBoundary/Art" unique_id=1947750633]
+position = Vector2(0, 64)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone96" type="Sprite2D" parent="EastBoundary/Art" unique_id=1489706133]
+position = Vector2(0, 96)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone128" type="Sprite2D" parent="EastBoundary/Art" unique_id=1616635996]
+position = Vector2(0, 128)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone160" type="Sprite2D" parent="EastBoundary/Art" unique_id=249094071]
+position = Vector2(0, 160)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone192" type="Sprite2D" parent="EastBoundary/Art" unique_id=1055384759]
+position = Vector2(0, 192)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone224" type="Sprite2D" parent="EastBoundary/Art" unique_id=1392860984]
+position = Vector2(0, 224)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone256" type="Sprite2D" parent="EastBoundary/Art" unique_id=31135241]
+position = Vector2(0, 256)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone288" type="Sprite2D" parent="EastBoundary/Art" unique_id=151157314]
+position = Vector2(0, 288)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone320" type="Sprite2D" parent="EastBoundary/Art" unique_id=23983694]
+position = Vector2(0, 320)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone352" type="Sprite2D" parent="EastBoundary/Art" unique_id=1259227017]
+position = Vector2(0, 352)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone384" type="Sprite2D" parent="EastBoundary/Art" unique_id=1238218458]
+position = Vector2(0, 384)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone416" type="Sprite2D" parent="EastBoundary/Art" unique_id=749477179]
+position = Vector2(0, 416)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone448" type="Sprite2D" parent="EastBoundary/Art" unique_id=62083332]
+position = Vector2(0, 448)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone480" type="Sprite2D" parent="EastBoundary/Art" unique_id=723708424]
+position = Vector2(0, 480)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone512" type="Sprite2D" parent="EastBoundary/Art" unique_id=111739470]
+position = Vector2(0, 512)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone544" type="Sprite2D" parent="EastBoundary/Art" unique_id=1031097585]
+position = Vector2(0, 544)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone576" type="Sprite2D" parent="EastBoundary/Art" unique_id=1025432028]
+position = Vector2(0, 576)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone608" type="Sprite2D" parent="EastBoundary/Art" unique_id=39666363]
+position = Vector2(0, 608)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone640" type="Sprite2D" parent="EastBoundary/Art" unique_id=1887303103]
+position = Vector2(0, 640)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone672" type="Sprite2D" parent="EastBoundary/Art" unique_id=850747457]
+position = Vector2(0, 672)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone704" type="Sprite2D" parent="EastBoundary/Art" unique_id=1334163468]
+position = Vector2(0, 704)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone736" type="Sprite2D" parent="EastBoundary/Art" unique_id=560903357]
+position = Vector2(0, 736)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone768" type="Sprite2D" parent="EastBoundary/Art" unique_id=872361958]
+position = Vector2(0, 768)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone800" type="Sprite2D" parent="EastBoundary/Art" unique_id=119242852]
+position = Vector2(0, 800)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone832" type="Sprite2D" parent="EastBoundary/Art" unique_id=162636013]
+position = Vector2(0, 832)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone864" type="Sprite2D" parent="EastBoundary/Art" unique_id=1637896083]
+position = Vector2(0, 864)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="LowLesson" type="StaticBody2D" parent="." unique_id=2048277959]
+position = Vector2(256, 640)
+script = ExtResource("6_jea67")
+surface_id = &"lesson_wall"
+
+[node name="Collision" type="CollisionShape2D" parent="LowLesson" unique_id=17850832]
+position = Vector2(16, 32)
+shape = SubResource("RectangleShape2D_2txer")
+
+[node name="Art" type="Node2D" parent="LowLesson" unique_id=873735586]
+
+[node name="Stone0" type="Sprite2D" parent="LowLesson/Art" unique_id=309637441]
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone32" type="Sprite2D" parent="LowLesson/Art" unique_id=1161093403]
+position = Vector2(0, 32)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Groove10" type="Line2D" parent="LowLesson/Art" unique_id=1419507232]
+points = PackedVector2Array(7, 10, 25, 10)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove34" type="Line2D" parent="LowLesson/Art" unique_id=419276383]
+points = PackedVector2Array(7, 34, 25, 34)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove58" type="Line2D" parent="LowLesson/Art" unique_id=513492273]
+points = PackedVector2Array(7, 58, 25, 58)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="FirstLeft" type="StaticBody2D" parent="." unique_id=238794963]
+position = Vector2(416, 416)
+script = ExtResource("6_jea67")
+surface_id = &"cloister_first_left"
+
+[node name="Collision" type="CollisionShape2D" parent="FirstLeft" unique_id=23574325]
+position = Vector2(16, 80)
+shape = SubResource("RectangleShape2D_nk46m")
+
+[node name="Art" type="Node2D" parent="FirstLeft" unique_id=873248208]
+
+[node name="Stone0" type="Sprite2D" parent="FirstLeft/Art" unique_id=35622884]
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone32" type="Sprite2D" parent="FirstLeft/Art" unique_id=1797528481]
+position = Vector2(0, 32)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone64" type="Sprite2D" parent="FirstLeft/Art" unique_id=1014236174]
+position = Vector2(0, 64)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone96" type="Sprite2D" parent="FirstLeft/Art" unique_id=1352519990]
+position = Vector2(0, 96)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone128" type="Sprite2D" parent="FirstLeft/Art" unique_id=1933212018]
+position = Vector2(0, 128)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Groove10" type="Line2D" parent="FirstLeft/Art" unique_id=1725207033]
+points = PackedVector2Array(7, 10, 25, 10)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove34" type="Line2D" parent="FirstLeft/Art" unique_id=1758544314]
+points = PackedVector2Array(7, 34, 25, 34)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove58" type="Line2D" parent="FirstLeft/Art" unique_id=1198203540]
+points = PackedVector2Array(7, 58, 25, 58)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove82" type="Line2D" parent="FirstLeft/Art" unique_id=1994948626]
+points = PackedVector2Array(7, 82, 25, 82)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove106" type="Line2D" parent="FirstLeft/Art" unique_id=706832133]
+points = PackedVector2Array(7, 106, 25, 106)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove130" type="Line2D" parent="FirstLeft/Art" unique_id=571386468]
+points = PackedVector2Array(7, 130, 25, 130)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove154" type="Line2D" parent="FirstLeft/Art" unique_id=811617091]
+points = PackedVector2Array(7, 154, 25, 154)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="FirstRight" type="StaticBody2D" parent="." unique_id=2016852788]
+position = Vector2(576, 320)
+script = ExtResource("6_jea67")
+surface_id = &"cloister_first_right"
+
+[node name="Collision" type="CollisionShape2D" parent="FirstRight" unique_id=13566495]
+position = Vector2(16, 160)
+shape = SubResource("RectangleShape2D_2ap13")
+
+[node name="Art" type="Node2D" parent="FirstRight" unique_id=645173620]
+
+[node name="Stone0" type="Sprite2D" parent="FirstRight/Art" unique_id=1284002306]
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone32" type="Sprite2D" parent="FirstRight/Art" unique_id=55914818]
+position = Vector2(0, 32)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone64" type="Sprite2D" parent="FirstRight/Art" unique_id=363889324]
+position = Vector2(0, 64)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone96" type="Sprite2D" parent="FirstRight/Art" unique_id=315835514]
+position = Vector2(0, 96)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone128" type="Sprite2D" parent="FirstRight/Art" unique_id=2003314707]
+position = Vector2(0, 128)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone160" type="Sprite2D" parent="FirstRight/Art" unique_id=1136951880]
+position = Vector2(0, 160)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone192" type="Sprite2D" parent="FirstRight/Art" unique_id=1941979887]
+position = Vector2(0, 192)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone224" type="Sprite2D" parent="FirstRight/Art" unique_id=1869318200]
+position = Vector2(0, 224)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone256" type="Sprite2D" parent="FirstRight/Art" unique_id=2026114093]
+position = Vector2(0, 256)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone288" type="Sprite2D" parent="FirstRight/Art" unique_id=2145037893]
+position = Vector2(0, 288)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Groove10" type="Line2D" parent="FirstRight/Art" unique_id=660756728]
+points = PackedVector2Array(7, 10, 25, 10)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove34" type="Line2D" parent="FirstRight/Art" unique_id=1620478810]
+points = PackedVector2Array(7, 34, 25, 34)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove58" type="Line2D" parent="FirstRight/Art" unique_id=1099197768]
+points = PackedVector2Array(7, 58, 25, 58)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove82" type="Line2D" parent="FirstRight/Art" unique_id=90527072]
+points = PackedVector2Array(7, 82, 25, 82)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove106" type="Line2D" parent="FirstRight/Art" unique_id=1381840895]
+points = PackedVector2Array(7, 106, 25, 106)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove130" type="Line2D" parent="FirstRight/Art" unique_id=1765968149]
+points = PackedVector2Array(7, 130, 25, 130)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove154" type="Line2D" parent="FirstRight/Art" unique_id=16784953]
+points = PackedVector2Array(7, 154, 25, 154)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove178" type="Line2D" parent="FirstRight/Art" unique_id=1335187735]
+points = PackedVector2Array(7, 178, 25, 178)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove202" type="Line2D" parent="FirstRight/Art" unique_id=1770499422]
+points = PackedVector2Array(7, 202, 25, 202)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove226" type="Line2D" parent="FirstRight/Art" unique_id=270357490]
+points = PackedVector2Array(7, 226, 25, 226)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove250" type="Line2D" parent="FirstRight/Art" unique_id=508203864]
+points = PackedVector2Array(7, 250, 25, 250)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove274" type="Line2D" parent="FirstRight/Art" unique_id=291662273]
+points = PackedVector2Array(7, 274, 25, 274)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove298" type="Line2D" parent="FirstRight/Art" unique_id=998848750]
+points = PackedVector2Array(7, 298, 25, 298)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="SecondLeft" type="StaticBody2D" parent="." unique_id=967828507]
+position = Vector2(96, 96)
+script = ExtResource("6_jea67")
+surface_id = &"cloister_second_left"
+
+[node name="Collision" type="CollisionShape2D" parent="SecondLeft" unique_id=1044579184]
+position = Vector2(16, 160)
+shape = SubResource("RectangleShape2D_jnaph")
+
+[node name="Art" type="Node2D" parent="SecondLeft" unique_id=69169583]
+
+[node name="Stone0" type="Sprite2D" parent="SecondLeft/Art" unique_id=1931633363]
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone32" type="Sprite2D" parent="SecondLeft/Art" unique_id=1317020861]
+position = Vector2(0, 32)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone64" type="Sprite2D" parent="SecondLeft/Art" unique_id=966064844]
+position = Vector2(0, 64)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone96" type="Sprite2D" parent="SecondLeft/Art" unique_id=518260149]
+position = Vector2(0, 96)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone128" type="Sprite2D" parent="SecondLeft/Art" unique_id=1850418034]
+position = Vector2(0, 128)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone160" type="Sprite2D" parent="SecondLeft/Art" unique_id=768979982]
+position = Vector2(0, 160)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone192" type="Sprite2D" parent="SecondLeft/Art" unique_id=1032876475]
+position = Vector2(0, 192)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone224" type="Sprite2D" parent="SecondLeft/Art" unique_id=198015062]
+position = Vector2(0, 224)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone256" type="Sprite2D" parent="SecondLeft/Art" unique_id=380282468]
+position = Vector2(0, 256)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone288" type="Sprite2D" parent="SecondLeft/Art" unique_id=633106766]
+position = Vector2(0, 288)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Groove10" type="Line2D" parent="SecondLeft/Art" unique_id=542328751]
+points = PackedVector2Array(7, 10, 25, 10)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove34" type="Line2D" parent="SecondLeft/Art" unique_id=1757932241]
+points = PackedVector2Array(7, 34, 25, 34)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove58" type="Line2D" parent="SecondLeft/Art" unique_id=1540092210]
+points = PackedVector2Array(7, 58, 25, 58)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove82" type="Line2D" parent="SecondLeft/Art" unique_id=264561726]
+points = PackedVector2Array(7, 82, 25, 82)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove106" type="Line2D" parent="SecondLeft/Art" unique_id=1740875970]
+points = PackedVector2Array(7, 106, 25, 106)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove130" type="Line2D" parent="SecondLeft/Art" unique_id=759317917]
+points = PackedVector2Array(7, 130, 25, 130)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove154" type="Line2D" parent="SecondLeft/Art" unique_id=2048451964]
+points = PackedVector2Array(7, 154, 25, 154)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove178" type="Line2D" parent="SecondLeft/Art" unique_id=1188273368]
+points = PackedVector2Array(7, 178, 25, 178)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove202" type="Line2D" parent="SecondLeft/Art" unique_id=1547022742]
+points = PackedVector2Array(7, 202, 25, 202)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove226" type="Line2D" parent="SecondLeft/Art" unique_id=901256097]
+points = PackedVector2Array(7, 226, 25, 226)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove250" type="Line2D" parent="SecondLeft/Art" unique_id=33343661]
+points = PackedVector2Array(7, 250, 25, 250)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove274" type="Line2D" parent="SecondLeft/Art" unique_id=1591023657]
+points = PackedVector2Array(7, 274, 25, 274)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove298" type="Line2D" parent="SecondLeft/Art" unique_id=1568308203]
+points = PackedVector2Array(7, 298, 25, 298)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="SecondRight" type="StaticBody2D" parent="." unique_id=986457616]
+position = Vector2(256, 192)
+script = ExtResource("6_jea67")
+surface_id = &"cloister_second_right"
+
+[node name="Collision" type="CollisionShape2D" parent="SecondRight" unique_id=1402008607]
+position = Vector2(16, 80)
+shape = SubResource("RectangleShape2D_ycda3")
+
+[node name="Art" type="Node2D" parent="SecondRight" unique_id=139748331]
+
+[node name="Stone0" type="Sprite2D" parent="SecondRight/Art" unique_id=897488211]
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone32" type="Sprite2D" parent="SecondRight/Art" unique_id=1794803566]
+position = Vector2(0, 32)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone64" type="Sprite2D" parent="SecondRight/Art" unique_id=1286774609]
+position = Vector2(0, 64)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone96" type="Sprite2D" parent="SecondRight/Art" unique_id=1826405397]
+position = Vector2(0, 96)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone128" type="Sprite2D" parent="SecondRight/Art" unique_id=330142543]
+position = Vector2(0, 128)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Groove10" type="Line2D" parent="SecondRight/Art" unique_id=833279436]
+points = PackedVector2Array(7, 10, 25, 10)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove34" type="Line2D" parent="SecondRight/Art" unique_id=358947053]
+points = PackedVector2Array(7, 34, 25, 34)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove58" type="Line2D" parent="SecondRight/Art" unique_id=235280127]
+points = PackedVector2Array(7, 58, 25, 58)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove82" type="Line2D" parent="SecondRight/Art" unique_id=1490402690]
+points = PackedVector2Array(7, 82, 25, 82)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove106" type="Line2D" parent="SecondRight/Art" unique_id=758605978]
+points = PackedVector2Array(7, 106, 25, 106)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove130" type="Line2D" parent="SecondRight/Art" unique_id=889996943]
+points = PackedVector2Array(7, 130, 25, 130)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="Groove154" type="Line2D" parent="SecondRight/Art" unique_id=1896839379]
+points = PackedVector2Array(7, 154, 25, 154)
+width = 3.0
+default_color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+
+[node name="ReturnGate" type="StaticBody2D" parent="." unique_id=1809796175]
+position = Vector2(384, -64)
+
+[node name="Collision" type="CollisionShape2D" parent="ReturnGate" unique_id=2006474276]
+position = Vector2(8, 128)
+shape = SubResource("RectangleShape2D_qllc6")
+
+[node name="Art" type="Node2D" parent="ReturnGate" unique_id=128666487]
+
+[node name="Stone0" type="Sprite2D" parent="ReturnGate/Art" unique_id=1266288154]
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 16, 32)
+
+[node name="Stone32" type="Sprite2D" parent="ReturnGate/Art" unique_id=135063435]
+position = Vector2(0, 32)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 16, 32)
+
+[node name="Stone64" type="Sprite2D" parent="ReturnGate/Art" unique_id=1024893942]
+position = Vector2(0, 64)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 16, 32)
+
+[node name="Stone96" type="Sprite2D" parent="ReturnGate/Art" unique_id=254475272]
+position = Vector2(0, 96)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 16, 32)
+
+[node name="Stone128" type="Sprite2D" parent="ReturnGate/Art" unique_id=883977403]
+position = Vector2(0, 128)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 16, 32)
+
+[node name="Stone160" type="Sprite2D" parent="ReturnGate/Art" unique_id=2016212297]
+position = Vector2(0, 160)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 16, 32)
+
+[node name="Stone192" type="Sprite2D" parent="ReturnGate/Art" unique_id=275261949]
+position = Vector2(0, 192)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 16, 32)
+
+[node name="Stone224" type="Sprite2D" parent="ReturnGate/Art" unique_id=1906193407]
+position = Vector2(0, 224)
+texture = ExtResource("5_sf3ig")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 16, 32)

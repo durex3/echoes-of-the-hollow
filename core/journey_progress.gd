@@ -4,9 +4,11 @@ extends RefCounted
 
 static func objective(abilities: Array[String], flags: Array[String], visited: Array[String]) -> String:
 	if "cistern_restored" in flags:
+		if "furnace_keeper_defeated" not in flags:
+			return "Cistern restored / Face the Furnace Keeper"
 		return "Cistern restored / Both chapters open to explore"
 	if "furnace_keeper_defeated" in flags:
-		return "Keeper defeated / Enter the central door"
+		return "Keeper defeated / Enter the right-hand door"
 	if "journey_restored" in flags:
 		if "ember_quay" not in visited:
 			return "Chapter II / Beyond the heart chamber"

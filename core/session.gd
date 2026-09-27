@@ -58,7 +58,8 @@ func commit() -> Error:
 	return Repository.write(save_path, snapshot())
 
 func maximum_health() -> int:
-	return 5 + int("heart_bloom" in flags) + int("cistern_heart" in flags)
+	# The retired cistern heart grants ward eligibility, not another vitality point.
+	return 5 + int("heart_bloom" in flags)
 
 func unlock(ability: String) -> void:
 	if ability not in abilities:

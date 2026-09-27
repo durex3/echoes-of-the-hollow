@@ -69,7 +69,7 @@ static func migrate(data: Variant) -> Variant:
 	if migrated.get("version") == 1:
 		migrated.version = VERSION
 		migrated.flags = []
-	# Additive, idempotent upgrade for validated 0.12 saves. Preserve earned HP.
+	# Additive, idempotent upgrade for validated 0.12 saves. The old mark grants ward only.
 	if validate(migrated) and "cistern_heart" in migrated.flags and "steam_ward" not in migrated.abilities:
 		migrated.abilities.append("steam_ward")
 	return migrated

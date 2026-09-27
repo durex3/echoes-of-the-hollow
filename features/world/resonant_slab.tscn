@@ -1,0 +1,18 @@
+[gd_scene load_steps=5 format=3]
+[ext_resource type="Script" path="res://features/world/resonant_slab.gd" id="1"]
+[ext_resource type="Resource" path="res://features/world/resonant_slab_config.tres" id="2"]
+[ext_resource type="Script" path="res://features/enemies/bell_frame_strike.gd" id="3"]
+[sub_resource type="RectangleShape2D" id="trigger"]
+size = Vector2(64, 8)
+[node name="ResonantSlab" type="Node2D"]
+script = ExtResource("1")
+config = ExtResource("2")
+[node name="Trigger" type="Area2D" parent="."]
+position = Vector2(0, -3)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+[node name="Shape" type="CollisionShape2D" parent="Trigger"]
+shape = SubResource("trigger")
+[node name="Strike" type="Node2D" parent="."]
+script = ExtResource("3")

@@ -189,7 +189,7 @@ func run(h: Node, game: Node) -> void:
 	old.flags.append("cistern_heart")
 	var migrated: Dictionary = SaveRepository.migrate(old)
 	h.check("steam_ward" not in old.abilities and migrated.abilities.count("steam_ward") == 1 and "cistern_heart" in migrated.flags and SaveRepository.migrate(migrated) == migrated, "Legacy heart migration is additive, pure and idempotent")
-	h.check(SaveRepository.write(Session.save_path,old) == OK and Session.restore() and Session.maximum_health() == max_hp+1 and "steam_ward" in Session.abilities, "Valid legacy save restores earned HP and adds skill")
+	h.check(SaveRepository.write(Session.save_path,old) == OK and Session.restore() and Session.maximum_health() == max_hp and "steam_ward" in Session.abilities, "Valid legacy save grants the shield without an extra maximum-health point")
 	game.load_room("echo_vault","checkpoint")
 	h.check(not game.room.get_node("Interactions/Heart").visible, "Migrated legacy reward cannot be collected twice")
 	old.version = 999

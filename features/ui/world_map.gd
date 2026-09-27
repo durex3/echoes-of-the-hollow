@@ -69,7 +69,7 @@ func mark_summary() -> String:
 
 func target_room() -> String:
 	if "cistern_restored" in flags:
-		return ""
+		return "" if "furnace_keeper_defeated" in flags else "furnace_core"
 	if "journey_restored" in flags:
 		if "ember_quay" not in visited:
 			return "heart_chamber"

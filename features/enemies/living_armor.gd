@@ -10,12 +10,16 @@ enum State { PATROL, CHASE, WINDUP, STRIKE, RECOVER, HURT, DEAD }
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var attack_box: Hitbox = $AttackBox
 @onready var edge: RayCast2D = $Edge
+@onready var stagger: EnemyStagger = $Stagger
 var target: Player
 var state := State.PATROL
 var facing := -1.0
 var home_x := 0.0
 var timer := 0.0
 var flash_left := 0.0
+var last_seen_x := 0.0
+var search_left := 0.0
+var recovery_after_hurt := 0.0
 
 func _ready() -> void:
 	home_x = position.x
@@ -42,6 +46,9 @@ func _physics_process(delta: float) -> void:
 	timer = maxf(0, timer - delta)
 	flash_left = maxf(0, flash_left - delta)
 	velocity.y = minf(velocity.y + 1600 * delta, 950)
+	velocity.x = 0 if state!=State.HURT else velocity.x
+	if state in [State.WINDUP,State.STRIKE] and (not is_instance_valid(target) or target.state==Player.State.DEAD):
+		_enter(State.RECOVER)
 	match state:
 		State.PATROL:
 			if can_see_target():
@@ -51,8 +58,16 @@ func _physics_process(delta: float) -> void:
 			_walk(config.patrol_speed)
 		State.CHASE:
 			if not can_see_target():
-				_enter(State.PATROL)
+				search_left = maxf(0,search_left-delta)
+				if search_left>0 and is_instance_valid(target) and target.state!=Player.State.DEAD and absf(last_seen_x-global_position.x)>8:
+					facing = signf(last_seen_x-global_position.x)
+					_walk(config.chase_speed)
+				else:
+					facing = signf(home_x-position.x) if absf(home_x-position.x)>8 else facing
+					_enter(State.PATROL)
 			else:
+				last_seen_x = target.global_position.x
+				search_left = config.search_seconds
 				facing = -1.0 if target.global_position.x < global_position.x else 1.0
 				if absf(target.global_position.x-global_position.x) <= config.attack_range:
 					_enter(State.WINDUP)
@@ -73,7 +88,11 @@ func _physics_process(delta: float) -> void:
 		State.HURT:
 			velocity.x = move_toward(velocity.x, 0, delta * 650)
 			if timer <= 0:
-				_enter(State.RECOVER)
+				if recovery_after_hurt>0:
+					_enter(State.RECOVER)
+					timer = recovery_after_hurt
+				else:
+					_enter(State.PATROL)
 	move_and_slide()
 	# Source armor faces left; body/attack direction stays independent of artwork.
 	sprite.flip_h = facing > 0
@@ -83,12 +102,15 @@ func _physics_process(delta: float) -> void:
 func _walk(speed: float) -> void:
 	edge.position.x = facing * 19
 	edge.force_raycast_update()
-	if is_on_floor() and (not edge.is_colliding() or is_on_wall()):
+	var outside := absf(position.x+facing*19-home_x)>config.leash_distance
+	if is_on_floor() and (not edge.is_colliding() or test_move(global_transform,Vector2(facing*5,0)) or outside):
 		velocity.x = 0
 		if state == State.PATROL:
 			facing *= -1
+		sprite.pause()
 		return
 	velocity.x = facing * speed
+	sprite.play("walk")
 
 func _enter(next: State) -> void:
 	state = next
@@ -129,8 +151,11 @@ func _play_clip(animation: StringName, duration := 0.0) -> void:
 
 func _on_damage(_amount: int, at: Vector2) -> void:
 	flash_left = 0.08
+	if not stagger.register_hit():
+		return
 	# Telegraphs remain readable; recovery is the safe interruption opportunity.
 	if state in [State.PATROL, State.CHASE, State.RECOVER, State.HURT]:
+		recovery_after_hurt = timer if state==State.RECOVER else 0.0
 		_enter(State.HURT)
 		velocity.x = 115 * (-1 if at.x > global_position.x else 1)
 

@@ -1,5 +1,9 @@
 # Skill 如何落实到工程
 
+2026-09-27第三关前半段实现：create-game-assets先核对原包/许可与固定锚点，再导入12张原图并查看实际800×450左右攻击截图；godot-animation/godot-physics把状态、显示帧、凹形法术查询及身体去重统一到物理时钟；game-ai分别实现杖使双式和蝙蝠锁旧站位/低位收招；level-design根据实测把压力竖井拆成两段224px、每段3次壁跃与中继平台；godot-tilemap/godot-nodes-scenes保存五个可编辑房间、稳定门/出生点和独立试玩宿主。见[tasks/chapter_three_preview.md](tasks/chapter_three_preview.md)。没有为了套用skill引入新框架；图形初版和真人难度仍需反馈。
+
+2026-09-27第三关设计：level-design落实移动指标/白盒/能力回环与休整；game-design-theory落实新能力与生命奖励、选择和渐进掌握；game-ai约束两敌/Boss的读招、锁向和组合窗口；create-game-assets只读盘点课程素材并明确完整动作缺口；save-systems将环境修复、能力、机关、生命与Boss胜利分开。方案见[tasks/chapter_three.md](tasks/chapter_three.md)，未把设计或候选数值标成已实现。第二关旧档修复使用save-systems与godot-gdscript，验证真实旧进度的首领出场和隔离存档回归。
+
 2026-09-27：create-game-assets用于外部骑士的许可/摘要、接触表和实景比例审核；godot-animation将原图动作绑定到伤害阶段并保留逐次按键左右手交替；godot-shaders用于蓄力染色、轮廓光和残影，校验Nearest与暗部细节；godot-physics核对身体接触、护盾去重、薄墙扫掠和火墙高台判定。game-ai与level-design用于两种独立Boss节奏、固定战斗房及门/地图一致性。工程经验已归入[执行规则](../AGENTS.md)与[开发复盘](development_lessons.md)。
 
 0.14.0：`level-design` 用现有玩家跳高与速度限定低裂焰、标记预警和休整窗口；`game-ai` 用有限状态明确预警/施法/泄压/转阶段，保证反击读得懂；`create-game-assets` 核验同课程图源、登记摘要和游戏内选帧；`godot-animation` 将动作帧速度匹配状态时间；`godot-gdscript` 与 `godot-nodes-scenes` 保证物理帧状态、独立原生场景、父场景接线。验证使用真实碰撞、两条正常输入主线、隔离存档和视觉截图。
@@ -33,6 +37,8 @@
 | godot-export | Windows 预设、固定引擎、CLI 检查 | 导出包测试尚待执行 |
 
 其他已安装但与当前任务无关的技能不强行加入工程；需求出现时再读取和应用。
+
+2026-09-27第三关首轮落地：level-design要求先实测移动再定几何，完成旧能力与壁跃指标、原生回环白盒和九房间视线/教学/组合/休整/捷径规格；game-ai用于杖使双式与飞行掠袭的独立FSM和安全组合设计，尚未冒称敌人已实现。godot-gdscript、godot-2d-movement、godot-nodes-scenes落实Player组件、物理碰撞法线、只读Resource和明确墙标记；create-game-assets保持原包、完整帧核验与实际显示尺度。全量回归通过，正式关卡及真人难度待后续验证。
 
 0.13.1：godot-gdscript为Hurtbox定义明确的IGNORED/DAMAGED/BLOCKED结果，Hitbox对挡住的同次挥击去重；godot-signals-groups保持Player组合并接入自身防护回调、damage_blocked表示已发生的抵挡、伤害反馈仅在实际扣血时发出。粉焰剑士/宝箱/墨弹真实场景验证，不以检查技能函数返回值替代玩法回归。
 

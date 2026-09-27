@@ -13,6 +13,7 @@ enum State { MOVE, ATTACK, HURT, DEAD, DASH }
 @onready var slash: PlayerSlash = $Visual/Slash
 @onready var effects: PlayerVisualEffects = $VisualEffects
 @onready var steam_ward: SteamWard = $SteamWard
+@onready var wall_echo: WallEcho = $WallEcho
 var ward_held := false
 var state := State.MOVE
 var facing := 1.0
@@ -40,12 +41,14 @@ func _ready() -> void:
 	health.restore_full()
 	health.damaged.connect(_on_damaged)
 	health.died.connect(_on_died)
+	wall_echo.jumped.connect(effects.show_wall_push)
 	attack_box.impact.connect(func(at: Vector2, defeated: bool) -> void: impact.emit(at, defeated))
 
 func _physics_process(delta: float) -> void:
 	_publish_dash_status()
 	if state == State.DEAD:
 		return
+	wall_echo.advance(delta, self, "wall_echo" in Session.abilities and state == State.MOVE)
 	steam_ward.advance(delta)
 	# Discrete actions require a fresh press after menus, even if held during resume.
 	if not input_armed:
@@ -74,6 +77,8 @@ func _physics_process(delta: float) -> void:
 			air_dash_used = false
 	if jump_pressed:
 		buffer_left = config.buffer_seconds
+		if "wall_echo" in Session.abilities and (wall_echo.can_jump() or wall_echo.approaching_surface(self)):
+			buffer_left = wall_echo.config.jump_buffer_seconds
 	var direction := Input.get_axis("move_left", "move_right")
 	if state == State.MOVE and dash_pressed and "dash" in Session.abilities and dash_cooldown_left <= 0 and not air_dash_used:
 		if direction != 0:
@@ -85,6 +90,7 @@ func _physics_process(delta: float) -> void:
 		buffer_left = 0
 		coyote_left = 0
 	if state == State.DASH:
+		wall_echo.interrupt()
 		var step := minf(delta, dash_left)
 		velocity = Vector2(facing * config.dash_speed * step / delta, 0)
 		move_and_slide()
@@ -111,13 +117,24 @@ func _physics_process(delta: float) -> void:
 		if state == State.MOVE and direction != 0:
 			facing = signf(direction)
 		var target := direction * config.run_speed * (0.35 if state == State.ATTACK else 1.0)
-		velocity.x = move_toward(velocity.x, target, (config.acceleration if direction else config.friction) * delta)
+		if wall_echo.arrival_left>0 and state==State.MOVE:
+			velocity.x = 0
+		elif wall_echo.steering_left > 0:
+			velocity.x = wall_echo.launch_direction*wall_echo.config.outward_speed
+		else:
+			velocity.x = move_toward(velocity.x, target, (config.acceleration if direction else config.friction) * delta)
 		if buffer_left > 0:
 			if coyote_left > 0:
 				_jump(false)
-			elif Session.abilities.has("double_jump") and not air_jump_used:
+			elif state == State.MOVE and wall_echo.launch(self, config.jump_velocity()):
+				# Never refill double jump/dash or cancel an attack through a wall jump.
+				buffer_left = 0.0
+				coyote_left = 0.0
+				facing = signf(velocity.x)
+				Audio.play_sound("jump")
+			elif Session.abilities.has("double_jump") and not air_jump_used and not (state==State.MOVE and "wall_echo" in Session.abilities and wall_echo.approaching_surface(self)):
 				_jump(true)
-		if jump_released and velocity.y < 0:
+		if jump_released and velocity.y < 0 and wall_echo.steering_left<=0:
 			velocity.y *= 0.45
 		if state == State.MOVE and (attack_pressed or attack_buffer_left > 0.0):
 			state = State.ATTACK
@@ -130,6 +147,8 @@ func _physics_process(delta: float) -> void:
 			attack_box.begin_swing()
 			Audio.play_sound("attack")
 	velocity.y = minf(velocity.y + config.gravity() * (config.fall_multiplier if velocity.y > 0 else 1.0) * delta, 950)
+	if state == State.MOVE:
+		wall_echo.limit_slide(self, direction)
 	attack_box.position.x = facing * 30
 	attack_box.active = state == State.ATTACK and attack_phase == AttackProfile.Phase.ACTIVE
 	move_and_slide()
@@ -139,6 +158,7 @@ func _physics_process(delta: float) -> void:
 		health.take_damage(health.maximum, global_position)
 
 func _jump(air: bool) -> void:
+	wall_echo.interrupt()
 	velocity.y = config.jump_velocity()
 	coyote_left = 0
 	buffer_left = 0
@@ -148,6 +168,7 @@ func _jump(air: bool) -> void:
 func _update_animation() -> void:
 	queue_redraw()
 	visual.scale.x = facing
+	sprite.position = Vector2(0,-40)
 	slash.visible = attack_box.active
 	if slash.visible:
 		slash.present(config.attack.phase_progress(attack_elapsed), attack_variant)
@@ -165,12 +186,20 @@ func _update_animation() -> void:
 				_: sprite.frame = 4 + mini(1, int(config.attack.phase_progress(attack_elapsed) * 2))
 		State.HURT: sprite.play("hurt")
 		_:
-			if not is_on_floor():
+			if wall_echo.sliding and not is_on_floor():
+				visual.scale.x = -wall_echo.normal_x
+				sprite.position.x = 2
+				sprite.play("wall_slide")
+			elif wall_echo.pose_left > 0 and not is_on_floor():
+				visual.scale.x = wall_echo.launch_direction
+				sprite.play("wall_push")
+			elif not is_on_floor():
 				sprite.play("jump" if velocity.y < 0 else "fall")
 			else:
 				sprite.play("run" if absf(velocity.x) > 8 else "idle")
 
 func _on_damaged(_amount: int, origin: Vector2) -> void:
+	wall_echo.interrupt()
 	effects.clear()
 	cancel_dash()
 	state = State.HURT
@@ -180,6 +209,8 @@ func _on_damaged(_amount: int, origin: Vector2) -> void:
 	Audio.play_sound("hit")
 
 func _on_died() -> void:
+	sprite.position = Vector2(0,-40)
+	wall_echo.reset()
 	effects.clear()
 	steam_ward.cancel()
 	cancel_dash()
@@ -190,6 +221,7 @@ func _on_died() -> void:
 	died.emit()
 
 func revive(at: Vector2) -> void:
+	wall_echo.reset()
 	effects.clear()
 	attack_variant = 0
 	next_attack_variant = 0
@@ -216,6 +248,7 @@ func cancel_attack() -> void:
 	slash.hide()
 
 func reset_input() -> void:
+	wall_echo.interrupt()
 	attack_buffer_left = 0.0
 	ward_held = Input.is_action_pressed("steam_ward")
 	buffer_left = 0

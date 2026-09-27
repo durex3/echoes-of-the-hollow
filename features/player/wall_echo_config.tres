@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="WallEchoConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://features/player/wall_echo_config.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+outward_speed = 230.0
+slide_speed = 80.0
+steering_lock_seconds = 0.5

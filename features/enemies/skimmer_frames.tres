@@ -1,0 +1,166 @@
+[gd_resource type="SpriteFrames" load_steps=44 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/characters/skimmer_fly.png" id="fly"]
+[ext_resource type="Texture2D" path="res://assets/characters/skimmer_attack.png" id="attack"]
+[ext_resource type="Texture2D" path="res://assets/characters/skimmer_hurt.png" id="hurt"]
+[ext_resource type="Texture2D" path="res://assets/characters/skimmer_fly_to_fall.png" id="fly_to_fall"]
+[ext_resource type="Texture2D" path="res://assets/characters/skimmer_fall.png" id="fall"]
+[ext_resource type="Texture2D" path="res://assets/characters/skimmer_death.png" id="death"]
+
+[sub_resource type="AtlasTexture" id="attack_0"]
+atlas = ExtResource("attack")
+region = Rect2(0, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="attack_1"]
+atlas = ExtResource("attack")
+region = Rect2(87, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="attack_2"]
+atlas = ExtResource("attack")
+region = Rect2(174, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="attack_3"]
+atlas = ExtResource("attack")
+region = Rect2(261, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="attack_4"]
+atlas = ExtResource("attack")
+region = Rect2(348, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="attack_5"]
+atlas = ExtResource("attack")
+region = Rect2(435, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="attack_6"]
+atlas = ExtResource("attack")
+region = Rect2(522, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="attack_7"]
+atlas = ExtResource("attack")
+region = Rect2(609, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="attack_8"]
+atlas = ExtResource("attack")
+region = Rect2(696, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="attack_9"]
+atlas = ExtResource("attack")
+region = Rect2(783, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="attack_10"]
+atlas = ExtResource("attack")
+region = Rect2(870, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="death_0"]
+atlas = ExtResource("death")
+region = Rect2(0, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="death_1"]
+atlas = ExtResource("death")
+region = Rect2(87, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="death_2"]
+atlas = ExtResource("death")
+region = Rect2(174, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="death_3"]
+atlas = ExtResource("death")
+region = Rect2(261, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="fall_0"]
+atlas = ExtResource("fall")
+region = Rect2(0, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="fall_1"]
+atlas = ExtResource("fall")
+region = Rect2(87, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="fall_2"]
+atlas = ExtResource("fall")
+region = Rect2(174, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="fall_3"]
+atlas = ExtResource("fall")
+region = Rect2(261, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="fall_4"]
+atlas = ExtResource("fall")
+region = Rect2(348, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="fly_0"]
+atlas = ExtResource("fly")
+region = Rect2(0, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="fly_1"]
+atlas = ExtResource("fly")
+region = Rect2(87, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="fly_2"]
+atlas = ExtResource("fly")
+region = Rect2(174, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="fly_3"]
+atlas = ExtResource("fly")
+region = Rect2(261, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="fly_4"]
+atlas = ExtResource("fly")
+region = Rect2(348, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="fly_5"]
+atlas = ExtResource("fly")
+region = Rect2(435, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="fly_6"]
+atlas = ExtResource("fly")
+region = Rect2(522, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="fly_7"]
+atlas = ExtResource("fly")
+region = Rect2(609, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="fly_8"]
+atlas = ExtResource("fly")
+region = Rect2(696, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="fly_9"]
+atlas = ExtResource("fly")
+region = Rect2(783, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="fly_10"]
+atlas = ExtResource("fly")
+region = Rect2(870, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="fly_to_fall_0"]
+atlas = ExtResource("fly_to_fall")
+region = Rect2(0, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="fly_to_fall_1"]
+atlas = ExtResource("fly_to_fall")
+region = Rect2(87, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="fly_to_fall_2"]
+atlas = ExtResource("fly_to_fall")
+region = Rect2(174, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="hurt_0"]
+atlas = ExtResource("hurt")
+region = Rect2(0, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="hurt_1"]
+atlas = ExtResource("hurt")
+region = Rect2(87, 0, 87, 87)
+
+[sub_resource type="AtlasTexture" id="hurt_2"]
+atlas = ExtResource("hurt")
+region = Rect2(174, 0, 87, 87)
+
+[resource]
+animations = [
+{"name": &"fly", "loop": true, "speed": 10.0, "frames": [{"duration": 1.0, "texture": SubResource("fly_0")}, {"duration": 1.0, "texture": SubResource("fly_1")}, {"duration": 1.0, "texture": SubResource("fly_2")}, {"duration": 1.0, "texture": SubResource("fly_3")}, {"duration": 1.0, "texture": SubResource("fly_4")}, {"duration": 1.0, "texture": SubResource("fly_5")}, {"duration": 1.0, "texture": SubResource("fly_6")}, {"duration": 1.0, "texture": SubResource("fly_7")}, {"duration": 1.0, "texture": SubResource("fly_8")}, {"duration": 1.0, "texture": SubResource("fly_9")}, {"duration": 1.0, "texture": SubResource("fly_10")}]},
+{"name": &"attack", "loop": false, "speed": 10.0, "frames": [{"duration": 1.0, "texture": SubResource("attack_0")}, {"duration": 1.0, "texture": SubResource("attack_1")}, {"duration": 1.0, "texture": SubResource("attack_2")}, {"duration": 1.0, "texture": SubResource("attack_3")}, {"duration": 1.0, "texture": SubResource("attack_4")}, {"duration": 1.0, "texture": SubResource("attack_5")}, {"duration": 1.0, "texture": SubResource("attack_6")}, {"duration": 1.0, "texture": SubResource("attack_7")}, {"duration": 1.0, "texture": SubResource("attack_8")}, {"duration": 1.0, "texture": SubResource("attack_9")}, {"duration": 1.0, "texture": SubResource("attack_10")}]},
+{"name": &"hurt", "loop": false, "speed": 10.0, "frames": [{"duration": 1.0, "texture": SubResource("hurt_0")}, {"duration": 1.0, "texture": SubResource("hurt_1")}, {"duration": 1.0, "texture": SubResource("hurt_2")}]},
+{"name": &"fly_to_fall", "loop": false, "speed": 10.0, "frames": [{"duration": 1.0, "texture": SubResource("fly_to_fall_0")}, {"duration": 1.0, "texture": SubResource("fly_to_fall_1")}, {"duration": 1.0, "texture": SubResource("fly_to_fall_2")}]},
+{"name": &"fall", "loop": true, "speed": 10.0, "frames": [{"duration": 1.0, "texture": SubResource("fall_0")}, {"duration": 1.0, "texture": SubResource("fall_1")}, {"duration": 1.0, "texture": SubResource("fall_2")}, {"duration": 1.0, "texture": SubResource("fall_3")}, {"duration": 1.0, "texture": SubResource("fall_4")}]},
+{"name": &"death", "loop": false, "speed": 10.0, "frames": [{"duration": 1.0, "texture": SubResource("death_0")}, {"duration": 1.0, "texture": SubResource("death_1")}, {"duration": 1.0, "texture": SubResource("death_2")}, {"duration": 1.0, "texture": SubResource("death_3")}]},
+]

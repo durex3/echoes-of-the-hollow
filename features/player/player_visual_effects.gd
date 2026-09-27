@@ -14,6 +14,8 @@ var front: Sprite2D
 var aura: Sprite2D
 var sample_left := 0.0
 var was_dashing := false
+var wall_dust: Array[Dictionary] = []
+var wall_dust_left := 0.0
 
 func _ready() -> void:
 	for index: int in range(config.trail_count):
@@ -58,6 +60,15 @@ func _physics_process(delta: float) -> void:
 	if player.state in [Player.State.DEAD, Player.State.HURT]:
 		clear()
 		return
+	wall_dust_left -= delta
+	for index: int in range(wall_dust.size()-1,-1,-1):
+		wall_dust[index].age += delta
+		if wall_dust[index].age >= config.wall_dust_seconds:
+			wall_dust.remove_at(index)
+	if player.wall_echo.sliding and wall_dust_left<=0:
+		_emit_wall_dust(player.wall_echo.normal_x,2)
+		wall_dust_left = config.wall_dust_interval
+	queue_redraw()
 	var dashing := player.state == Player.State.DASH
 	var reduced := 0.4 if Session.reduce_flashes else 1.0
 	for index: int in range(ghosts.size()):
@@ -105,6 +116,9 @@ func _capture(pose: Sprite2D, halo: Sprite2D) -> void:
 	material.set_shader_parameter("frame_bounds", Vector4(bounds.position.x, bounds.position.y, bounds.end.x, bounds.end.y))
 
 func clear() -> void:
+	wall_dust.clear()
+	wall_dust_left = 0.0
+	queue_redraw()
 	for index: int in range(ghosts.size()):
 		ghosts[index].hide()
 		halos[index].hide()
@@ -114,3 +128,18 @@ func clear() -> void:
 		aura.hide()
 	sample_left = 0.0
 	was_dashing = false
+
+func show_wall_push(_surface_id: StringName) -> void:
+	_emit_wall_dust(player.wall_echo.launch_direction,5)
+
+func _emit_wall_dust(normal: float, count: int) -> void:
+	for index: int in range(count):
+		wall_dust.append({"at":player.global_position+Vector2(-normal*9,-8-index*3),"velocity":Vector2(normal*(18+index*9),8+index*6),"age":0.0})
+
+func _draw() -> void:
+	for dust: Dictionary in wall_dust:
+		var age: float = dust.age
+		var at: Vector2 = dust.at+dust.velocity*age+Vector2(0,90*age*age)
+		var tint := config.wall_dust_color
+		tint.a = (1-age/config.wall_dust_seconds)*(0.45 if Session.reduce_flashes else 0.8)
+		draw_rect(Rect2(to_local(at).round(),Vector2(2,2)),tint)

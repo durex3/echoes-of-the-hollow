@@ -1,0 +1,350 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" path="res://features/world/room.gd" id="1_ijw8t"]
+[ext_resource type="Script" path="res://features/world/bell_court_landmarks.gd" id="2_5j1h3"]
+[ext_resource type="TileSet" path="res://features/world/cistern_tileset.tres" id="3_mynta"]
+[ext_resource type="Script" path="res://features/world/interaction.gd" id="4_atsdi"]
+[ext_resource type="SpriteFrames" path="res://features/world/checkpoint_frames.tres" id="5_tcxbq"]
+[ext_resource type="PackedScene" path="res://features/enemies/bell_skimmer.tscn" id="6_8055m"]
+[ext_resource type="Script" path="res://features/enemies/bell_skimmer.gd" id="7_6ryx6"]
+[ext_resource type="Resource" path="res://features/enemies/skimmer_config.tres" id="8_bp4j4"]
+[ext_resource type="PackedScene" path="res://features/world/resonant_slab.tscn" id="9_box0b"]
+[ext_resource type="Script" path="res://features/world/resonant_slab.gd" id="10_oa8vu"]
+[ext_resource type="Resource" path="res://features/world/resonant_slab_config.tres" id="11_l6f31"]
+[ext_resource type="Texture2D" path="res://assets/environment/forest.png" id="12_q8ubn"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0fyjo"]
+size = Vector2(32, 512)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ionio"]
+size = Vector2(32, 512)
+
+[node name="HangingGallery" type="Node2D" unique_id=1904554268]
+script = ExtResource("1_ijw8t")
+room_id = "hanging_gallery"
+display_name = "悬铃回廊"
+bounds = Rect2(0, 0, 1152, 384)
+
+[node name="Sky" type="Node2D" parent="." unique_id=1618197173]
+script = ExtResource("2_5j1h3")
+room_width = 1152.0
+room_height = 384.0
+theme = "gallery"
+z_index = -20
+
+[node name="Terrain" type="TileMapLayer" parent="." unique_id=215336396]
+tile_map_data = PackedByteArray("AAAAAAoAAAAZAAAAAAAAAAsAAAAZAAIAAAABAAoAAAAaAAAAAAABAAsAAAAaAAIAAAACAAoAAAAZAAAAAAACAAsAAAAZAAIAAAADAAoAAAAaAAAAAAADAAsAAAAaAAIAAAAEAAoAAAAZAAAAAAAEAAsAAAAZAAIAAAAFAAoAAAAaAAAAAAAFAAsAAAAaAAIAAAAGAAoAAAAZAAAAAAAGAAsAAAAZAAIAAAAHAAoAAAAaAAAAAAAHAAsAAAAaAAIAAAAIAAoAAAAZAAAAAAAIAAsAAAAZAAIAAAAJAAoAAAAaAAAAAAAJAAsAAAAaAAIAAAAKAAoAAAAZAAAAAAAKAAsAAAAZAAIAAAALAAoAAAAaAAAAAAALAAsAAAAaAAIAAAAMAAoAAAAZAAAAAAAMAAsAAAAZAAIAAAANAAoAAAAaAAAAAAANAAsAAAAaAAIAAAAOAAoAAAAZAAAAAAAOAAsAAAAZAAIAAAAPAAoAAAAaAAAAAAAPAAsAAAAaAAIAAAAQAAoAAAAZAAAAAAAQAAsAAAAZAAIAAAARAAoAAAAaAAAAAAARAAsAAAAaAAIAAAASAAoAAAAZAAAAAAASAAsAAAAZAAIAAAATAAoAAAAaAAAAAAATAAsAAAAaAAIAAAAUAAoAAAAZAAAAAAAUAAsAAAAZAAIAAAAVAAoAAAAaAAAAAAAVAAsAAAAaAAIAAAAWAAoAAAAZAAAAAAAWAAsAAAAZAAIAAAAXAAoAAAAaAAAAAAAXAAsAAAAaAAIAAAAYAAoAAAAZAAAAAAAYAAsAAAAZAAIAAAAZAAoAAAAaAAAAAAAZAAsAAAAaAAIAAAAaAAoAAAAZAAAAAAAaAAsAAAAZAAIAAAAbAAoAAAAaAAAAAAAbAAsAAAAaAAIAAAAcAAoAAAAZAAAAAAAcAAsAAAAZAAIAAAAdAAoAAAAaAAAAAAAdAAsAAAAaAAIAAAAeAAoAAAAZAAAAAAAeAAsAAAAZAAIAAAAfAAoAAAAaAAAAAAAfAAsAAAAaAAIAAAAgAAoAAAAZAAAAAAAgAAsAAAAZAAIAAAAhAAoAAAAaAAAAAAAhAAsAAAAaAAIAAAAiAAoAAAAZAAAAAAAiAAsAAAAZAAIAAAAjAAoAAAAaAAAAAAAjAAsAAAAaAAIAAAA=")
+tile_set = ExtResource("3_mynta")
+
+[node name="Spawns" type="Node2D" parent="." unique_id=1560129919]
+
+[node name="entry" type="Marker2D" parent="Spawns" unique_id=512820338]
+position = Vector2(1040, 320)
+
+[node name="checkpoint" type="Marker2D" parent="Spawns" unique_id=221723796]
+position = Vector2(1040, 320)
+
+[node name="Interactions" type="Node2D" parent="." unique_id=1290379454]
+
+[node name="East" type="Node2D" parent="Interactions" unique_id=346739180]
+position = Vector2(1104, 320)
+script = ExtResource("4_atsdi")
+kind = "exit"
+target_room = "broken_bell_atrium"
+target_spawn = "gallery"
+prompt = "向东 · 中庭上层"
+
+[node name="Shrine" type="Node2D" parent="Interactions" unique_id=374501999]
+position = Vector2(1008, 320)
+script = ExtResource("4_atsdi")
+prompt = "记录回廊重试点"
+
+[node name="Shrine" type="AnimatedSprite2D" parent="Interactions/Shrine" unique_id=235385185]
+position = Vector2(0, -20)
+sprite_frames = ExtResource("5_tcxbq")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="BatLesson" type="Node2D" parent="Interactions" unique_id=303633213]
+position = Vector2(928, 320)
+script = ExtResource("4_atsdi")
+kind = "sign"
+prompt = "铃翼远处蓄力后发出三道声刃，跳开或盾挡；靠近后会俯冲，扑空低停时反击。"
+
+[node name="PreviewEnd" type="Node2D" parent="Interactions" unique_id=1736351211]
+position = Vector2(64, 320)
+script = ExtResource("4_atsdi")
+kind = "goal"
+prompt = "完成本段试玩"
+
+[node name="Enemies" type="Node2D" parent="." unique_id=1357900225]
+
+[node name="FirstSkimmer" type="CharacterBody2D" parent="Enemies" unique_id=39480682 groups=["enemies"] instance=ExtResource("6_8055m")]
+position = Vector2(752, 248)
+collision_layer = 4
+script = ExtResource("7_6ryx6")
+config = ExtResource("8_bp4j4")
+
+[node name="SecondSkimmer" type="CharacterBody2D" parent="Enemies" unique_id=1141649306 groups=["enemies"] instance=ExtResource("6_8055m")]
+position = Vector2(288, 248)
+collision_layer = 4
+script = ExtResource("7_6ryx6")
+config = ExtResource("8_bp4j4")
+
+[node name="Hazards" type="Node2D" parent="." unique_id=149192472]
+
+[node name="ResonantSlab" type="Node2D" parent="Hazards" unique_id=2048937829 instance=ExtResource("9_box0b")]
+position = Vector2(240, 320)
+script = ExtResource("10_oa8vu")
+config = ExtResource("11_l6f31")
+
+[node name="Decor" type="Node2D" parent="." unique_id=1668778703]
+z_index = -2
+
+[node name="Arch480" type="Sprite2D" parent="Decor" unique_id=2009292871]
+modulate = Color(0.8, 0.88, 0.92, 0.68)
+position = Vector2(480, 160)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 256, 192, 160)
+
+[node name="WestBoundary" type="StaticBody2D" parent="." unique_id=1630938742]
+position = Vector2(-32, -64)
+
+[node name="Collision" type="CollisionShape2D" parent="WestBoundary" unique_id=1226099353]
+position = Vector2(16, 256)
+shape = SubResource("RectangleShape2D_0fyjo")
+
+[node name="Art" type="Node2D" parent="WestBoundary" unique_id=1306769085]
+
+[node name="Stone0" type="Sprite2D" parent="WestBoundary/Art" unique_id=1052409104]
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone32" type="Sprite2D" parent="WestBoundary/Art" unique_id=764833265]
+position = Vector2(0, 32)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone64" type="Sprite2D" parent="WestBoundary/Art" unique_id=248494757]
+position = Vector2(0, 64)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone96" type="Sprite2D" parent="WestBoundary/Art" unique_id=1238890222]
+position = Vector2(0, 96)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone128" type="Sprite2D" parent="WestBoundary/Art" unique_id=1569474561]
+position = Vector2(0, 128)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone160" type="Sprite2D" parent="WestBoundary/Art" unique_id=1460637214]
+position = Vector2(0, 160)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone192" type="Sprite2D" parent="WestBoundary/Art" unique_id=1034604415]
+position = Vector2(0, 192)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone224" type="Sprite2D" parent="WestBoundary/Art" unique_id=15502390]
+position = Vector2(0, 224)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone256" type="Sprite2D" parent="WestBoundary/Art" unique_id=1803974517]
+position = Vector2(0, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone288" type="Sprite2D" parent="WestBoundary/Art" unique_id=1135387302]
+position = Vector2(0, 288)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone320" type="Sprite2D" parent="WestBoundary/Art" unique_id=1948604165]
+position = Vector2(0, 320)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone352" type="Sprite2D" parent="WestBoundary/Art" unique_id=804872432]
+position = Vector2(0, 352)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone384" type="Sprite2D" parent="WestBoundary/Art" unique_id=559131887]
+position = Vector2(0, 384)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone416" type="Sprite2D" parent="WestBoundary/Art" unique_id=641162039]
+position = Vector2(0, 416)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone448" type="Sprite2D" parent="WestBoundary/Art" unique_id=1145177879]
+position = Vector2(0, 448)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone480" type="Sprite2D" parent="WestBoundary/Art" unique_id=2119169740]
+position = Vector2(0, 480)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="EastBoundary" type="StaticBody2D" parent="." unique_id=449078844]
+position = Vector2(1152, -64)
+
+[node name="Collision" type="CollisionShape2D" parent="EastBoundary" unique_id=1048077404]
+position = Vector2(16, 256)
+shape = SubResource("RectangleShape2D_ionio")
+
+[node name="Art" type="Node2D" parent="EastBoundary" unique_id=1865426887]
+
+[node name="Stone0" type="Sprite2D" parent="EastBoundary/Art" unique_id=2036579815]
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone32" type="Sprite2D" parent="EastBoundary/Art" unique_id=154180519]
+position = Vector2(0, 32)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone64" type="Sprite2D" parent="EastBoundary/Art" unique_id=1135933879]
+position = Vector2(0, 64)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone96" type="Sprite2D" parent="EastBoundary/Art" unique_id=783039179]
+position = Vector2(0, 96)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone128" type="Sprite2D" parent="EastBoundary/Art" unique_id=704152438]
+position = Vector2(0, 128)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone160" type="Sprite2D" parent="EastBoundary/Art" unique_id=1303430239]
+position = Vector2(0, 160)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone192" type="Sprite2D" parent="EastBoundary/Art" unique_id=1132617329]
+position = Vector2(0, 192)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone224" type="Sprite2D" parent="EastBoundary/Art" unique_id=495816847]
+position = Vector2(0, 224)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone256" type="Sprite2D" parent="EastBoundary/Art" unique_id=2112603700]
+position = Vector2(0, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone288" type="Sprite2D" parent="EastBoundary/Art" unique_id=1627290385]
+position = Vector2(0, 288)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone320" type="Sprite2D" parent="EastBoundary/Art" unique_id=1508327544]
+position = Vector2(0, 320)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone352" type="Sprite2D" parent="EastBoundary/Art" unique_id=920185233]
+position = Vector2(0, 352)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone384" type="Sprite2D" parent="EastBoundary/Art" unique_id=311940245]
+position = Vector2(0, 384)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone416" type="Sprite2D" parent="EastBoundary/Art" unique_id=153093521]
+position = Vector2(0, 416)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone448" type="Sprite2D" parent="EastBoundary/Art" unique_id=271579949]
+position = Vector2(0, 448)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)
+
+[node name="Stone480" type="Sprite2D" parent="EastBoundary/Art" unique_id=51751496]
+position = Vector2(0, 480)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(800, 64, 32, 32)

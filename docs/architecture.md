@@ -1,5 +1,59 @@
 # 架构与编码规范
 
+## 杖使贴身反击的选招距离
+
+真人再次指出第三关法师出反击却不掉血。根因不是抗打断吞伤害：上挑原图实体与其保守源帧轮廓位于外侧，内侧32–42px站位处确实打空；此前反击测试把玩家移到58px之后才检查掉血，漏掉固定贴身站位。现在InvokerConfig.rising_minimum=52px，进入近战WARNING之前，由_choose_arc选择：距离不足52px用已有回扫（最后一帧覆盖内侧），其余保留原两式轮换。技能选好后继续锁向，不改变原图、形状、伤害数值、前摇/生效/收招，不给空白处添加隐形伤害。
+
+新增counter_damage_suite用固定站位、正常剑击、真实健康事件核对左右26/32/42/52px法师反击，明确事件发生在ACTIVE阶段；护盾检查同一次反击只消耗一次防护、无补伤。也复查第二关剑士/宝箱左右32/42/52px。旧enemy_stagger_suite取消为命中而后退到58px的走位。法师原生退步夹具改为正常走回被反击击退前的近身距离，再测试退步决策，不能因首次空挥不掉血的旧假设削弱真实反击。
+
+## 小怪连续受击与还击修订
+
+用户认可三章AI后指出小怪被连续攻击时无法还击，并明确其他内容无需调整。七类小怪原生场景新增EnemyStagger子节点，共享只读EnemyStaggerConfig，quiet_left仅属于实例；0.75秒没有新的有效伤害后恢复打断资格，物理时钟随暂停冻结。Health/Hurtbox仍先正常扣血，组件只决定这次命中是否能重置FSM；不增加生命、减伤、伤害免疫或必定反击。活铠甲原有不可打断的剑击准备/生效规则保留。
+
+可打断阶段的首击继续受伤闪烁、原图受击动作并取消该次攻击；连续命中仍有伤害和命中反馈，但不重新计满硬直、不重复击退，也不取消当前已重新准备的法术/声刃。死亡始终立即关闭伤害和清理技能。第一下受击后直接返回原决策，而非额外接一整段未发生攻击的收招：杖使/铃翼受击为0.18秒，宝箱/剑士受击0.18秒；铠甲0.18秒、墨文0.22秒、史莱姆0.2秒保留。若命中发生在真实攻击收招阶段，保留剩余收招，不能因为抗打断缩短玩家已有反击窗口。
+
+本节更新此前“每次受伤都取消技能”的描述：现在只有获准造成硬直的伤害才取消；致死伤害无条件清理。Boss、寻路/换位决策、攻击前摇和生效时长、地图、主角与存档不随本轮变更。enemy_stagger_suite用真实连续剑击验证剑士/宝箱/杖使存活后的完整预警、释放与实际玩家掉血，另测七类普通伤害、致死、暂停、实例隔离、停手后可再次打断及原收招窗口。
+
+## 三章小怪决策修订（2026-09-27）
+
+沿用各敌人自己的FSM，采用game-ai的决策与安全移动分离方法，没有引入通用AI框架。新增距离、记忆、耐心、冷却和追击上限放在对应Config Resource；已完成出招次数、最后看见的位置、锁定换位点和计时属于实例。敌人只读玩家当前位置、速度和实际落地状态，不读取按键、不预测未来输入；准备/生效/收招期间不重新选招或转向追打。
+
+- 第一关：Slime超出巡逻范围时先朝出生区返回，使用方向性碰撞探测，取消逐帧位置微移和0.6秒强制重置身体命中名单；持续接触依靠原Hitbox的离开后重置。LivingArmor有0.65秒最后位置记忆和260px追击范围，正向碰撞查询让它能离开刚碰到的墙；丢失或死亡目标不产生盲目剑击。DoomScribe保持定点炮台，用与InkBolt相同5px半径的形状检查射路；首发保留教学，后续遇上升中的玩家最多等待0.35秒再进入完整蓄力，锁向后不追踪。
+- 第二关：WingedChest增加APPROACH，170px感知内先以52px/s接近到110px再进入原0.7秒预警；安全检查覆盖墙、落脚与220px出生范围。RoseSentinel首轮保留后撤教学，之后72px内才主动后撤，已在合适距离或背后无安全空间时直接进入完整0.7秒预警。两者失去目标后安全返回驻点，剑士追击限260px；HP、伤害、突进速度和完整收招不变。
+- 第三关：BellInvoker增加RETREAT，完成一次释放及完整收招后才允许在近身压力下后退，105px/s、最多0.42秒、冷却3秒；110–148px远程冷却期保持距离，失去目标仅搜索0.65秒然后返程。首轮远程按房间教学，后续静止落地目标优先咒印、移动/空中目标优先钟波，落地目标前同招连续两次后换招。BellSkimmer增加REPOSITION，空中贴近或连续两次俯冲后尝试短距离侧移；105px/s、最多96px/1秒、冷却3秒，不升高逃逸且保留完整低位收招。实际身体test_move检查俯冲/换位通道，两个敌人追击范围均240px。
+
+新增bell_ai_suite与chapter_enemy_ai_suite使用独立场景与user://test_*路径。测试摆位与真实InputMap路线分别记录；默认统一check都执行两套决策测试，-Full再运行两章路线、跨进程保存与旧集成，-Visual检查原生房间中的新动作。地图、主角能力、Boss和正式存档结构没有随本轮AI调整改变。
+
+## 飞行尖啸与踏壁易用性修订（2026-09-27）
+
+BellSkimmer增加SCREECH_WARNING/ACTIVE/RECOVER三个FSM状态，SkimmerConfig保存只读时长/速度/扇角；自身持有EchoPulse世界坐标子节点。三道声刃和本次接触共享hit_ids，所有世界扫掠查询先于玩家伤害查询，父敌人受伤/死亡/切房撤销实例。当前波未结束时不因离开身体重置同次接触列表。法师大小由InvokerConfig.sprite_scale统一驱动视觉与原图近战轮廓，原生场景盒子同步校准，世界脚底点不动。
+
+WallEcho保留真实碰撞来源并增加限时/限距的接触记忆和向前探测：仅标记墙、未花费墙可保留早按；不会把普通墙变为壁跃面。壁跃按键可缓冲，不必在碰撞的同一帧触发；0.50秒自动向外移动、对墙接续0.18秒、离墙0.14秒，落地/受伤/菜单清理，普通跳跃主动结束辅助。共享Player只在wall_echo能力与标记墙条件下应用新规则。下方0.10秒控制保护等为初版历史，以本节及最新试玩说明为准。
+
+## 第三关试玩反馈修订（2026-09-27）
+
+试玩宿主接入原CombatFeedback，统一玩家/敌人impact并在切房清理。BellInvoker新增由自身持有的BellSpell世界坐标子节点，负责远程钟波和锁定地面的咒印，继续使用InvokerConfig只读参数、BellFrameStrike与Hurtbox防御链。技能与本次身体接触共用命中列表，受伤/死亡立即撤销，随房间销毁。没有改主线法术或第一二关敌人。Player的WallEcho只新增表现计时，SpriteFrames增加两段组合动作，PlayerVisualEffects监听壁跃信号生成无碰撞石屑；物理移动和旧能力预算不变。
+
+## 第三关前半段试玩与独立敌人（2026-09-27）
+
+新增五个原生GameRoom/TileMapLayer场景，由独立bell_court_preview宿主载入。宿主持有内存检查点、清场与回闩，不调用主线commit/restore；已有GameRoom.enabled=false由试玩宿主管理交互，正式Main和存档白名单保持原状。Player仍用原节点/配置，默认6生命继承双跳、冲刺、护盾，可用Baseline以5生命无盾验证。踏壁教学从448px压力竖井拆成两个224px段，中间宽台，实测每段3次蹬墙。门绑定稳定房间/出生点并验证上层双向返回。
+
+BellInvoker与BellSkimmer分别独立FSM，组合Health/Hurtbox/ContactBox/BellFrameStrike及只读Resource。物理时钟直接选择SpriteFrames帧与当帧伤害轮廓；凹多边形分解查询保留法术内侧空区，World射线挡薄墙，接触与当前招式共享去重。ResonantSlab是踩压后延迟释放的四齿机关，一次释放共享去重，须离开再踩才能重启。正式数值/源帧映射、试玩边界与工具见[tasks/chapter_three_preview.md](tasks/chapter_three_preview.md)。两敌已导入原PNG和许可，Bringer Boss、后半章和持久化接线尚未实现。
+
+## 第三关壁跃组件与独立白盒（2026-09-27）
+
+Player组合WallEcho节点，配置WallEchoConfig只读；每次物理帧根据真实slide collision读取WallEchoSurface法线和稳定surface_id。普通旧墙不参与；连续墙块必须同ID。已解锁且MOVE状态下的新jump按键优先蹬墙，向外230px/s、沿用原跳跃初速、0.10秒横向控制保护；贴墙向内输入下落封顶80px/s。运行状态为当前接触、上一面实际使用的墙与控制剩余时间；只有落地或交替使用另一面墙才可再次使用原墙。空中双跳/冲刺次数不补充，攻击/HURT/DASH不能触发蹬墙；受伤/菜单清接触和控制但不返还已用墙，复活/死亡清理实例状态。
+
+features/world/prototypes/echo_cloister_blockout.tscn为可编辑原生TileMapLayer场景，一次性工具遇已有文件拒绝重建。它独立F6启动，仅初始化本进程内的六HP与旧能力、领取新能力并开本地回闩；save/settings路径改为test_前缀且没有写入调用。没有主线房间注册、没有玩家进度迁移，没有把wall_echo加入正式存档白名单；正式章节接线时再联动迁移/跨进程验证。统一check先运行独立wall_echo_metrics，再运行原门禁；本轮共享Player变更已执行-Full -Visual。
+
+## 第二关旧生命加成统一（2026-09-27用户追加确认）
+
+Session.maximum_health只返回5加heart_bloom收益；cistern_heart保留为历史领奖/补steam_ward的依据，不再参与生命计算。有第一关生命花的第二关新旧档均为6HP，否则仍为5HP。存档不保存瞬时HP或独立上限，因此无需写玩家JSON；重新启动并继续现有进度时Player按新规则初始化，死亡/重试继续使用同一规则。普通存档依旧不回血；第三关规划的bell_heart尚未实现。
+
+## 第二关旧修复档与首领进度分离（2026-09-27）
+
+GameRoom仅按furnace_keeper_defeated移除炉心监守者，cistern_restored仅保留环境修复/停喷口和既有终点交互收益。仅修复的旧档仍生成首领、锁住左右出口并隐藏回忆交互；JourneyProgress与WorldMap指向未击败的炉心。Main的chapter_end在重复标记分支之前也检查首领胜利和清场，避免旧标记绕过战斗。实际获胜新增击败标记并保存，旧能力/生命/修复标记不删，不改schema或玩家文件。真正完成后可在可见场地x=860回忆练习；练习胜利刷新门状态，不保存进度。第三关方案见[tasks/chapter_three.md](tasks/chapter_three.md)，目前未新增运行模块。
+
 ## 无招式文字与保存不回血（2026-09-27）
 
 GameUI不再创建boss_hint，Main不把两个首领的cue_changed接到HUD；血条、阶段名称及源动画/材质/音效仍由原系统管理。检查点交互和前庭/炉心入口自动存档仅更新检查点并commit，不调用Health.restore_full，成功统一显示Progress saved。重复保存及失败不改变当前生命。复活、领取独立奖励与击败Boss的回血仍属于各自事件，不属于保存行为。未更改存档schema，当前HP仍不持久化，继续游戏与复活规则保持原样。
@@ -36,11 +90,11 @@ WingedChest在扑咬时让身体接触与咬击共享hit_ids，直到扑咬结�
 
 2026-09-27补充：攻击循环包含近身普攻和地面蓄力三连斩。空中WARNING在真实升空位置悬停2.2秒，VisualEffects仅推进轮廓光晕、世界残影与全身红色材质，不改变物理位置；减少闪光设置使用稳定低强度红色。下砸中心与双墙共享实例级已处理目标列表，图形结束同步关闭中心伤害。火墙高210px，站在平台仍可受伤，登台起跳才可越过。
 
-FurnaceKeeper 是独立 CharacterBody2D，组合 Health/Hurtbox 和只读 FurnaceConfig，物理帧状态机管理锁向突进斩、短跳换位、升空悬停、垂直下砸、泄压和转阶段。独立 DashHitbox 复用单次挥击去重和护盾处理。FurnaceFlame 是首领子节点 Area2D，负责落点爆发、双向焰浪横移、单次命中和释放；命中走 Hurtbox.resolve_hit，继承护盾抵挡语义。视觉 Sprite 与碰撞形状分离。GameRoom 在加载时按 furnace_keeper_defeated 或旧 cistern_restored 过滤首领，并向 Main 转发事件；Main 负责血条、唯一击败标记、保存及通关交互。完成旧档可用 challenge 交互开启回忆战，rehearsal 状态只在当前房间实例中存在，不写存档。schema仍为2，新增稳定 flag；地形 TileMapLayer 与桌面素材未重建或修改。
+FurnaceKeeper 是独立 CharacterBody2D，组合 Health/Hurtbox 和只读 FurnaceConfig，物理帧状态机管理锁向突进斩、短跳换位、升空悬停、垂直下砸、泄压和转阶段。独立 DashHitbox 复用单次挥击去重和护盾处理。FurnaceFlame 是首领子节点 Area2D，负责落点爆发、双向焰浪横移、单次命中和释放；命中走 Hurtbox.resolve_hit，继承护盾抵挡语义。视觉 Sprite 与碰撞形状分离。GameRoom 在加载时仅按 furnace_keeper_defeated 过滤首领，并向 Main 转发事件；Main 负责血条、唯一击败标记、保存及通关交互。真实击败后可用 challenge 交互开启回忆战，rehearsal 状态只在当前房间实例中存在，不写存档。旧 cistern_restored 仅保留水道修复成果；schema仍为2，地形 TileMapLayer 与桌面素材未重建或修改。
 
 ## 基线
 
-0.13.0将秘库奖励改为steam_ward能力。第二关仍为七个持久化原生房间，地图几何不变。SaveRepository扩展能力白名单，schema仍为2；旧cistern_heart仅用于保留历史生命收益并补发技能，新领取不再添加此标记。实例状态不写配置，桌面源素材不修改。地图工具拒绝覆盖已保存场景；第二关敌人集合与第一关不重叠，由回归自动检查。
+0.13.0将秘库奖励改为steam_ward能力。第二关仍为七个持久化原生房间，地图几何不变。SaveRepository扩展能力白名单，schema仍为2；旧cistern_heart仅用于识别历史领奖并补发护盾，不再增加生命上限，新领取不再添加此标记。实例状态不写配置，桌面源素材不修改。地图工具拒绝覆盖已保存场景；第二关敌人集合与第一关不重叠，由回归自动检查。
 
 ### 水闸回响（0.13.1）
 
@@ -50,7 +104,7 @@ SteamVent在真实ACTIVE重叠时尝试消耗一次充能；成功后仅记录�
 
 0.13.1由Player将steam_ward.absorb注入自身Hurtbox.damage_guard；敌人Hurtbox不绑定防护。resolve_hit先检查生命/伤害/无敌，再返回IGNORED、DAMAGED或BLOCKED。Hitbox将实际伤害与抵挡均记入本次挥击的hit_ids，只有DAMAGED发landed/impact，避免同一刀次帧补伤与假受伤反馈。receive_hit仍保持“实际扣血才true”的原契约，InkBolt通过它消耗护盾且照常销毁弹体，不产生伤害反馈。护盾damage_blocked信号表示已发生的抵挡，HUD沿用status_changed；不引入全局无敌。越界复活用Health直接结算，不受护盾阻碍。
 
-保存只持久化steam_ward解锁，不保存瞬時計时。迁移先深复制并校验旧schema2，只有合法cistern_heart标记才补发能力，保留全部原收益；重复迁移无重复条目，未来/非法档不补发。玩家文件只在正常游戏保存时更新，测试使用隔离路径。新奖励回满当前上限生命、唯一隐藏、沿用保存失败提示与祭坛重试。
+保存只持久化steam_ward解锁，不保存瞬時計时。迁移先深复制并校验旧schema2，只有合法cistern_heart标记才补发能力，保留能力与第一关生命花收益；重复迁移无重复条目，未来/非法档不补发。玩家文件只在正常游戏保存时更新，测试使用隔离路径。新奖励回满当前上限生命、唯一隐藏、沿用保存失败提示与祭坛重试。
 
 SettingsRepository校验原配置类型后，InputBindings.with_ward_defaults为旧设置中被占用的L/LB选择空闲设备槽；不改旧动作。显式技能绑定仍遵守冲突检测。Session正常保存时持久化补齐后的配置，HUD和领奖说明均显示实际映射。
 

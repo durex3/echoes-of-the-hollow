@@ -259,7 +259,7 @@ func _on_interaction(point: WorldInteraction) -> void:
 		return
 	match point.kind:
 		"challenge":
-			if room.room_id == "furnace_core" and not room.rehearsal and ("furnace_keeper_defeated" in Session.flags or "cistern_restored" in Session.flags):
+			if room.room_id == "furnace_core" and not room.rehearsal and "furnace_keeper_defeated" in Session.flags:
 				player.revive(room.spawn_position("entry"))
 				load_room.call_deferred("furnace_core","entry",true)
 				transition_pending = true
@@ -307,6 +307,8 @@ func _on_interaction(point: WorldInteraction) -> void:
 			room.update_progress()
 			_save_reward(point.stable_id)
 		"reward", "chapter_end":
+			if point.kind == "chapter_end" and room.room_id == "furnace_core" and (not room.is_cleared() or "furnace_keeper_defeated" not in Session.flags):
+				return
 			if point.stable_id in Session.flags:
 				if point.kind == "chapter_end" and room.room_id == "furnace_core":
 					transition_pending = true
@@ -406,6 +408,7 @@ func _on_keeper_defeated(room_instance: int) -> void:
 	ui.hide_boss()
 	player.health.restore_full()
 	if room.rehearsal:
+		room.update_progress()
 		ui.notify("Practice complete / Your journey is unchanged")
 		return
 	if "furnace_keeper_defeated" in Session.flags:

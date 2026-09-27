@@ -3,21 +3,24 @@ extends CharacterBody2D
 ## Wing-assisted short pounce: warning locks direction, miss exposes recovery.
 signal defeated
 signal impact(at: Vector2, killed: bool)
-enum State { IDLE, WARNING, LUNGE, RECOVER, DEAD }
+enum State { IDLE, WARNING, LUNGE, RECOVER, DEAD, APPROACH }
 @export var config: ChestConfig
 @onready var health: HealthComponent = $Health
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var attack_box: Hitbox = $AttackBox
 @onready var contact_box: Hitbox = $ContactBox
 @onready var edge: RayCast2D = $Edge
+@onready var stagger: EnemyStagger = $Stagger
 var target: Player
 var state := State.IDLE
 var facing := -1.0
 var timer := 0.0
 var flash_left := 0.0
 var shared_pounce_contact := false
+var home_x := 0.0
 
 func _ready() -> void:
+	home_x = global_position.x
 	health.maximum = config.maximum_health
 	health.restore_full()
 	health.damaged.connect(_on_damaged)
@@ -53,17 +56,28 @@ func _physics_process(delta: float) -> void:
 	velocity.y = minf(950,velocity.y + config.gravity * delta)
 	velocity.x = 0
 	match state:
-		State.IDLE:
+		State.IDLE, State.APPROACH:
 			if is_on_floor() and can_see_target():
 				facing = -1.0 if target.global_position.x < global_position.x else 1.0
-				_enter(State.WARNING)
+				var offset := target.global_position-global_position
+				if absf(offset.x)<=config.attack_range and absf(offset.y)<=config.attack_vertical_range:
+					_enter(State.WARNING)
+				elif absf(offset.x)>config.attack_range and _safe_step(facing):
+					state = State.APPROACH
+					velocity.x = facing*config.approach_speed
+				else:
+					state = State.IDLE
+			else:
+				state = State.IDLE
+				if is_on_floor() and absf(global_position.x-home_x)>8:
+					facing = signf(home_x-global_position.x)
+					if _safe_step(facing):
+						velocity.x = facing*config.approach_speed
 		State.WARNING:
 			if timer <= 0:
 				_enter(State.LUNGE)
 		State.LUNGE:
-			edge.position.x = facing * 28
-			edge.force_raycast_update()
-			if timer <= 0 or is_on_wall() or not edge.is_colliding():
+			if timer <= 0 or not _safe_step(facing):
 				_enter(State.RECOVER)
 			else:
 				velocity.x = facing * config.lunge_speed
@@ -75,6 +89,11 @@ func _physics_process(delta: float) -> void:
 	sprite.flip_h = facing > 0
 	sprite.modulate = Color(2,2,2) if flash_left > 0 and not Session.reduce_flashes else Color.WHITE
 	queue_redraw()
+
+func _safe_step(direction: float) -> bool:
+	edge.position.x = direction*28
+	edge.force_raycast_update()
+	return edge.is_colliding() and absf(global_position.x+direction*28-home_x)<=config.leash_distance and not test_move(global_transform,Vector2(direction*5,0))
 
 func _enter(next: State) -> void:
 	state = next
@@ -109,8 +128,10 @@ func _enter(next: State) -> void:
 func _on_damaged(_amount: int, _source: Vector2) -> void:
 	flash_left = 0.08
 	# Sword interrupts bite damage; ordinary body contact remains dangerous.
-	if health.current > 0:
+	if health.current > 0 and stagger.register_hit():
+		var remaining := timer if state==State.RECOVER else 0.0
 		_enter(State.RECOVER)
+		timer = maxf(config.hurt_seconds,remaining)
 
 func _on_died() -> void:
 	_enter(State.DEAD)

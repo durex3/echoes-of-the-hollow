@@ -1338,7 +1338,7 @@ config = ExtResource("14_o6iuf")
 [node name="ExpansionMarker" type="Node" parent="."]
 
 [node name="Rematch" type="Node2D" parent="Interactions"]
-position = Vector2(290,480)
+position = Vector2(860,480)
 script = ExtResource("11_buwmc")
 kind = "challenge"
 prompt = "E / RECALL THE KEEPER (PRACTICE)"

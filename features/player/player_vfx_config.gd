@@ -14,3 +14,6 @@ extends Resource
 @export var dash_color := Color(0.08, 1.0, 0.57)
 @export var dash_glow_radius := 6.0
 @export var dash_glow_strength := 0.75
+@export var wall_dust_seconds := 0.24
+@export var wall_dust_interval := 0.12
+@export var wall_dust_color := Color("b3c8c3")

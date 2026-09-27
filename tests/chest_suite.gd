@@ -109,7 +109,13 @@ func run(h: Node, game: Node) -> void:
 	for swing: int in range(3):
 		await h.press("attack",26)
 	await h.frames(25)
-	h.check(game.room.is_cleared() and player.health.current == player.health.maximum, "Three mapped sword swings defeat the gallery chest")
+	h.check(player.health.current<player.health.maximum,"Repeated stationary sword presses leave the surviving chest an actual counterattack")
+	for swing: int in range(3):
+		if game.room.is_cleared():
+			break
+		player.facing = signf(chest.position.x-player.position.x)
+		await h.press("attack",26)
+	h.check(game.room.is_cleared() and player.health.current>0,"Mapped sword attacks still finish the chest after its counter, without damage immunity")
 	player.revive(Vector2(1100,352))
 	await h.frames(4)
 	await h.press("interact",2)

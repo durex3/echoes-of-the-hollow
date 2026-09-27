@@ -1,0 +1,293 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" path="res://features/world/prototypes/echo_cloister_blockout.gd" id="1_0scxb"]
+[ext_resource type="TileSet" path="res://features/world/cistern_tileset.tres" id="2_7txdk"]
+[ext_resource type="Script" path="res://features/world/wall_echo_surface.gd" id="3_iq48w"]
+[ext_resource type="Script" path="res://features/world/interaction.gd" id="4_lv5ok"]
+[ext_resource type="PackedScene" path="res://features/player/player.tscn" id="5_4qe0o"]
+[ext_resource type="Script" path="res://features/player/player.gd" id="6_181ju"]
+[ext_resource type="Resource" path="res://features/player/default_player.tres" id="7_xfk4x"]
+[ext_resource type="FontFile" path="res://assets/fonts/noto_sans_sc.otf" id="8_wwfxm"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_40rk1"]
+size = Vector2(32, 320)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_su2cq"]
+size = Vector2(32, 576)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_u77wj"]
+size = Vector2(32, 832)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7qycl"]
+size = Vector2(32, 832)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_apl8j"]
+size = Vector2(16, 320)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pgelo"]
+content_margin_left = 10.0
+content_margin_top = 6.0
+content_margin_bottom = 6.0
+bg_color = Color(0.045, 0.065, 0.095, 0.93)
+
+[node name="EchoCloisterBlockout" type="Node2D" unique_id=981555550]
+script = ExtResource("1_0scxb")
+
+[node name="Sky" type="Polygon2D" parent="." unique_id=1386747811]
+color = Color(0.34509805, 0.41568628, 0.49411765, 1)
+polygon = PackedVector2Array(0, 0, 1024, 0, 1024, 768, 0, 768)
+
+[node name="Terrain" type="TileMapLayer" parent="." unique_id=547876593]
+tile_map_data = PackedByteArray("AAAAABYAAAAZAAAAAAAAABcAAAAZAAIAAAABABYAAAAaAAAAAAABABcAAAAaAAIAAAACABYAAAAZAAAAAAACABcAAAAZAAIAAAADABYAAAAaAAAAAAADABcAAAAaAAIAAAAEABYAAAAZAAAAAAAEABcAAAAZAAIAAAAFABYAAAAaAAAAAAAFABcAAAAaAAIAAAAGABYAAAAZAAAAAAAGABcAAAAZAAIAAAAHABYAAAAaAAAAAAAHABcAAAAaAAIAAAAIABYAAAAZAAAAAAAIABcAAAAZAAIAAAAJABYAAAAaAAAAAAAJABcAAAAaAAIAAAAKABYAAAAZAAAAAAAKABcAAAAZAAIAAAALABYAAAAaAAAAAAALABcAAAAaAAIAAAAMABYAAAAZAAAAAAAMABcAAAAZAAIAAAANABYAAAAaAAAAAAANABcAAAAaAAIAAAAOABYAAAAZAAAAAAAOABcAAAAZAAIAAAAPABYAAAAaAAAAAAAPABcAAAAaAAIAAAAQABYAAAAZAAAAAAAQABcAAAAZAAIAAAARABYAAAAaAAAAAAARABcAAAAaAAIAAAASABYAAAAZAAAAAAASABcAAAAZAAIAAAATABYAAAAaAAAAAAATABcAAAAaAAIAAAAUABYAAAAZAAAAAAAUABcAAAAZAAIAAAAVABYAAAAaAAAAAAAVABcAAAAaAAIAAAAWABYAAAAZAAAAAAAWABcAAAAZAAIAAAAXABYAAAAaAAAAAAAXABcAAAAaAAIAAAAYABYAAAAZAAAAAAAYABcAAAAZAAIAAAAZABYAAAAaAAAAAAAZABcAAAAaAAIAAAAaABYAAAAZAAAAAAAaABcAAAAZAAIAAAAbABYAAAAaAAAAAAAbABcAAAAaAAIAAAAcABYAAAAZAAAAAAAcABcAAAAZAAIAAAAdABYAAAAaAAAAAAAdABcAAAAaAAIAAAAeABYAAAAZAAAAAAAeABcAAAAZAAIAAAAfABYAAAAaAAAAAAAfABcAAAAaAAIAAAAHAAgAAAAaAAAAAAAIAAgAAAAZAAAAAAAJAAgAAAAaAAAAAAAKAAgAAAAZAAAAAAALAAgAAAAaAAAAAAAMAAgAAAAZAAAAAAANAAgAAAAaAAAAAAA=")
+tile_set = ExtResource("2_7txdk")
+
+[node name="LeftEchoWall" type="StaticBody2D" parent="." unique_id=325891363]
+position = Vector2(416, 256)
+script = ExtResource("3_iq48w")
+surface_id = &"cloister_left"
+
+[node name="Collision" type="CollisionShape2D" parent="LeftEchoWall" unique_id=239518485]
+position = Vector2(16, 160)
+shape = SubResource("RectangleShape2D_40rk1")
+
+[node name="Art" type="Polygon2D" parent="LeftEchoWall" unique_id=411443082]
+color = Color(0.2, 0.27450982, 0.3254902, 1)
+polygon = PackedVector2Array(0, 0, 32, 0, 32, 320, 0, 320)
+
+[node name="Groove12" type="Polygon2D" parent="LeftEchoWall" unique_id=502143812]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 12, 25, 12, 25, 16, 7, 16)
+
+[node name="Groove36" type="Polygon2D" parent="LeftEchoWall" unique_id=142890772]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 36, 25, 36, 25, 40, 7, 40)
+
+[node name="Groove60" type="Polygon2D" parent="LeftEchoWall" unique_id=1276521775]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 60, 25, 60, 25, 64, 7, 64)
+
+[node name="Groove84" type="Polygon2D" parent="LeftEchoWall" unique_id=1258171341]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 84, 25, 84, 25, 88, 7, 88)
+
+[node name="Groove108" type="Polygon2D" parent="LeftEchoWall" unique_id=697228574]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 108, 25, 108, 25, 112, 7, 112)
+
+[node name="Groove132" type="Polygon2D" parent="LeftEchoWall" unique_id=2058776516]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 132, 25, 132, 25, 136, 7, 136)
+
+[node name="Groove156" type="Polygon2D" parent="LeftEchoWall" unique_id=1013410083]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 156, 25, 156, 25, 160, 7, 160)
+
+[node name="Groove180" type="Polygon2D" parent="LeftEchoWall" unique_id=2129551099]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 180, 25, 180, 25, 184, 7, 184)
+
+[node name="Groove204" type="Polygon2D" parent="LeftEchoWall" unique_id=1648088207]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 204, 25, 204, 25, 208, 7, 208)
+
+[node name="Groove228" type="Polygon2D" parent="LeftEchoWall" unique_id=2095067362]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 228, 25, 228, 25, 232, 7, 232)
+
+[node name="Groove252" type="Polygon2D" parent="LeftEchoWall" unique_id=518412552]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 252, 25, 252, 25, 256, 7, 256)
+
+[node name="Groove276" type="Polygon2D" parent="LeftEchoWall" unique_id=1923839000]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 276, 25, 276, 25, 280, 7, 280)
+
+[node name="Groove300" type="Polygon2D" parent="LeftEchoWall" unique_id=105745294]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 300, 25, 300, 25, 304, 7, 304)
+
+[node name="RightEchoWall" type="StaticBody2D" parent="." unique_id=1487401616]
+position = Vector2(576, 128)
+script = ExtResource("3_iq48w")
+surface_id = &"cloister_right"
+
+[node name="Collision" type="CollisionShape2D" parent="RightEchoWall" unique_id=838447894]
+position = Vector2(16, 288)
+shape = SubResource("RectangleShape2D_su2cq")
+
+[node name="Art" type="Polygon2D" parent="RightEchoWall" unique_id=1009423928]
+color = Color(0.2, 0.27450982, 0.3254902, 1)
+polygon = PackedVector2Array(0, 0, 32, 0, 32, 576, 0, 576)
+
+[node name="Groove12" type="Polygon2D" parent="RightEchoWall" unique_id=802301235]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 12, 25, 12, 25, 16, 7, 16)
+
+[node name="Groove36" type="Polygon2D" parent="RightEchoWall" unique_id=1414255900]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 36, 25, 36, 25, 40, 7, 40)
+
+[node name="Groove60" type="Polygon2D" parent="RightEchoWall" unique_id=1889475947]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 60, 25, 60, 25, 64, 7, 64)
+
+[node name="Groove84" type="Polygon2D" parent="RightEchoWall" unique_id=589752435]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 84, 25, 84, 25, 88, 7, 88)
+
+[node name="Groove108" type="Polygon2D" parent="RightEchoWall" unique_id=1399170140]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 108, 25, 108, 25, 112, 7, 112)
+
+[node name="Groove132" type="Polygon2D" parent="RightEchoWall" unique_id=1010101212]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 132, 25, 132, 25, 136, 7, 136)
+
+[node name="Groove156" type="Polygon2D" parent="RightEchoWall" unique_id=768535818]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 156, 25, 156, 25, 160, 7, 160)
+
+[node name="Groove180" type="Polygon2D" parent="RightEchoWall" unique_id=1714878330]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 180, 25, 180, 25, 184, 7, 184)
+
+[node name="Groove204" type="Polygon2D" parent="RightEchoWall" unique_id=197686734]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 204, 25, 204, 25, 208, 7, 208)
+
+[node name="Groove228" type="Polygon2D" parent="RightEchoWall" unique_id=921219754]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 228, 25, 228, 25, 232, 7, 232)
+
+[node name="Groove252" type="Polygon2D" parent="RightEchoWall" unique_id=643176232]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 252, 25, 252, 25, 256, 7, 256)
+
+[node name="Groove276" type="Polygon2D" parent="RightEchoWall" unique_id=441026557]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 276, 25, 276, 25, 280, 7, 280)
+
+[node name="Groove300" type="Polygon2D" parent="RightEchoWall" unique_id=559937441]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 300, 25, 300, 25, 304, 7, 304)
+
+[node name="Groove324" type="Polygon2D" parent="RightEchoWall" unique_id=1470269638]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 324, 25, 324, 25, 328, 7, 328)
+
+[node name="Groove348" type="Polygon2D" parent="RightEchoWall" unique_id=1321127642]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 348, 25, 348, 25, 352, 7, 352)
+
+[node name="Groove372" type="Polygon2D" parent="RightEchoWall" unique_id=154031281]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 372, 25, 372, 25, 376, 7, 376)
+
+[node name="Groove396" type="Polygon2D" parent="RightEchoWall" unique_id=776563906]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 396, 25, 396, 25, 400, 7, 400)
+
+[node name="Groove420" type="Polygon2D" parent="RightEchoWall" unique_id=602054481]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 420, 25, 420, 25, 424, 7, 424)
+
+[node name="Groove444" type="Polygon2D" parent="RightEchoWall" unique_id=1785166155]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 444, 25, 444, 25, 448, 7, 448)
+
+[node name="Groove468" type="Polygon2D" parent="RightEchoWall" unique_id=95788892]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 468, 25, 468, 25, 472, 7, 472)
+
+[node name="Groove492" type="Polygon2D" parent="RightEchoWall" unique_id=2016285244]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 492, 25, 492, 25, 496, 7, 496)
+
+[node name="Groove516" type="Polygon2D" parent="RightEchoWall" unique_id=802791788]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 516, 25, 516, 25, 520, 7, 520)
+
+[node name="Groove540" type="Polygon2D" parent="RightEchoWall" unique_id=269965483]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 540, 25, 540, 25, 544, 7, 544)
+
+[node name="Groove564" type="Polygon2D" parent="RightEchoWall" unique_id=276386149]
+color = Color(0.5803922, 0.89411765, 0.80784315, 1)
+polygon = PackedVector2Array(7, 564, 25, 564, 25, 568, 7, 568)
+
+[node name="LeftBoundary" type="StaticBody2D" parent="." unique_id=638088325]
+position = Vector2(-32, -64)
+
+[node name="Collision" type="CollisionShape2D" parent="LeftBoundary" unique_id=148909414]
+position = Vector2(16, 416)
+shape = SubResource("RectangleShape2D_u77wj")
+
+[node name="Art" type="Polygon2D" parent="LeftBoundary" unique_id=663616595]
+color = Color(0.6666667, 0.53333336, 0.34509805, 1)
+polygon = PackedVector2Array(0, 0, 32, 0, 32, 832, 0, 832)
+
+[node name="RightBoundary" type="StaticBody2D" parent="." unique_id=803915981]
+position = Vector2(1024, -64)
+
+[node name="Collision" type="CollisionShape2D" parent="RightBoundary" unique_id=714729092]
+position = Vector2(16, 416)
+shape = SubResource("RectangleShape2D_7qycl")
+
+[node name="Art" type="Polygon2D" parent="RightBoundary" unique_id=1248847351]
+color = Color(0.6666667, 0.53333336, 0.34509805, 1)
+polygon = PackedVector2Array(0, 0, 32, 0, 32, 832, 0, 832)
+
+[node name="ReturnGate" type="StaticBody2D" parent="." unique_id=274697224]
+position = Vector2(248, -64)
+
+[node name="Collision" type="CollisionShape2D" parent="ReturnGate" unique_id=132885151]
+position = Vector2(8, 160)
+shape = SubResource("RectangleShape2D_apl8j")
+
+[node name="Art" type="Polygon2D" parent="ReturnGate" unique_id=1658750777]
+color = Color(0.6666667, 0.53333336, 0.34509805, 1)
+polygon = PackedVector2Array(0, 0, 16, 0, 16, 320, 0, 320)
+
+[node name="Ability" type="Node2D" parent="." unique_id=2069693069]
+position = Vector2(128, 704)
+script = ExtResource("4_lv5ok")
+kind = "ability"
+
+[node name="UpperLatch" type="Node2D" parent="." unique_id=197914083]
+position = Vector2(320, 256)
+script = ExtResource("4_lv5ok")
+kind = "reward"
+
+[node name="Player" type="CharacterBody2D" parent="." unique_id=1182038995 groups=["player"] instance=ExtResource("5_4qe0o")]
+process_mode = 1
+position = Vector2(96, 704)
+collision_layer = 2
+floor_snap_length = 6.0
+script = ExtResource("6_181ju")
+config = ExtResource("7_xfk4x")
+
+[node name="Camera" type="Camera2D" parent="Player" unique_id=1283018647]
+position = Vector2(70, -105)
+zoom = Vector2(1.4, 1.4)
+limit_left = 0
+limit_top = 0
+limit_right = 1024
+limit_bottom = 768
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0
+
+[node name="Overlay" type="CanvasLayer" parent="." unique_id=2093537251]
+
+[node name="Panel" type="PanelContainer" parent="Overlay" unique_id=386976347]
+custom_minimum_size = Vector2(776, 70)
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 12.0
+offset_bottom = 12.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_pgelo")
+
+[node name="Label" type="Label" parent="Overlay/Panel" unique_id=1040354208]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("8_wwfxm")
+theme_override_font_sizes/font_size = 14
