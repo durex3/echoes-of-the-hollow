@@ -472,5 +472,117 @@
     "source_url": "https://luizmelo.itch.io/monsters-creatures-fantasy-2",
     "sha256": "4a523bebeafa7640cd80d1a5affe757d7ae1ecd126c0ad0f1d0142bd20099525",
     "license_status": "CC0 as stated on the original author page; provenance note"
+  },
+  {
+    "file": "assets/props/bell_heart.png",
+    "source_pack": "Metroidvania Forge course pack",
+    "source_relative_path": "Metroidvania Forge/ch_05_enemies/sprites/heart.png",
+    "source_url": "",
+    "sha256": "6ee38d29b66835d88660f2ba35a4552c5c4e189fe3d28d08daf1047e32a552b8",
+    "license_status": "Course licence not supplied; check before distribution."
+  },
+  {
+    "file": "assets/effects/dust_effects.png",
+    "source_pack": "Metroidvania Forge course pack",
+    "source_relative_path": "Metroidvania Forge/ch_04_player_abilities/sprites/dust_effects.png",
+    "source_url": "",
+    "sha256": "7ffe3d73e3fa5a13bd4fe5f53b0be30b072c1e3ef581ea9692a93270466273a8",
+    "license_status": "Course licence not supplied; check before distribution."
+  },
+  {
+    "file": "assets/environment/bridge_bridges.png",
+    "source_pack": "Free Bridges Top Down Pixel Art Asset Pack",
+    "source_relative_path": "resouce/Free-Bridges-Top-Down-Pixel-Art-Asset-Pack/PNG_n_Tiled/Bridges.png",
+    "source_url": "https://free-game-assets.itch.io/free-bridges-top-down-pixel-art-asset-pack",
+    "sha256": "4a75c1bd4731fdd90be26c86a5f144b1d0c6e484787f5ee19261e30ae336947a",
+    "license_status": "See bundled license."
+  },
+  {
+    "file": "assets/environment/bridge_constructor.png",
+    "source_pack": "Bridge Constructor Tileset",
+    "source_relative_path": "resouce/bridge-constructor-tileset-pixel-art/1 Tiles/Bridge_tileset.png",
+    "source_url": "https://free-game-assets.itch.io/bridge-constructor-tileset-pixel-art",
+    "sha256": "dbe03daddb105cca99117dde486fa77bb6352ee980c62afee8355e2a8ad8e410",
+    "license_status": "See bundled license."
+  },
+  {
+    "file": "assets/props/counterweight_gear_silver.png",
+    "source_pack": "FREE Pixel Art Gear Wheels Pack",
+    "source_relative_path": "resouce/Cog Wheels - Gears/SpriteSheets/Silver Gear Wheels/Gear 6 - Silver_spritesheet.png",
+    "source_url": "https://karsiori.itch.io/free-pixel-art-gear-wheels-pack-animated",
+    "sha256": "047275d1b8ec07b449652042e17e3c865b47da58a8f9b617159a28dede1e94ca",
+    "license_status": "CC0 as stated on author page."
+  },
+  {
+    "file": "assets/props/counterweight_gear_bronze.png",
+    "source_pack": "FREE Pixel Art Gear Wheels Pack",
+    "source_relative_path": "resouce/Cog Wheels - Gears/SpriteSheets/Bronze Gear Wheels/Gear 6 - Bronze_spritesheet.png",
+    "source_url": "https://karsiori.itch.io/free-pixel-art-gear-wheels-pack-animated",
+    "sha256": "5a54febb0a198125b8b7fb0f92ff145f3e84d30d5a9959af3ccc9b96dea1d3ff",
+    "license_status": "CC0 as stated on author page."
+  },
+  {
+    "file": "assets/effects/bell_arcane_explosion.png",
+    "source_pack": "Pixel RPG VFX Pack",
+    "source_relative_path": "resouce/fx_pack_01/explosion_fire_0000/arcane/64/spritesheet.png",
+    "source_url": "https://pewas.itch.io/pixel-rpg-vfx-pack-free-animated-effects",
+    "sha256": "781f48240989965d66f6cbfcf3a682afb81e39946065eb29288434cbae99a208",
+    "license_status": "See bundled license; AI-assisted graphics."
+  },
+  {
+    "file": "assets/effects/bell_arcane_impact.png",
+    "source_pack": "Pixel RPG VFX Pack",
+    "source_relative_path": "resouce/fx_pack_01/impact_fire_0002/arcane/64/spritesheet.png",
+    "source_url": "https://pewas.itch.io/pixel-rpg-vfx-pack-free-animated-effects",
+    "sha256": "d8877946e6f6ee7e822a542a56f30de1c9d9c2cab4831c046d2c2be5cecb7e6c",
+    "license_status": "See bundled license; AI-assisted graphics."
+  },
+  {
+    "file": "assets/effects/bell_arcane_slash.png",
+    "source_pack": "Pixel RPG VFX Pack",
+    "source_relative_path": "resouce/fx_pack_01/slash_fire_0001/arcane/64/spritesheet.png",
+    "source_url": "https://pewas.itch.io/pixel-rpg-vfx-pack-free-animated-effects",
+    "sha256": "f0a62740746f418cb060163ae1461c8597781bd685c0cd3b07f56b7f93086119",
+    "license_status": "See bundled license; AI-assisted graphics."
+  },
+  {
+    "file": "assets/effects/bell_dark_bolt.png",
+    "source_pack": "Gothicvania Magic Pack 9",
+    "source_relative_path": "resouce/Magic Pack 9 files/spritesheets/Dark-Bolt.png",
+    "source_url": "https://ansimuz.itch.io/gothicvania-magic-pack-9",
+    "sha256": "e958f6b082bef502256441b040d31cdaee4ccb706f463b5277f78df71602ee03",
+    "license_status": "See bundled license."
+  },
+  {
+    "file": "assets/effects/bell_spell_bolt.png",
+    "source_pack": "Spell FX Free",
+    "source_relative_path": "resouce/spell-fx-free/sheets/pixel/arcane/arcane_bolt.png",
+    "source_url": "https://heyheythere.itch.io/spell-fx-free",
+    "sha256": "ac593986ba8723b042a8f06f3dcae452bac22753b746c22314ad900d9ce6fa9c",
+    "license_status": "CC BY 4.0; attribution required."
+  },
+  {
+    "file": "assets/effects/bell_spell_impact.png",
+    "source_pack": "Spell FX Free",
+    "source_relative_path": "resouce/spell-fx-free/sheets/pixel/arcane/arcane_impact.png",
+    "source_url": "https://heyheythere.itch.io/spell-fx-free",
+    "sha256": "d6b1517a5c1258b46eb2de70b02ea1317c3ea413b82c2beeaef5fcf5386f6edf",
+    "license_status": "CC BY 4.0; attribution required."
+  },
+  {
+    "file": "assets/characters/bell_warden_sheet.png",
+    "source_pack": "Bringer-Of-Death by Clembod",
+    "source_relative_path": "Bringer-Of-Death/SpriteSheet/Bringer-of-Death-SpritSheet.png",
+    "source_url": "https://clembod.itch.io/bringer-of-death-free",
+    "sha256": "126c755e384332bf4868bb09e06cc187d3b04466e08595c4676926064a239ed8",
+    "license_status": "Game use and modification allowed; no standalone redistribution."
+  },
+  {
+    "file": "assets/licenses/bell_warden_license.txt",
+    "source_pack": "Bringer-Of-Death by Clembod",
+    "source_relative_path": "Bringer-Of-Death/License.txt",
+    "source_url": "https://clembod.itch.io/bringer-of-death-free",
+    "sha256": "fe17ba9f2e13877d0bbefb9274cc4a32bd1deff647df10ca64e1e8dc8e1178e3",
+    "license_status": "Original pack license."
   }
 ]

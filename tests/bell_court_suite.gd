@@ -85,11 +85,14 @@ func skimmer(at := Vector2(360,248)) -> BellSkimmer:
 func shot(name_text: String) -> void:
 	if "--visual" not in OS.get_cmdline_user_args():
 		return
+	var was_paused := get_tree().paused
+	get_tree().paused = true
 	# An obscured/minimized test window may stop normal frame_post_draw emission.
 	# Force one real render rather than waiting indefinitely or saving an old frame.
 	await get_tree().process_frame
 	RenderingServer.force_draw(false)
 	var result := get_viewport().get_texture().get_image().save_png("res://artifacts/"+name_text+".png")
+	get_tree().paused = was_paused
 	check(result == OK,"Saved native screenshot " + name_text)
 
 func run() -> void:

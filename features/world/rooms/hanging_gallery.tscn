@@ -12,12 +12,16 @@
 [ext_resource type="Script" path="res://features/world/resonant_slab.gd" id="10_oa8vu"]
 [ext_resource type="Resource" path="res://features/world/resonant_slab_config.tres" id="11_l6f31"]
 [ext_resource type="Texture2D" path="res://assets/environment/forest.png" id="12_q8ubn"]
+[ext_resource type="Texture2D" path="res://assets/props/counterweight_gear_silver.png" id="13_gear"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0fyjo"]
 size = Vector2(32, 512)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ionio"]
 size = Vector2(32, 512)
+
+[sub_resource type="RectangleShape2D" id="BridgeShape"]
+size = Vector2(960, 32)
 
 [node name="HangingGallery" type="Node2D" unique_id=1904554268]
 script = ExtResource("1_ijw8t")
@@ -76,6 +80,35 @@ position = Vector2(64, 320)
 script = ExtResource("4_atsdi")
 kind = "goal"
 prompt = "完成本段试玩"
+
+[node name="BridgeTerrain" type="TileMapLayer" parent="."]
+enabled = false
+tile_set = ExtResource("3_mynta")
+
+[node name="BridgeCollision" type="StaticBody2D" parent="."]
+position = Vector2(576, 272)
+
+[node name="Collision" type="CollisionShape2D" parent="BridgeCollision"]
+shape = SubResource("BridgeShape")
+
+[node name="bridge" type="Marker2D" parent="Spawns"]
+position = Vector2(960, 256)
+
+[node name="WestWeight" type="Node2D" parent="Interactions"]
+position = Vector2(96, 320)
+script = ExtResource("4_atsdi")
+kind = "reward"
+stable_id = "west_weight_restored"
+prompt = "启动西承重 · 开启上层回桥"
+
+[node name="BridgeReturn" type="Node2D" parent="Interactions"]
+position = Vector2(1040, 256)
+script = ExtResource("4_atsdi")
+kind = "exit"
+required_flag = "west_weight_restored"
+target_room = "broken_bell_atrium"
+target_spawn = "gallery_bridge"
+prompt = "沿西回桥返回中庭"
 
 [node name="Enemies" type="Node2D" parent="." unique_id=1357900225]
 
@@ -348,3 +381,253 @@ texture = ExtResource("12_q8ubn")
 centered = false
 region_enabled = true
 region_rect = Rect2(800, 64, 32, 32)
+
+[node name="BridgeArt" type="Node2D" parent="."]
+visible = false
+z_index = -1
+
+[node name="Plank0" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(96, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank1" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(128, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank2" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(160, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank3" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(192, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank4" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(224, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank5" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(256, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank6" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(288, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank7" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(320, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank8" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(352, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank9" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(384, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank10" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(416, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank11" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(448, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank12" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(480, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank13" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(512, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank14" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(544, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank15" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(576, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank16" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(608, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank17" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(640, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank18" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(672, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank19" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(704, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank20" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(736, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank21" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(768, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank22" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(800, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank23" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(832, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank24" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(864, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank25" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(896, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank26" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(928, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank27" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(960, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank28" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(992, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="Plank29" type="Sprite2D" parent="BridgeArt"]
+position = Vector2(1024, 256)
+texture = ExtResource("12_q8ubn")
+centered = false
+region_enabled = true
+region_rect = Rect2(512, 192, 32, 32)
+modulate = Color(0.72, 0.78, 0.76, 0.95)
+
+[node name="CounterweightGear" type="Sprite2D" parent="."]
+position = Vector2(96, 280)
+texture = ExtResource("13_gear")
+region_enabled = true
+region_rect = Rect2(0, 0, 26, 26)

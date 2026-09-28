@@ -2,12 +2,12 @@
 
 Godot 4.7.2 + GDScript 的 2D 类银河恶魔城工程基础，使用本机《类银河恶魔城锻造坊》素材。
 默认窗口 1600×900，内部像素视口 800×450；使用整数倍显示和最近邻采样，非整数窗口/全屏尺寸可能留黑边。Boss 开战前后保持相同镜头倍率。
-项目版本字段仍为 **0.14.0**；其后的第三关试玩与战斗修订记录在 CHANGELOG 的 Unreleased。正式主线共十六个可编辑房间（第一关九区、第二关七区）、两个章节终点，另有第三关五房间独立试玩；第三关完整章节、Boss与主线接线尚未完成。第一关已获用户整体试玩认可，第二关人工体验与发布验收仍待完成。
+项目版本字段仍为 **0.14.0**；其后的第三关试玩与战斗修订记录在 CHANGELOG 的 Unreleased。正式主线共十六个可编辑房间（第一关九区、第二关七区）、两个章节终点，另有第三关独立试玩；第三关完整章节与主线接线尚未完成。第一关已获用户整体试玩认可，第二关人工体验与发布验收仍待完成。
 当前优先完成游戏内容；Windows 打包与浏览器兼容放到内容完成后的发布阶段。每轮照常执行开发回归，不要求先制作试玩包或等待用户试玩才能继续。
 
 ## 立即运行
 
-**第三关前半段试玩**：双击 `Preview-Chapter-Three.cmd`。现有5个可编辑房间串起鸣石教学、杖使技能教学、安全中庭、领取踏壁、两段短攀爬与上层回桥，再到蝙蝠教学回廊。默认6生命，继承二段跳/冲刺/护盾；试玩只记录本次内存进度，关闭后重开，不改主线存档。Boss、可选生命及完整双分支尚未开放。地图已做第二轮环境细化，内容和验证边界见[前半段试玩说明](docs/tasks/chapter_three_preview.md)。`Play.cmd`仍为前两章主线。
+**第三关独立试玩**：Windows 双击 `Preview-Chapter-Three.cmd`，Mac 双击 `Preview-Chapter-Three.command`。试玩包含双承重支路、静声藏室生命奖励、合鸣桥廊和缚钟守望者第一可玩切片；默认6生命，继承二段跳/冲刺/护盾。进度只保留在本次试玩内，不改主线存档。Boss 真人难度、正式第三关存档与结局仍未完成。内容与验证边界见[试玩说明](docs/tasks/chapter_three_preview.md)。`Play.cmd` / `Play.command` 仍启动前两章主线。
 
 **试玩反馈修订**：杖使新增远程钟波与锁定旧落点的地面咒印，分开两场教学；补齐命中火花/音效/敌人受伤闪烁。踏壁新增贴墙、蹬离组合动作及石屑，地图完成第二轮钟塔/修院建筑层次细化。原图没有专用攀墙序列，目前组合已有姿势；动作自然度和地图审美仍待再次真人试玩，不能视为最终验收。
 
@@ -17,6 +17,21 @@ Godot 4.7.2 + GDScript 的 2D 类银河恶魔城工程基础，使用本机《�
 2. 启动器优先使用 `E:\Godot_v4.7.2-stable_win64\Godot_v4.7.2-stable_win64_console.exe`。
 3. 也可以在 Godot 项目管理器导入此目录的 `project.godot`。无需安装插件、Python 包或 .NET。
 4. 双击 `Check.cmd` 运行项目规范、引擎导入与当前章节行为检查；跨章节和跨进程存档全量回归使用 `tools/check.ps1 -Full`。
+
+macOS 使用根目录 `tools/run.sh` 和 `tools/check.sh`：
+
+```bash
+./tools/run.sh                 # 运行主线
+./tools/run.sh --editor        # 打开 Godot 编辑器
+./tools/run.sh --preview       # 运行第三关九房间独立试玩
+./tools/check.sh               # 与 Windows 默认检查保持同一范围
+./tools/check.sh --full        # 跨章节和跨进程存档全量回归
+./tools/check.sh --full --visual
+```
+
+脚本优先使用 `/Applications/Godot.app/Contents/MacOS/Godot`，也支持 `GODOT_BIN` 或 `--godot PATH` 指定同版本引擎。Windows 继续使用原有 `.cmd` 和 `tools/check.ps1`；两套入口调用相同的 Godot 测试场景和结果标记。
+
+也可以直接双击 macOS 根目录的 `Play.command`、`Preview-Chapter-Three.command`、`Open-Editor.command`、`Check.command` 或 `Check-Full.command`。首次使用若 Finder 不允许运行，在终端执行一次 `chmod +x *.command tools/*.sh`。
 
 命令行（在项目根目录运行）：
 
@@ -100,7 +115,7 @@ artifacts/            本机检查日志和截图（不提交）
 
 ## 文档阅读顺序
 
-换机继续开发：先看[开发交接与下一步](docs/next-development.md)和[本机 Skills 清单与迁移](docs/local-skills.md)。第三关下一项内容任务是双支路与承重回桥；Mac 先验证已有工程与检查入口。
+换机继续开发：先看[开发交接与下一步](docs/next-development.md)和[本机 Skills 清单与迁移](docs/local-skills.md)。第三关下一项内容任务是缚钟守望者完整验收与正式主线接线；Windows 先拉取 `fix/enemy-art-separation` 并运行 `tools/check.ps1 -Full`。
 
 首先阅读 [项目执行规则](AGENTS.md) 与 [第一、二关开发经验](docs/development_lessons.md)，避免重复出现清晰度、伤害判定、Boss房边界及门/地图不一致的问题。
 

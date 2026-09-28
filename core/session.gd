@@ -59,7 +59,7 @@ func commit() -> Error:
 
 func maximum_health() -> int:
 	# The retired cistern heart grants ward eligibility, not another vitality point.
-	return 5 + int("heart_bloom" in flags)
+	return 5 + int("heart_bloom" in flags) + int("bell_heart" in flags)
 
 func unlock(ability: String) -> void:
 	if ability not in abilities:

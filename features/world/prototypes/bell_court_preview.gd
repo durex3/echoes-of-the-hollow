@@ -5,7 +5,11 @@ const ROOMS := {
 	"bell_guard_walk": preload("res://features/world/rooms/bell_guard_walk.tscn"),
 	"broken_bell_atrium": preload("res://features/world/rooms/broken_bell_atrium.tscn"),
 	"echo_cloister": preload("res://features/world/rooms/echo_cloister.tscn"),
-	"hanging_gallery": preload("res://features/world/rooms/hanging_gallery.tscn")
+	"hanging_gallery": preload("res://features/world/rooms/hanging_gallery.tscn"),
+	"bell_weight_chamber": preload("res://features/world/rooms/bell_weight_chamber.tscn"),
+	"quiet_reliquary": preload("res://features/world/rooms/quiet_reliquary.tscn"),
+	"confluence_bridge": preload("res://features/world/rooms/confluence_bridge.tscn"),
+	"terminal_platform": preload("res://features/world/rooms/terminal_platform.tscn")
 }
 @onready var player: Player = $Player
 @onready var camera: Camera2D = $Player/Camera
@@ -108,10 +112,13 @@ func load_room(id: String, spawn: String) -> void:
 	$RoomHost.add_child(room)
 	if id not in visited:
 		visited.append(id)
+	notice.text = ""
+	notice_left = 0.0
 	room.player = player
 	player.position = room.spawn_position(spawn)
 	for enemy: Node in room.get_node("Enemies").get_children():
 		if id in cleared_rooms:
+			room.get_node("Enemies").remove_child(enemy)
 			enemy.queue_free()
 		else:
 			enemy.target = player
@@ -130,25 +137,56 @@ func _enemy_defeated() -> void:
 	if room.is_cleared():
 		if room.room_id not in cleared_rooms:
 			cleared_rooms.append(room.room_id)
-		show_notice("外廊已清，东侧通往安全中庭。" if room.room_id == "bell_guard_walk" else "掠袭已平息。西侧尽头可完成本段试玩，再返回中庭。")
+		if room.room_id == "terminal_platform":
+			preview_flags.append("bell_warden_defeated")
+			show_notice("缚钟守望者已击败。左侧返程门开放；正式章节结局尚未接入。")
+		else:
+			show_notice("外廊已清，东侧通往安全中庭。" if room.room_id == "bell_guard_walk" else "掠袭已平息。西侧尽头可完成本段试玩，再返回中庭。")
+		_refresh()
 
 func _refresh() -> void:
 	for child: Node in room.get_node("Interactions").get_children():
 		var point := child as WorldInteraction
+		if room.room_id == "terminal_platform" and point.name == "Return":
+			point.visible = room.is_cleared()
+			continue
 		if point.kind == "ability":
 			point.visible = point.stable_id not in Session.abilities
-		elif point.kind == "reward":
+		elif point.kind in ["reward", "upgrade"]:
 			point.visible = point.stable_id not in preview_flags
 	var gate := room.get_node_or_null("ReturnGate")
 	if gate and "wall_passage_open" in preview_flags:
 		(gate.get_node("Collision") as CollisionShape2D).set_deferred("disabled", true)
 		(gate.get_node("Art") as CanvasItem).hide()
+	var bridge := room.get_node_or_null("ReturnBridge") as TileMapLayer
+	if bridge:
+		bridge.enabled = "east_weight_restored" in preview_flags
+	var east_art := room.get_node_or_null("BridgeArt") as CanvasItem
+	if east_art and room.room_id == "bell_weight_chamber":
+		east_art.visible = "east_weight_restored" in preview_flags
+	var bridge_collision := room.get_node_or_null("BridgeCollision/Collision") as CollisionShape2D
+	if bridge_collision:
+		var restored := "east_weight_restored" in preview_flags if room.room_id == "bell_weight_chamber" else "west_weight_restored" in preview_flags
+		bridge_collision.set_deferred("disabled", not restored)
+	var west_bridge := room.get_node_or_null("BridgeTerrain") as TileMapLayer
+	if west_bridge:
+		west_bridge.enabled = "west_weight_restored" in preview_flags
+	var west_art := room.get_node_or_null("BridgeArt") as CanvasItem
+	if west_art and room.room_id == "hanging_gallery":
+		west_art.visible = "west_weight_restored" in preview_flags
 
 func _interact(point: WorldInteraction) -> void:
 	if point.kind == "exit":
+		if not point.required_ability.is_empty() and point.required_ability not in Session.abilities:
+			show_notice("需要踏壁回响才能进入静声藏室。")
+			return
 		if point.required_flag == "clear" and not room.is_cleared():
 			show_notice("先击败外廊两名杖使；西侧仍可退回阶庭。")
 			return
+		for required: String in point.required_flags:
+			if required not in preview_flags:
+				show_notice("需要先恢复东西两座承重，中央合鸣桥才会连通。")
+				return
 		if not point.required_flag.is_empty() and point.required_flag != "clear" and point.required_flag not in preview_flags:
 			show_notice("沿刻槽墙到上层，打开修院回闩。")
 			return
@@ -166,14 +204,31 @@ func _interact(point: WorldInteraction) -> void:
 			show_notice("获得踏壁回响 · 生命恢复\n先靠向青绿刻槽墙，再连续点按 [%s]；系统会帮你蹬向对墙。\n不用来回切方向，稍早或稍晚按也有效。长按不会连跳；宽台可休息。" % Session.bindings.hint("jump"),10)
 		_refresh()
 	elif point.kind == "reward":
+		if not room.is_cleared():
+			show_notice("先清理承钟机室，承重装置才安全可操作。")
+			return
 		if point.stable_id not in preview_flags:
 			preview_flags.append(point.stable_id)
-			show_notice("上层回闩已开。向右回到中庭上层，西侧可进入悬铃回廊。")
+			if point.stable_id == "east_weight_restored":
+				show_notice("东承重已恢复。上方回桥现在连通中庭；机室西侧可安全返回。")
+			elif point.stable_id == "west_weight_restored":
+				show_notice("西承重已恢复。上方回桥现在连通中庭；回廊东侧可安全返回。")
+			else:
+				show_notice("上层回闩已开。向右回到中庭上层，西侧可进入悬铃回廊。")
+		_refresh()
+	elif point.kind == "upgrade":
+		if point.stable_id == "bell_heart" and point.stable_id not in preview_flags:
+			preview_flags.append(point.stable_id)
+			Session.set_flag("bell_heart")
+			player.health.maximum = Session.maximum_health()
+			player.health.restore_full()
+			Audio.play_sound("ability_acquire")
+			show_notice("获得钟庭之心 · 最大生命 +1 · 生命恢复\n这是本次试玩的唯一生命上限奖励。", 10)
 		_refresh()
 	elif point.kind == "goal":
 		if room.is_cleared():
 			finished = true
-			show_notice("前半段试玩完成：鸣石、杖使、踏壁回环、铃翼掠袭。\n可以原路回访；双分支奖励与终钟 Boss 尚未开放。",12)
+			show_notice("前半段试玩完成：双承重回桥、钟庭之心、合鸣桥廊。\n可以原路回访；终钟 Boss 与正式章节存档尚未开放。",12)
 		else:
 			show_notice("悬铃回廊还有掠食者。")
 	else:

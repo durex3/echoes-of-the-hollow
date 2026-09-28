@@ -2,18 +2,22 @@
 
 ## 当前检查范围与平台
 
-玩法基线 `3ba389f` 已在 Windows 完成全量和图形检查，具体结果见[验证记录](verification.md)。本次换机交接仅整理文档；Mac 导入、渲染、输入及检查脚本尚待实机执行，不将 Windows 结果直接标成跨平台通过。
+玩法基线 `3ba389f` 已在 Windows 完成全量和图形检查，具体结果见[验证记录](verification.md)。Mac 已完成导入及 `tools/check.sh --full` 无头回归；Mac 图形显示与真人输入体验仍待单独验收。
 
 | 入口 | 当前覆盖 |
 |---|---|
 | `tools/check.ps1` | 静态/资产摘要、引擎导入、小怪受击与真实反击伤害、两组AI、壁跃、第三关默认与5HP无盾路线、当前章节集成 |
 | `tools/check.ps1 -Full` | 默认专项检查，加完整集成、前两章连续路线、秘库与跨进程存档/设置 |
 | `tools/check.ps1 -Full -Visual` | 全量范围，另启用实际渲染截图与图形运行；须打开图片核对 |
+| `tools/check.sh` | macOS 默认检查，与 `tools/check.ps1` 使用相同测试场景和结果标记 |
+| `tools/check.sh --full --visual` | macOS 全量和图形检查；须打开图片核对 |
+| `Play.command` / `Preview-Chapter-Three.command` | macOS 双击入口，分别运行主线或第三关独立试玩 |
+| `Check.command` / `Check-Full.command` | macOS 双击入口，分别运行默认或全量检查；日志写入 `artifacts/` |
 | GitHub Actions现有workflow | Windows默认检查；未配置Full/Visual或Mac任务；实际远程运行结果尚未核验 |
 
-第三关路线只覆盖前半段五房间，不能代表九房间完整章节、Boss或正式第三关存档已经验证。下一阶段新增双支路后必须增加两种先后顺序、回桥两端、中央桥门槛与5HP无盾路线证据。Mac入口适配不得减少这些检查，准备事项见[交接](next-development.md)。
+第三关路线覆盖九个独立试玩房间，但不能代表正式章节、Boss 真人难度或正式第三关存档已经验证。当前已增加两种支路先后顺序、回桥两端、中央桥门槛、钟庭之心、合鸣桥廊和终钟台第一可玩切片；后续主线接线仍需 5HP 无盾路线证据。Mac入口适配不得减少这些检查，准备事项见[交接](next-development.md)。
 
-纯文档修改核对本地相对链接、实现/规划状态、技能清单与 `git diff --check`；没有改行为时不重复跑全量游戏，也不把既有结果当作本次新运行。
+纯文档修改核对本地相对链接、实现/规划状态、技能清单与 `git diff --check`；没有改行为时不重复跑全量游戏，也不把既有结果当作本次新运行。Windows 使用 `tools/check.ps1`，macOS 使用 `tools/check.sh`；两者必须保持测试场景、完成标记和存档隔离规则一致。
 
 ## 当前战斗与试玩专项
 

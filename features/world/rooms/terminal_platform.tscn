@@ -1,0 +1,76 @@
+[gd_scene load_steps=10 format=4]
+
+[ext_resource type="Script" path="res://features/world/room.gd" id="1"]
+[ext_resource type="Script" path="res://features/world/bell_court_landmarks.gd" id="2"]
+[ext_resource type="TileSet" path="res://features/world/cistern_tileset.tres" id="3"]
+[ext_resource type="Script" path="res://features/world/interaction.gd" id="4"]
+[ext_resource type="PackedScene" path="res://features/enemies/bell_warden.tscn" id="5"]
+[ext_resource type="SpriteFrames" path="res://features/world/checkpoint_frames.tres" id="6"]
+[ext_resource type="Texture2D" path="res://assets/environment/forest.png" id="7"]
+
+[sub_resource type="RectangleShape2D" id="floor"]
+size = Vector2(576, 64)
+[sub_resource type="RectangleShape2D" id="wall"]
+size = Vector2(32, 384)
+
+[node name="TerminalPlatform" type="Node2D"]
+script = ExtResource("1")
+room_id = "terminal_platform"
+display_name = "终钟台"
+bounds = Rect2(0, 0, 576, 384)
+
+[node name="Sky" type="Node2D" parent="."]
+script = ExtResource("2")
+room_width = 576.0
+room_height = 384.0
+theme = "gallery"
+z_index = -20
+
+[node name="Terrain" type="TileMapLayer" parent="."]
+tile_map_data = PackedByteArray("AAAAAAoAAAAZAAAAAAAAAAsAAAAZAAIAAAABAAoAAAAaAAAAAAABAAsAAAAaAAIAAAACAAoAAAAZAAAAAAACAAsAAAAZAAIAAAADAAoAAAAaAAAAAAADAAsAAAAaAAIAAAAEAAoAAAAZAAAAAAAEAAsAAAAZAAIAAAAFAAoAAAAaAAAAAAAFAAsAAAAaAAIAAAAGAAoAAAAZAAAAAAAGAAsAAAAZAAIAAAAHAAoAAAAaAAAAAAAHAAsAAAAaAAIAAAAIAAoAAAAZAAAAAAAIAAsAAAAZAAIAAAAJAAoAAAAaAAAAAAAJAAsAAAAaAAIAAAAKAAoAAAAZAAAAAAAKAAsAAAAZAAIAAAALAAoAAAAaAAAAAAALAAsAAAAaAAIAAAAMAAoAAAAZAAAAAAAMAAsAAAAZAAIAAAANAAoAAAAaAAAAAAANAAsAAAAaAAIAAAAOAAoAAAAZAAAAAAAOAAsAAAAZAAIAAAAPAAoAAAAaAAAAAAAPAAsAAAAaAAIAAAAQAAoAAAAZAAAAAAAQAAsAAAAZAAIAAAARAAoAAAAaAAAAAAARAAsAAAAaAAIAAAASAAoAAAAZAAAAAAASAAsAAAAZAAIAAAATAAoAAAAaAAAAAAATAAsAAAAaAAIAAAAUAAoAAAAZAAAAAAAUAAsAAAAZAAIAAAAVAAoAAAAaAAAAAAAVAAsAAAAaAAIAAAAWAAoAAAAZAAAAAAAWAAsAAAAZAAIAAAAXAAoAAAAaAAAAAAAXAAsAAAAaAAIAAAAYAAoAAAAZAAAAAAAYAAsAAAAZAAIAAAAZAAoAAAAaAAAAAAAZAAsAAAAaAAIAAAAaAAoAAAAZAAAAAAAaAAsAAAAZAAIAAAAbAAoAAAAaAAAAAAAbAAsAAAAaAAIAAAAcAAoAAAAZAAAAAAAcAAsAAAAZAAIAAAAdAAoAAAAaAAAAAAAdAAsAAAAaAAIAAAAeAAoAAAAZAAAAAAAeAAsAAAAZAAIAAAAfAAoAAAAaAAAAAAAfAAsAAAAaAAIAAAAgAAoAAAAZAAAAAAAgAAsAAAAZAAIAAAAhAAoAAAAaAAAAAAAhAAsAAAAaAAIAAAAiAAoAAAAZAAAAAAAiAAsAAAAZAAIAAAAjAAoAAAAaAAAAAAAjAAsAAAAaAAIAAAA=")
+tile_set = ExtResource("3")
+
+[node name="FloorCollision" type="StaticBody2D" parent="."]
+position = Vector2(288, 352)
+[node name="Collision" type="CollisionShape2D" parent="FloorCollision"]
+shape = SubResource("floor")
+[node name="LeftBoundary" type="StaticBody2D" parent="."]
+position = Vector2(-16, 192)
+[node name="Collision" type="CollisionShape2D" parent="LeftBoundary"]
+shape = SubResource("wall")
+[node name="RightBoundary" type="StaticBody2D" parent="."]
+position = Vector2(592, 192)
+[node name="Collision" type="CollisionShape2D" parent="RightBoundary"]
+shape = SubResource("wall")
+
+[node name="Spawns" type="Node2D" parent="."]
+[node name="entry" type="Marker2D" parent="Spawns"]
+position = Vector2(96, 320)
+[node name="checkpoint" type="Marker2D" parent="Spawns"]
+position = Vector2(96, 320)
+[node name="return" type="Marker2D" parent="Spawns"]
+position = Vector2(96, 320)
+
+[node name="Interactions" type="Node2D" parent="."]
+[node name="Shrine" type="Node2D" parent="Interactions"]
+position = Vector2(96, 320)
+script = ExtResource("4")
+kind = "checkpoint"
+checkpoint_spawn = "checkpoint"
+prompt = "记录终钟台战前重试点"
+[node name="ShrineArt" type="AnimatedSprite2D" parent="Interactions/Shrine"]
+position = Vector2(0, -20)
+sprite_frames = ExtResource("6")
+animation = &"idle"
+autoplay = "idle"
+[node name="Return" type="Node2D" parent="Interactions"]
+position = Vector2(64, 320)
+script = ExtResource("4")
+kind = "exit"
+target_room = "confluence_bridge"
+target_spawn = "altar"
+prompt = "向西 · 返回合鸣桥廊"
+[node name="Enemies" type="Node2D" parent="."]
+[node name="BellWarden" parent="Enemies" instance=ExtResource("5")]
+position = Vector2(432, 320)
+[node name="Hazards" type="Node2D" parent="."]

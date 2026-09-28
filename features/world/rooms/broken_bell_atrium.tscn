@@ -97,6 +97,56 @@ script = ExtResource("4_hc07k")
 kind = "sign"
 prompt = "两座承钟支路与终钟台尚未开放；本次试玩先向西体验铃翼掠袭。"
 
+[node name="machine" type="Marker2D" parent="Spawns"]
+position = Vector2(704, 256)
+
+[node name="machine_bridge" type="Marker2D" parent="Spawns"]
+position = Vector2(576, 256)
+
+[node name="gallery_bridge" type="Marker2D" parent="Spawns"]
+position = Vector2(320, 256)
+
+[node name="quiet_heart_return" type="Marker2D" parent="Spawns"]
+position = Vector2(608, 256)
+
+[node name="confluence_return" type="Marker2D" parent="Spawns"]
+position = Vector2(672, 256)
+
+[node name="EastWeight" type="Node2D" parent="Interactions"]
+position = Vector2(752, 256)
+script = ExtResource("4_hc07k")
+kind = "exit"
+target_room = "bell_weight_chamber"
+target_spawn = "entry"
+prompt = "向东 · 承钟机室"
+
+[node name="WestBridgeReturn" type="Node2D" parent="Interactions"]
+position = Vector2(256, 256)
+script = ExtResource("4_hc07k")
+kind = "exit"
+required_flag = "west_weight_restored"
+target_room = "hanging_gallery"
+target_spawn = "bridge"
+prompt = "沿西回桥返回悬铃回廊"
+
+[node name="QuietReliquary" type="Node2D" parent="Interactions"]
+position = Vector2(544, 256)
+script = ExtResource("4_hc07k")
+kind = "exit"
+required_ability = "wall_echo"
+target_room = "quiet_reliquary"
+target_spawn = "entry"
+prompt = "向北 · 静声藏室"
+
+[node name="Confluence" type="Node2D" parent="Interactions"]
+position = Vector2(672, 256)
+script = ExtResource("4_hc07k")
+kind = "exit"
+required_flags = ["east_weight_restored", "west_weight_restored"]
+target_room = "confluence_bridge"
+target_spawn = "entry"
+prompt = "向北 · 合鸣桥廊"
+
 [node name="Enemies" type="Node2D" parent="." unique_id=1488120186]
 
 [node name="Hazards" type="Node2D" parent="." unique_id=502758860]

@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="BellWardenConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://features/enemies/bell_warden_config.gd" id="1"]
+
+[resource]
+script = ExtResource("1")

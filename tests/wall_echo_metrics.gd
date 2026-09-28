@@ -23,8 +23,11 @@ func frames(count: int) -> void:
 
 func shot(name_text: String) -> void:
 	if "--visual" in OS.get_cmdline_user_args():
+		var was_paused := get_tree().paused
+		get_tree().paused = true
 		await RenderingServer.frame_post_draw
 		var error := get_viewport().get_texture().get_image().save_png("res://artifacts/" + name_text + ".png")
+		get_tree().paused = was_paused
 		check(error == OK, "Saved blockout screenshot " + name_text)
 
 func check(condition: bool, message: String) -> void:

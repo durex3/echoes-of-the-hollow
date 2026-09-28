@@ -58,6 +58,18 @@ if ($bellLog -notmatch 'BELL_COURT_RESULT: \d+ checks, 0 failures' -or $bellLog 
 Invoke-CheckedGodot -Name 'bell_court_baseline' -Arguments @('--headless','--fixed-fps','60','res://tests/bell_court_suite.tscn','--','--baseline')
 $bellBaselineLog = Get-Content -LiteralPath (Join-Path $artifacts 'bell_court_baseline.log') -Raw
 if ($bellBaselineLog -notmatch 'BELL_COURT_RESULT: \d+ checks, 0 failures' -or $bellBaselineLog -notmatch 'BELL_ROUTE_PASS:.*baseline=true') { throw 'Five HP, no ward front-half route must complete.' }
+Invoke-CheckedGodot -Name 'bell_branch' -Arguments @('--headless','--fixed-fps','60','res://tests/bell_branch_suite.tscn')
+$branchLog = Get-Content -LiteralPath (Join-Path $artifacts 'bell_branch.log') -Raw
+if ($branchLog -notmatch 'BELL_BRANCH_RESULT: \d+ checks, 0 failures') { throw 'Both weight branches and real bridges must complete.' }
+Invoke-CheckedGodot -Name 'bell_heart' -Arguments @('--headless','--fixed-fps','60','res://tests/bell_heart_suite.tscn')
+$heartLog = Get-Content -LiteralPath (Join-Path $artifacts 'bell_heart.log') -Raw
+if ($heartLog -notmatch 'BELL_HEART_RESULT: \d+ checks, 0 failures') { throw 'Optional bell heart route must complete.' }
+Invoke-CheckedGodot -Name 'confluence_bridge' -Arguments @('--headless','--fixed-fps','60','res://tests/confluence_bridge_suite.tscn')
+$confluenceLog = Get-Content -LiteralPath (Join-Path $artifacts 'confluence_bridge.log') -Raw
+if ($confluenceLog -notmatch 'CONFLUENCE_RESULT: \d+ checks, 0 failures') { throw 'Confluence bridge composition must complete.' }
+Invoke-CheckedGodot -Name 'bell_warden' -Arguments @('--headless','--fixed-fps','60','res://tests/bell_warden_suite.tscn')
+$wardenLog = Get-Content -LiteralPath (Join-Path $artifacts 'bell_warden.log') -Raw
+if ($wardenLog -notmatch 'BELL_WARDEN_RESULT: \d+ checks, 0 failures') { throw 'Bell warden phases and echo marks must complete.' }
 if (-not $Full) {
     if ($Visual) {
         Invoke-CheckedGodot -Name 'current_visual' -Arguments @('--fixed-fps','60','--max-fps','60','res://tests/test_runner.tscn','--','--current','--visual')

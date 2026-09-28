@@ -46,8 +46,11 @@ func press(action: String, count := 1) -> void:
 func shot(filename: String) -> void:
 	if not visual:
 		return
+	var was_paused := get_tree().paused
+	get_tree().paused = true
 	await RenderingServer.frame_post_draw
 	var result := get_viewport().get_texture().get_image().save_png("res://artifacts/" + filename + ".png")
+	get_tree().paused = was_paused
 	check(result == OK, "Screenshot: " + filename)
 
 func _run() -> void:

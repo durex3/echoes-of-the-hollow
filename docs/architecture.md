@@ -2,9 +2,9 @@
 
 ## 当前运行边界与后续接线
 
-正式入口 `app/main.tscn` 仍服务前两章16房间；第三关通过 `features/world/prototypes/bell_court_preview.tscn` 独立运行五房间，复用已有角色/战斗组件，但进度为内存状态。已实现 `WallEcho`、`ResonantSlab`、`BellInvoker`、`BellSkimmer` 和七类小怪的 `EnemyStagger`；第三关 Boss、完整支路/奖励、正式 Session/SaveRepository/WorldMap 接线待做。
+正式入口 `app/main.tscn` 仍服务前两章16房间；第三关通过 `features/world/prototypes/bell_court_preview.tscn` 独立运行九房间，复用已有角色/战斗组件，但进度为内存状态。已实现 `WallEcho`、`ResonantSlab`、`BellInvoker`、`BellSkimmer`、双承重回桥、钟庭之心和 `BellWarden` 第一可玩切片；正式第三关 Session/SaveRepository/WorldMap 接线待做。
 
-下一项为双支路与承重回桥，保持已认可的物理/地图和只读 Resource 约定。正式集成时再按[第三关设计](tasks/chapter_three.md)扩展稳定 ID 与存档白名单，不提前让不存在的房间进入主线。开发顺序与 Mac 边界见[交接](next-development.md)。下方按专题及版本保留演进记录，后续修订优先于历史实现。
+下一项为 Boss 完整验收和正式主线接线，保持已认可的物理/地图和只读 Resource 约定。正式集成时再按[第三关设计](tasks/chapter_three.md)扩展稳定 ID 与存档白名单，不提前让试玩房间进入主线。开发顺序与 Windows/Mac 边界见[交接](next-development.md)。下方按专题及版本保留演进记录，后续修订优先于历史实现。
 
 ## 杖使贴身反击的选招距离
 
