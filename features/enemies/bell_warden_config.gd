@@ -19,6 +19,15 @@ extends Resource
 @export var dash_recovery := 0.76
 @export var dash_speed := 430.0
 @export var dash_damage := 1
+@export var double_echo_record_gap := 0.42
+@export var double_echo_warning := 0.72
+@export var double_echo_active := 0.24
+@export var double_echo_recovery := 1.0
+@export var double_echo_damage := 1
+@export var resonance_charge := 1.6
+@export var resonance_active_seconds := 0.26
+@export var resonance_recovery_seconds := 1.0
+@export var resonance_layer_damage := 1
 @export var echo_windup := 1.05
 @export var echo_active := 0.28
 @export var echo_recovery := 1.0

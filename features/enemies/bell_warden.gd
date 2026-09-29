@@ -7,7 +7,7 @@ signal cue_changed(message: String)
 signal impact(at: Vector2, killed: bool)
 
 enum State { DORMANT, INTRO, CHASE, WINDUP, STRIKE, RECOVER, DEAD, STAGGER }
-enum Attack { SWEEP, DASH }
+enum Attack { SWEEP, DASH, DOUBLE_ECHO, LAYER_RESONANCE }
 
 @export var config: BellWardenConfig
 @onready var health: HealthComponent = $Health
@@ -82,7 +82,7 @@ func _physics_process(delta: float) -> void:
 		State.STAGGER:
 			if timer <= 0.0: _enter(State.CHASE)
 	move_and_slide()
-	contact_box.active = state in [State.CHASE, State.WINDUP, State.STRIKE]
+	contact_box.active = state in [State.CHASE, State.WINDUP, State.STRIKE] and (state == State.CHASE or attack in [Attack.SWEEP, Attack.DASH])
 	contact_box.damage = 1
 	global_position.x = clampf(global_position.x, config.arena_min_x, config.arena_max_x)
 	_update_visual()
@@ -93,14 +93,14 @@ func _start_attack() -> void:
 		return
 	var distance := absf(target.global_position.x - global_position.x)
 	var airborne := target.global_position.y < global_position.y - 34.0
-	var selected: int = decision.choose_attack(distance, airborne, regular_attacks, (attack_states[Attack.DASH] as BossAttackState).ready(), (attack_states[Attack.SWEEP] as BossAttackState).ready())
+	var selected: int = decision.choose_attack(distance, airborne, regular_attacks, (attack_states[Attack.DASH] as BossAttackState).ready(), (attack_states[Attack.SWEEP] as BossAttackState).ready(), (attack_states[Attack.DOUBLE_ECHO] as BossAttackState).ready(), (attack_states[Attack.LAYER_RESONANCE] as BossAttackState).ready(), target.is_on_floor(), int(attack))
 	if selected < 0:
 		return
 	attack = selected as Attack
 	(attack_states[attack] as BossAttackState).arm()
 	state_machine.change(attack_states[attack])
 	attack_count += 1
-	if attack == Attack.DASH:
+	if attack != Attack.SWEEP:
 		regular_attacks = 0
 	else:
 		regular_attacks += 1
@@ -127,16 +127,26 @@ func _enter(next: State) -> void:
 			contact_box.end_swing()
 
 func _windup() -> float:
+	if attack == Attack.DOUBLE_ECHO:
+		return config.double_echo_record_gap * 2.0
+	if attack == Attack.LAYER_RESONANCE:
+		return config.resonance_charge
 	return config.sweep_windup if attack == Attack.SWEEP else config.dash_windup
 
 func _active() -> float:
+	if attack == Attack.DOUBLE_ECHO:
+		return config.double_echo_warning + config.double_echo_record_gap + config.double_echo_active + 0.12
+	if attack == Attack.LAYER_RESONANCE:
+		return config.resonance_active_seconds
 	return config.sweep_active if attack == Attack.SWEEP else config.dash_active
 
 func _update_visual() -> void:
 	body_sprite.flip_h = facing > 0.0
 	body_sprite.position.x = facing * 40.0
 	body_sprite.modulate = Color(2.6, 2.6, 2.6) if flash_left > 0.0 and not Session.reduce_flashes else Color.WHITE
-	if state == State.WINDUP:
+	if attack in [Attack.DOUBLE_ECHO, Attack.LAYER_RESONANCE] and state in [State.WINDUP, State.STRIKE]:
+		_set_strip_frame(40 + mini(5, int(action_elapsed * 8.0)))
+	elif state == State.WINDUP:
 		_set_strip_frame(16 + mini(3, int(action_elapsed / maxf(_windup(), 0.01) * 4.0)))
 	elif state == State.STRIKE:
 		_set_strip_frame(20 + mini(3, int(action_elapsed / maxf(_active(), 0.01) * 4.0)))

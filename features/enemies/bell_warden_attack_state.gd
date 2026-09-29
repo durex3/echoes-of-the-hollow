@@ -1,6 +1,16 @@
 class_name BellWardenAttackState
 extends BossAttackState
 
+const ECHO_MARK := preload("res://features/enemies/echo_mark.gd")
+const RESONANCE := preload("res://features/enemies/bell_warden_resonance.gd")
+const GHOST_SHEET := preload("res://assets/characters/bell_warden_sheet.png")
+var recorded: Array[Vector2] = []
+var hazards: Array[Node2D] = []
+var layer_locked := false
+var swap_target := Vector2.ZERO
+var swap_cue: Sprite2D
+var record_clock := 0.0
+
 func _init(id := 0, label := "", cooldown_seconds := 0.0) -> void:
 	attack_id = id
 	name_id = label
@@ -8,11 +18,21 @@ func _init(id := 0, label := "", cooldown_seconds := 0.0) -> void:
 
 func enter() -> void:
 	super.enter()
+	recorded.clear()
+	layer_locked = false
+	swap_target = Vector2.ZERO
+	record_clock = 0.0
 	_begin_phase(BellWarden.State.WINDUP)
 
 func physics_update(delta: float) -> void:
 	super.physics_update(delta)
 	var boss := host as BellWarden
+	if attack_id == BellWarden.Attack.DOUBLE_ECHO:
+		_update_echo(boss)
+		return
+	if attack_id == BellWarden.Attack.LAYER_RESONANCE:
+		_update_resonance(boss)
+		return
 	match boss.state:
 		BellWarden.State.WINDUP:
 			if boss.timer <= 0.0:
@@ -30,6 +50,13 @@ func physics_update(delta: float) -> void:
 
 func exit() -> void:
 	(host as BellWarden).attack_box.end_swing()
+	for hazard in hazards:
+		if is_instance_valid(hazard):
+			hazard.queue_free()
+	hazards.clear()
+	if is_instance_valid(swap_cue):
+		swap_cue.queue_free()
+	swap_cue = null
 	super.exit()
 
 func _begin_phase(next: BellWarden.State) -> void:
@@ -40,15 +67,99 @@ func _begin_phase(next: BellWarden.State) -> void:
 	boss.attack_box.end_swing()
 	match next:
 		BellWarden.State.WINDUP:
-			boss.timer = boss.config.sweep_windup if attack_id == BellWarden.Attack.SWEEP else boss.config.dash_windup
+			boss.timer = boss.config.double_echo_record_gap * 2.0 if attack_id == BellWarden.Attack.DOUBLE_ECHO else boss.config.resonance_charge if attack_id == BellWarden.Attack.LAYER_RESONANCE else boss.config.sweep_windup if attack_id == BellWarden.Attack.SWEEP else boss.config.dash_windup
+			if attack_id in [BellWarden.Attack.DOUBLE_ECHO, BellWarden.Attack.LAYER_RESONANCE]:
+				boss.contact_box.end_swing()
+				boss.cue_changed.emit("双重回响" if attack_id == BellWarden.Attack.DOUBLE_ECHO else "楼层共振")
+				return
 			boss.attack_box.position.x = boss.facing * (34.0 if attack_id == BellWarden.Attack.SWEEP else 42.0)
 			boss.attack_box.damage = boss.config.sweep_damage if attack_id == BellWarden.Attack.SWEEP else boss.config.dash_damage
 			boss.attack_box.begin_swing()
 			boss.cue_changed.emit("红色横扫：后撤或绕后" if attack_id == BellWarden.Attack.SWEEP else "红色突进：跳过或绕后")
 		BellWarden.State.STRIKE:
-			boss.timer = boss.config.sweep_active if attack_id == BellWarden.Attack.SWEEP else boss.config.dash_active
-			boss.attack_box.active = true
+			boss.timer = boss._active()
+			boss.attack_box.active = attack_id in [BellWarden.Attack.SWEEP, BellWarden.Attack.DASH]
 		BellWarden.State.RECOVER:
-			boss.timer = boss.config.sweep_recovery if attack_id == BellWarden.Attack.SWEEP else boss.config.dash_recovery
+			boss.timer = boss.config.double_echo_recovery if attack_id == BellWarden.Attack.DOUBLE_ECHO else boss.config.resonance_recovery_seconds if attack_id == BellWarden.Attack.LAYER_RESONANCE else boss.config.sweep_recovery if attack_id == BellWarden.Attack.SWEEP else boss.config.dash_recovery
 			boss.contact_box.begin_swing()
 			boss.cue_changed.emit("反击窗口")
+
+func _update_echo(boss: BellWarden) -> void:
+	if boss.state == BellWarden.State.WINDUP:
+		if boss.target.is_on_floor() and boss.action_elapsed >= record_clock:
+			if recorded.is_empty() or recorded[recorded.size() - 1].distance_to(boss.target.global_position) >= 72.0:
+				recorded.append(boss.target.global_position)
+				record_clock = boss.action_elapsed + boss.config.double_echo_record_gap
+		if boss.timer <= 0.0:
+			if recorded.is_empty():
+				recorded.append(boss.target.global_position)
+			for index in range(mini(2, recorded.size())):
+				var mark := ECHO_MARK.new() as EchoMark
+				mark.pattern = "target"
+				mark.ghost_visual = true
+				mark.delay_seconds = boss.config.double_echo_warning + float(index) * boss.config.double_echo_record_gap
+				mark.active_seconds = boss.config.double_echo_active
+				mark.radius = 38.0
+				mark.damage = boss.config.double_echo_damage
+				mark.player = boss.target
+				boss.get_parent().add_child(mark)
+				mark.global_position = recorded[index]
+				hazards.append(mark)
+			_begin_phase(BellWarden.State.STRIKE)
+	elif boss.state == BellWarden.State.STRIKE:
+		if boss.timer <= 0.32 and not is_instance_valid(swap_cue):
+			var candidate := recorded[recorded.size() - 1]
+			if candidate.y >= 295.0 and candidate.x >= boss.config.arena_min_x + 35.0 and candidate.x <= boss.config.arena_max_x - 35.0 and candidate.distance_to(boss.target.global_position) >= 85.0 and candidate.distance_to(boss.global_position) >= 95.0:
+				swap_target = candidate
+				swap_cue = Sprite2D.new()
+				swap_cue.texture = GHOST_SHEET
+				swap_cue.region_enabled = true
+				swap_cue.region_rect = Rect2(0, 93, 140, 93)
+				swap_cue.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+				swap_cue.scale = boss.body_sprite.scale
+				swap_cue.modulate = Color(1.0, 0.32, 0.78, 0.95)
+				swap_cue.z_index = 8
+				boss.get_parent().add_child(swap_cue)
+				swap_cue.global_position = candidate + Vector2(-40.0, -49.0)
+		if boss.timer <= 0.0:
+			if is_instance_valid(swap_cue) and swap_target.distance_to(boss.target.global_position) >= 75.0:
+				boss.global_position = swap_target
+			if is_instance_valid(swap_cue):
+				swap_cue.queue_free()
+			swap_cue = null
+			_begin_phase(BellWarden.State.RECOVER)
+	elif boss.state == BellWarden.State.RECOVER:
+		boss.velocity.x = 0.0
+		if boss.timer <= 0.0:
+			machine.finish()
+			boss._enter(BellWarden.State.CHASE)
+
+func _update_resonance(boss: BellWarden) -> void:
+	if boss.state == BellWarden.State.WINDUP:
+		if not layer_locked and boss.action_elapsed >= 0.4:
+			layer_locked = true
+			var mark := RESONANCE.new() as BellWardenResonance
+			mark.player = boss.target
+			mark.warning_seconds = boss.config.resonance_charge - 0.4
+			mark.active_seconds = boss.config.resonance_active_seconds
+			mark.damage = boss.config.resonance_layer_damage
+			var foot := boss.target.global_position
+			if foot.y < 196.0 and foot.x >= 224.0 and foot.x <= 352.0:
+				mark.configure_layer(224.0, 352.0, 168.0)
+			elif foot.y < 270.0 and foot.x < 288.0:
+				mark.configure_layer(64.0, 160.0, 228.0)
+			elif foot.y < 270.0:
+				mark.configure_layer(416.0, 512.0, 228.0)
+			else:
+				mark.configure_layer(0.0, 576.0, 320.0)
+			boss.get_parent().add_child(mark)
+			hazards.append(mark)
+		if boss.timer <= 0.0:
+			_begin_phase(BellWarden.State.STRIKE)
+	elif boss.state == BellWarden.State.STRIKE and boss.timer <= 0.0:
+		_begin_phase(BellWarden.State.RECOVER)
+	elif boss.state == BellWarden.State.RECOVER:
+		boss.velocity.x = 0.0
+		if boss.timer <= 0.0:
+			machine.finish()
+			boss._enter(BellWarden.State.CHASE)

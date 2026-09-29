@@ -35,6 +35,16 @@ script = ExtResource("9")
 attack_id = 1
 name_id = "dash"
 cooldown = 4.0
+[node name="DoubleEcho" type="Node" parent="BossStateMachine"]
+script = ExtResource("9")
+attack_id = 2
+name_id = "double_echo"
+cooldown = 8.0
+[node name="LayerResonance" type="Node" parent="BossStateMachine"]
+script = ExtResource("9")
+attack_id = 3
+name_id = "layer_resonance"
+cooldown = 9.0
 
 [node name="Sprite" type="Sprite2D" parent="."]
 position = Vector2(-40, -49)

@@ -102,8 +102,10 @@ func _run() -> void:
 	boss._enter(BellWarden.State.CHASE)
 	boss.timer = 0.0
 	boss._start_attack()
-	check(boss.attack in [BellWarden.Attack.SWEEP, BellWarden.Attack.DASH], "Low health keeps the regular loop until the finisher is designed")
-	check(boss.attack_states.size() == 2, "Only designed Chapter III normal attacks are registered")
+	check(boss.attack_states.size() == 4, "Chapter III has normal attacks and two independent specials")
+	check((boss.attack_states[BellWarden.Attack.DOUBLE_ECHO] as BossAttackState).cooldown != (boss.attack_states[BellWarden.Attack.LAYER_RESONANCE] as BossAttackState).cooldown, "Special attacks keep independent cooldowns")
+	await _check_resonance_damage()
+	await _check_double_echo()
 	print("BELL_WARDEN_RESULT: %d checks, %d failures" % [checks, failures.size()])
 	get_tree().quit(0 if failures.is_empty() else 1)
 
@@ -123,6 +125,103 @@ func _check_boss_decisions() -> void:
 	check(bell.choose_attack(180.0, false, 3, true, true) == BellWarden.Attack.DASH, "Bell warden dashes after three sweeps at mid-range")
 	check(bell.choose_attack(80.0, false, 3, true, true) == BellWarden.Attack.SWEEP, "Bell warden does not dash at point-blank range")
 	check(bell.choose_attack(180.0, false, 3, false, true) == BellWarden.Attack.SWEEP, "Bell warden respects dash cooldown")
+	check(bell.choose_attack(180.0, false, 2, true, true, true, true, true) == BellWarden.Attack.DOUBLE_ECHO, "Grounded player after ordinary attacks enables double echo")
+	check(bell.choose_attack(180.0, false, 2, true, true, true, true, false) != BellWarden.Attack.DOUBLE_ECHO, "Airborne player is not recorded as a landing")
+	check(bell.choose_attack(180.0, false, 1, true, true, false, true, true) == BellWarden.Attack.LAYER_RESONANCE, "Resonance has its own selection path")
+
+func _check_resonance_damage() -> void:
+	boss.set_physics_process(false)
+	boss.state_machine.finish()
+	game.player.set_physics_process(false)
+	game.player.revive(Vector2(288.0, 320.0))
+	game.player.health.restore_full()
+	var mark := BellWardenResonance.new()
+	mark.player = game.player
+	mark.warning_seconds = 0.2
+	mark.active_seconds = 0.3
+	mark.configure_layer(0.0, 576.0, 320.0)
+	game.room.add_child(mark)
+	var hp: int = game.player.health.current
+	await frames(8)
+	check(game.player.health.current == hp and not mark.hit, "Layer resonance warning is harmless")
+	await shot("bell_warden_resonance_warning")
+	game.player.global_position = Vector2(288.0, 168.0)
+	await frames(7)
+	await shot("bell_warden_resonance_active")
+	await frames(13)
+	check(game.player.health.current == hp and not mark.hit, "Leaving the locked floor avoids resonance")
+	mark.queue_free()
+	game.player.revive(Vector2(288.0, 320.0))
+	game.player.health.restore_full()
+	var hit_mark := BellWardenResonance.new()
+	hit_mark.player = game.player
+	hit_mark.warning_seconds = 0.05
+	hit_mark.active_seconds = 0.3
+	hit_mark.configure_layer(0.0, 576.0, 320.0)
+	game.room.add_child(hit_mark)
+	hp = game.player.health.current
+	await frames(9)
+	check(game.player.health.current == hp - 1 and hit_mark.hit, "Locked floor resonance deals one real hit")
+	hit_mark.queue_free()
+	game.player.set_physics_process(true)
+
+func _check_double_echo() -> void:
+	boss.set_physics_process(false)
+	boss.state_machine.finish()
+	boss.global_position = Vector2(432.0, 320.0)
+	game.player.revive(Vector2(210.0, 320.0))
+	await frames(3)
+	var echo := boss.attack_states[BellWarden.Attack.DOUBLE_ECHO] as BellWardenAttackState
+	boss.attack = BellWarden.Attack.DOUBLE_ECHO
+	boss.state_machine.change(echo)
+	boss.action_elapsed = 0.15
+	echo._update_echo(boss)
+	check(echo.recorded.size() == 1, "First grounded landing is recorded")
+	game.player.global_position = Vector2(330.0, 320.0)
+	await frames(3)
+	boss.action_elapsed = 0.65
+	echo._update_echo(boss)
+	check(echo.recorded.size() == 2 and echo.recorded[1].x > echo.recorded[0].x + 70.0, "Second distinct landing is recorded")
+	boss.timer = 0.0
+	echo._update_echo(boss)
+	check(echo.hazards.size() == 2 and boss.state == BellWarden.State.STRIKE, "Two fixed ghosts release in sequence")
+	await shot("bell_warden_double_echo")
+	game.player.global_position = Vector2(470.0, 320.0)
+	boss.timer = 0.31
+	echo._update_echo(boss)
+	check(is_instance_valid(echo.swap_cue), "Optional swap shows a destination ghost first")
+	await shot("bell_warden_swap_cue")
+	boss.timer = 0.0
+	echo._update_echo(boss)
+	check(absf(boss.global_position.x - 330.0) < 3.0 and boss.state == BellWarden.State.RECOVER, "Swap lands at the fixed ghost and enters recovery")
+	boss.state_machine.finish()
+	game.player.revive(Vector2(210.0, 320.0))
+	var ghost := EchoMark.new()
+	ghost.pattern = "target"
+	ghost.ghost_visual = true
+	ghost.player = game.player
+	ghost.delay_seconds = 0.12
+	ghost.active_seconds = 0.24
+	ghost.radius = 38.0
+	ghost.damage = 1
+	game.room.add_child(ghost)
+	ghost.global_position = Vector2(210.0, 320.0)
+	var ghost_hp: int = game.player.health.current
+	await frames(20)
+	check(game.player.health.current == ghost_hp - 1 and ghost.hit, "Ghost's visible attack resolves through the player hurtbox once")
+	ghost.queue_free()
+	boss.global_position = Vector2(432.0, 320.0)
+	game.player.global_position = Vector2(210.0, 320.0)
+	await frames(3)
+	boss.state_machine.change(echo)
+	boss.action_elapsed = 0.15
+	echo._update_echo(boss)
+	boss.action_elapsed = 0.65
+	echo._update_echo(boss)
+	boss.timer = 0.0
+	echo._update_echo(boss)
+	check(echo.hazards.size() == 1, "Repeated landing collapses to one ghost instead of stacking hits")
+	boss.state_machine.finish()
 
 func shot(label: String) -> void:
 	if "--visual" not in OS.get_cmdline_user_args():
