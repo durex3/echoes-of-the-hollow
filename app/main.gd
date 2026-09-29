@@ -151,24 +151,17 @@ func load_room(room_id: String, spawn: String, rehearsal := false) -> void:
 	room.projectile_impact.connect($Feedback.show_impact.bind(false))
 	room.prompt_changed.connect(func(message: String) -> void: ui.set_text(ui.prompt,message))
 	room.update_progress()
+	var boss_orchestrator := room.get_node_or_null("BossBattleOrchestrator") as BossBattleOrchestrator
+	if boss_orchestrator:
+		boss_orchestrator.setup(room, player, ui)
+		boss_orchestrator.impact.connect($Feedback.show_impact.bind(false))
+		match room_id:
+			"heart_chamber": boss_orchestrator.boss_defeated.connect(_on_warden_defeated)
+			"furnace_core": boss_orchestrator.boss_defeated.connect(_on_keeper_defeated)
+			"terminal_platform": boss_orchestrator.boss_defeated.connect(_on_bell_warden_defeated)
 	for enemy: Node in room.get_node("Enemies").get_children():
-		if enemy is FurnaceKeeper:
-			enemy.target = player
-			var furnace_orchestrator := BossBattleOrchestrator.new()
-			room.add_child(furnace_orchestrator)
-			furnace_orchestrator.setup(room, enemy, ui, "FURNACE KEEPER", _on_keeper_defeated)
-			enemy.awakened.connect(func() -> void:
-				for vent: SteamVent in room.get_node("Hazards").get_children():
-					vent.deactivate())
-			enemy.impact.connect($Feedback.show_impact.bind(false))
 		if enemy is WingedChest or enemy is RoseSentinel:
 			enemy.target = player
-			enemy.impact.connect($Feedback.show_impact.bind(false))
-		if enemy is HollowWarden:
-			enemy.target = player
-			var warden_orchestrator := BossBattleOrchestrator.new()
-			room.add_child(warden_orchestrator)
-			warden_orchestrator.setup(room, enemy, ui, "HOLLOW WARDEN", _on_warden_defeated)
 			enemy.impact.connect($Feedback.show_impact.bind(false))
 		if enemy is DoomScribe:
 			enemy.target = player
@@ -180,12 +173,6 @@ func load_room(room_id: String, spawn: String, rehearsal := false) -> void:
 			enemy.target = player
 			enemy.impact.connect($Feedback.show_impact.bind(false))
 			enemy.defeated.connect(_on_chapter_three_enemy_defeated.bind(room.get_instance_id()), CONNECT_DEFERRED)
-		if enemy is BellWarden:
-			enemy.target = player
-			var bell_orchestrator := BossBattleOrchestrator.new()
-			room.add_child(bell_orchestrator)
-			bell_orchestrator.setup(room, enemy, ui, "BELL WARDEN", _on_bell_warden_defeated)
-			enemy.impact.connect($Feedback.show_impact.bind(false))
 	player.global_position = room.spawn_position(spawn)
 	player.velocity = Vector2.ZERO
 	Session.visit(room_id)

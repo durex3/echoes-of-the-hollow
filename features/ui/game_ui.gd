@@ -145,7 +145,7 @@ func _ready() -> void:
 	boss_panel.offset_top = 35
 	boss_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hud.add_child(boss_panel)
-	boss_title = label("HOLLOW WARDEN / I",14,Color("efce8e"))
+	boss_title = label("HOLLOW WARDEN",14,Color("efce8e"))
 	boss_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	boss_panel.add_child(boss_title)
 	boss_bar = ProgressBar.new()
@@ -375,7 +375,7 @@ func update_progress() -> void:
 func show_boss(current: int, maximum: int, title := "HOLLOW WARDEN") -> void:
 	boss_name = title
 	update_boss_health(current,maximum)
-	update_boss_phase(1)
+	set_text(boss_title, boss_name)
 	reward_notice.remaining = 0
 	boss_panel.show()
 	controls.hide()
@@ -383,9 +383,6 @@ func show_boss(current: int, maximum: int, title := "HOLLOW WARDEN") -> void:
 func update_boss_health(current: int, maximum: int) -> void:
 	boss_bar.max_value = maximum
 	boss_bar.value = current
-
-func update_boss_phase(phase: int) -> void:
-	set_text(boss_title,boss_name + " / " + ["I", "II", "III"][clampi(phase - 1, 0, 2)])
 
 func hide_boss() -> void:
 	boss_panel.hide()

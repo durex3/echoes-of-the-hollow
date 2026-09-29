@@ -3,11 +3,10 @@ extends CharacterBody2D
 
 signal defeated
 signal awakened
-signal phase_changed(phase: int)
 signal cue_changed(message: String)
 signal impact(at: Vector2, killed: bool)
 const COURT := preload("res://features/combat/sword_court.tscn")
-enum State { DORMANT, INTRO, CHASE, WINDUP, STRIKE, RECOVER, TRANSITION, DEAD, SWORD_COURT }
+enum State { DORMANT, INTRO, CHASE, WINDUP, STRIKE, RECOVER, DEAD, SWORD_COURT }
 enum Attack { SWEEP, RUSH, CHARGED }
 @export var config: WardenConfig
 @onready var health: HealthComponent = $Health
@@ -16,18 +15,11 @@ enum Attack { SWEEP, RUSH, CHARGED }
 @onready var charged_box: Hitbox = $ChargedBox
 @onready var contact_box: Hitbox = $ContactBox
 const HollowWardenDecisionScript = preload("res://features/enemies/hollow_warden_decision.gd")
-const StateMachineScript = preload("res://features/enemies/boss_state_machine.gd")
-const AttackStateScript = preload("res://features/enemies/boss_attack_state.gd")
 var decision: RefCounted = HollowWardenDecisionScript.new()
-var state_machine: RefCounted = StateMachineScript.new()
-var attack_states := {
-	Attack.SWEEP: AttackStateScript.new("sweep", 0.55, 0.2, 0.8, 0.5),
-	Attack.RUSH: AttackStateScript.new("rush", 0.7, 0.35, 1.0, 1.5),
-	Attack.CHARGED: AttackStateScript.new("sword_court", 1.1, 2.0, 0.8, 5.0),
-}
+@onready var state_machine: BossStateMachine = $BossStateMachine
+var attack_states := {}
 var target: Player
 var state := State.DORMANT
-var phase := 1
 var facing := -1.0
 var timer := 0.0
 var flash_left := 0.0
@@ -47,7 +39,7 @@ var ordinary_attacks_since_court := 0
 var sword_court: SwordCourt
 
 func _ready() -> void:
-	state_machine.setup(self)
+	attack_states = state_machine.setup(self)
 	($Hurtbox as Hurtbox).damage_guard = summon_guard
 	health.maximum = config.maximum_health
 	health.restore_full()
@@ -63,9 +55,9 @@ func _physics_process(delta: float) -> void:
 	attack_cooldown = maxf(0.0, attack_cooldown - delta)
 	stuck_left = maxf(0.0, stuck_left - delta)
 	court_cooldown_left = maxf(0.0, court_cooldown_left - delta)
-	state_machine.tick(delta)
 	recoil_left = maxf(0.0, recoil_left - delta)
 	if not is_instance_valid(target) or target.state == Player.State.DEAD:
+		state_machine.finish()
 		attack_box.end_swing()
 		charged_box.end_swing()
 		contact_box.end_swing()
@@ -77,50 +69,39 @@ func _physics_process(delta: float) -> void:
 	_update_contact_damage()
 	velocity.x = 0
 	velocity.y = minf(velocity.y+1600*delta,950)
+	var executing_attack := state_machine.current != null
+	state_machine.tick(delta)
 	match state:
 		State.DORMANT:
 			if target.position.x >= config.activation_x:
 				_enter(State.INTRO)
 				awakened.emit()
-		State.INTRO, State.TRANSITION:
+		State.INTRO:
 			if timer <= 0:
 				_enter(State.CHASE)
 		State.CHASE:
+			if executing_attack:
+				move_and_slide()
+				return
 			facing = -1.0 if target.global_position.x < global_position.x else 1.0
 			var distance := absf(target.global_position.x-global_position.x)
-			var court_ready := phase == 2 and not is_instance_valid(sword_court) and (not court_introduced or court_cooldown_left <= 0.0 and ordinary_attacks_since_court >= config.court.ordinary_attacks_between)
-			var attack_ready := attack_cooldown <= 0.0 and (court_ready or distance <= config.attack_range + (42.0 if phase == 2 else 18.0))
+			var court_ready := not is_instance_valid(sword_court) and (not court_introduced or court_cooldown_left <= 0.0 and ordinary_attacks_since_court >= config.court.ordinary_attacks_between)
+			var attack_ready := attack_cooldown <= 0.0 and (court_ready or distance <= config.attack_range + 18.0)
 			if attack_ready:
 				_start_attack()
 			elif is_on_wall() and distance > config.attack_range:
 				stuck_left = config.stuck_escape_seconds
 				facing = -facing
-				velocity.x = facing * (config.phase_two_speed if phase == 2 else config.chase_speed)
+				velocity.x = facing * config.chase_speed
 			elif stuck_left > 0.0:
-				velocity.x = facing * (config.phase_two_speed if phase == 2 else config.chase_speed)
+				velocity.x = facing * config.chase_speed
 			else:
-				velocity.x = facing*(config.phase_two_speed if phase == 2 else config.chase_speed)
-		State.WINDUP:
-			if timer <= 0:
-				_enter(State.STRIKE)
-		State.STRIKE:
-			if timer <= 0:
-				_enter(State.RECOVER)
-			elif rush_attack:
-				velocity.x = facing*config.rush_speed
-		State.SWORD_COURT:
-			pass # Only the summon locks the body; the independent swords continue later.
-		State.RECOVER:
-			if timer <= 0:
-				if phase == 1 and health.current <= config.maximum_health/2:
-					phase = 2
-					phase_changed.emit(phase)
-					_enter(State.TRANSITION)
-				else:
-					_enter(State.CHASE)
+				velocity.x = facing * config.chase_speed
+		State.WINDUP, State.STRIKE, State.SWORD_COURT, State.RECOVER:
+			pass
 	move_and_slide()
-	if state == State.STRIKE and rush_attack and is_on_wall():
-		_enter(State.RECOVER)
+	if state_machine.current:
+		(state_machine.current as HollowWardenAttackState).after_move()
 	sprite.flip_h = facing < 0
 	if recoil_left > 0.0:
 		sprite.position.x = recoil_direction * 4.0 * recoil_left / 0.08
@@ -128,9 +109,6 @@ func _physics_process(delta: float) -> void:
 		sprite.position.x = 0.0
 	if flash_left > 0 and not Session.reduce_flashes:
 		sprite.modulate = Color(2.8,2.8,2.8)
-	elif state == State.TRANSITION:
-		var transition_pulse := 0.0 if Session.reduce_flashes else 0.22 + 0.18 * sin(timer * 15.0)
-		sprite.modulate = Color(1.25 + transition_pulse,0.42,0.42)
 	elif state == State.SWORD_COURT and is_instance_valid(sword_court):
 		var pulse := 0.0 if Session.reduce_flashes else 0.15 + 0.15 * sin(sword_court.elapsed * 12.0)
 		sprite.modulate = Color(1.3 + pulse,0.95,0.7)
@@ -139,10 +117,13 @@ func _physics_process(delta: float) -> void:
 	queue_redraw()
 
 func _start_attack() -> void:
+	if not state_machine.can_decide():
+		return
+	var selected := _choose_attack()
+	if selected < 0:
+		return
 	attack_cooldown = config.attack_gap_seconds
-	attack = _choose_attack()
-	state_machine.change(attack_states[attack])
-	(attack_states[attack] as BossAttackState).arm()
+	attack = selected as Attack
 	rush_attack = attack == Attack.RUSH
 	if int(attack) == last_attack:
 		repeated_attack_count += 1
@@ -151,71 +132,47 @@ func _start_attack() -> void:
 	last_attack = int(attack)
 	attack_count += 1
 	active_profile = config.charged if attack == Attack.CHARGED else config.rush if rush_attack else config.sweep
+	(attack_states[attack] as BossAttackState).arm()
+	state_machine.change(attack_states[attack])
 	if attack == Attack.CHARGED:
 		court_introduced = true
 		ordinary_attacks_since_court = 0
-		_enter(State.SWORD_COURT)
 	else:
 		ordinary_attacks_since_court += 1
-		_enter(State.WINDUP)
 
-func _choose_attack() -> Attack:
-	# Keep the opening readable: teach sweep, then rush, then reveal the phase-two
-	# sword court. Once those lessons are complete, choose by player context.
-	if phase == 1 and attack_count == 0:
+func _choose_attack() -> int:
+	# Teach sweep and rush before the sword court joins the ordinary attack loop.
+	if attack_count == 0 and (attack_states[Attack.SWEEP] as BossAttackState).ready():
 		return Attack.SWEEP
-	if phase == 1 and attack_count == 1:
+	if attack_count == 1 and (attack_states[Attack.RUSH] as BossAttackState).ready():
 		return Attack.RUSH
-	if phase == 2 and not court_introduced:
+	if not court_introduced and (attack_states[Attack.CHARGED] as BossAttackState).ready():
 		return Attack.CHARGED
 	var distance := absf(target.global_position.x - global_position.x)
 	var player_airborne := target.global_position.y < global_position.y - 24.0 or not target.is_on_floor()
-	var court_ready := phase >= 2 and not is_instance_valid(sword_court) and (not court_introduced or court_cooldown_left <= 0.0 and ordinary_attacks_since_court >= config.court.ordinary_attacks_between)
-	return decision.choose_attack(distance, player_airborne, last_attack, repeated_attack_count, court_ready) as Attack
+	var court_ready := not is_instance_valid(sword_court) and court_cooldown_left <= 0.0 and ordinary_attacks_since_court >= config.court.ordinary_attacks_between and (attack_states[Attack.CHARGED] as BossAttackState).ready()
+	return decision.choose_attack(distance, player_airborne, last_attack, repeated_attack_count, court_ready, (attack_states[Attack.SWEEP] as BossAttackState).ready(), (attack_states[Attack.RUSH] as BossAttackState).ready())
 
 func _enter(next: State) -> void:
-	if next in [State.WINDUP, State.SWORD_COURT]:
-		state_machine.change(attack_states[attack])
 	state = next
+	if next in [State.CHASE, State.DEAD]:
+		state_machine.finish()
 	attack_box.end_swing()
 	charged_box.end_swing()
 	if next not in [State.CHASE, State.WINDUP, State.STRIKE, State.SWORD_COURT, State.RECOVER]:
 		contact_box.end_swing()
 	velocity.x = 0
 	match state:
-		State.INTRO, State.TRANSITION:
-			timer = config.intro_seconds if state == State.INTRO else config.transition_seconds
+		State.INTRO:
+			timer = config.intro_seconds
 			attack_cooldown = maxf(attack_cooldown, timer)
 			_play_clip("idle")
-			cue_changed.emit("Warden awakens" if state == State.INTRO else "Phase II / Faster pursuit")
+			cue_changed.emit("Warden awakens")
 			Audio.play_sound("ability_acquire", 0.65, -8.0)
 		State.CHASE:
 			attack_cooldown = maxf(attack_cooldown, config.attack_gap_seconds)
 			_play_clip("walk")
 			cue_changed.emit("")
-		State.WINDUP:
-			timer = active_profile.windup
-			attack_box.position.x = facing * 44
-			attack_box.damage = active_profile.damage
-			attack_box.begin_swing()
-			_play_clip("rush_windup" if rush_attack else "windup",timer)
-			cue_changed.emit("RUSH / Jump over" if rush_attack else "SWEEP / Step back or behind")
-			Audio.play_sound("jump" if rush_attack else "attack", 0.7, -7.0)
-		State.STRIKE:
-			timer = active_profile.active_seconds
-			attack_box.active = true
-			_play_clip("rush_strike" if rush_attack else "strike",timer)
-			Audio.play_sound("attack")
-		State.SWORD_COURT:
-			timer = config.court.summon_seconds
-			_play_clip("charged_windup",timer)
-			_spawn_court()
-			cue_changed.emit("SWORD COURT / Invulnerable while summoning")
-			Audio.play_sound("ability_acquire",0.6,-5.0)
-		State.RECOVER:
-			timer = active_profile.recovery*(config.phase_two_recovery_scale if phase == 2 else 1.0)
-			_play_clip("rush_recover" if rush_attack else "recover",timer)
-			cue_changed.emit("RECOVERY / Strike now")
 		State.DEAD:
 			clear_court()
 			velocity = Vector2.ZERO
@@ -282,9 +239,6 @@ func _on_death() -> void:
 func _draw() -> void:
 	if state == State.DEAD:
 		return
-	if state == State.TRANSITION:
-		var pulse := 0.0 if Session.reduce_flashes else 0.3 + 0.15 * sin(timer * 12.0)
-		draw_arc(Vector2(0,-44),44 + pulse * 8.0,0,TAU,32,Color(0.95,0.25,0.35,0.7),3)
 
 func _update_contact_damage() -> void:
 	var enabled := state in [State.CHASE, State.WINDUP, State.STRIKE, State.SWORD_COURT, State.RECOVER]

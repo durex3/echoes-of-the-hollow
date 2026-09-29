@@ -47,13 +47,18 @@ func run(h: Node, game: Node) -> void:
 		vents_off = vents_off and not vent.enabled
 	h.check(vents_off, "Ordinary room vents turn off while boss patterns teach their timing")
 	var hurt := boss.get_node("Hurtbox") as Hurtbox
-	h.check(hurt.resolve_hit(1,player.position) == Hurtbox.HitResult.BLOCKED and boss.health.current == 14, "Pressure seal protects keeper outside recovery")
+	h.check(hurt.resolve_hit(1,player.position) == Hurtbox.HitResult.DAMAGED and boss.health.current == boss.config.maximum_health-1, "Keeper can be damaged immediately after entering the arena")
 	h.check(await until(h,boss,FurnaceKeeper.State.WARNING), "Keeper reaches full first warning")
+	boss.health.invulnerability_left = 0.0
+	h.check(hurt.resolve_hit(1,player.position) == Hurtbox.HitResult.DAMAGED and boss.health.current == boss.config.maximum_health-2, "Ordinary warning does not silently block a sword hit")
+	boss.health.restore_full()
 	var timer := boss.timer
 	get_tree().paused = true
 	await h.frames(8)
 	h.check(boss.timer == timer, "Pause freezes keeper warning")
 	get_tree().paused = false
+	var dash_visual := boss.get_node("VisualEffects")
+	h.check((boss.sprite.material as ShaderMaterial).get_shader_parameter("charge_amount") > 0.0 and dash_visual.glow.visible, "Ground dash warning tints the full body red before the hitbox opens")
 	await h.shot("99_keeper_wave_warning")
 	var locked := boss.facing
 	player.revive(Vector2(1010,480))
@@ -62,6 +67,7 @@ func run(h: Node, game: Node) -> void:
 	player.revive(Vector2(850,480))
 	await until(h,boss,FurnaceKeeper.State.CAST)
 	await h.frames(2)
+	h.check((boss.sprite.material as ShaderMaterial).get_shader_parameter("charge_amount") > 0.0 and dash_visual.ghosts.any(func(ghost: Sprite2D) -> bool: return ghost.visible), "Ground dash keeps its red body and captured movement trail")
 	await h.shot("100_keeper_wave_active")
 	await h.frames(13)
 	h.check(player.health.current == player.health.maximum-1, "Actual dash slash collision deals one damage")
@@ -140,13 +146,13 @@ func run(h: Node, game: Node) -> void:
 	await h.shot("102b_keeper_outward_flames")
 	await h.frames(36)
 	h.check(player.health.current==player.health.maximum-1, "Visible upper flame wall damages a player standing on a ledge once")
-	# Force only HP; transition still waits for the natural recovery boundary.
+	# Damage does not interrupt recovery or start a numbered phase.
 	boss.health.invulnerability_left = 0
 	boss.health.take_damage(8,boss.position)
-	h.check(boss.phase==1 and boss.state==FurnaceKeeper.State.RECOVER, "Half health never cuts recovery short")
-	await until(h,boss,FurnaceKeeper.State.TRANSITION)
-	h.check(boss.phase==2 and boss.timer>1.1, "Phase two has a safe transition")
-	await h.shot("103_keeper_phase_two")
+	h.check(boss.state==FurnaceKeeper.State.RECOVER, "Half health never cuts recovery short")
+	h.check(await until(h,boss,FurnaceKeeper.State.APPROACH) or await until(h,boss,FurnaceKeeper.State.WARNING), "Attack loop continues without a health-gated transition")
+	h.check(game.ui.boss_title.text == "炉心监守者", "Keeper HUD shows its name without a numbered phase")
+	await h.shot("103_keeper_next_attack")
 	player.revive(Vector2(620,480))
 	Input.action_press("move_left")
 	await h.frames(35)
@@ -155,7 +161,7 @@ func run(h: Node, game: Node) -> void:
 	boss.reset_encounter()
 	gate.set_closed(false)
 	await h.frames(3)
-	h.check(boss.health.current == 14 and boss.flames.get_child_count() == 0 and not visual.glow.visible and visual.ghosts.all(func(ghost: Sprite2D) -> bool: return not ghost.visible), "Encounter reset clears hazards and visual trails")
+	h.check(boss.health.current == boss.config.maximum_health and boss.flames.get_child_count() == 0 and not visual.glow.visible and visual.ghosts.all(func(ghost: Sprite2D) -> bool: return not ghost.visible), "Encounter reset clears hazards and visual trails")
 	# Isolated real cast verifies shield, pause and expiry through the normal hurtbox.
 	player.revive(Vector2(850,480))
 	boss.set_physics_process(false)

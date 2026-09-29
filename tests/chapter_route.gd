@@ -220,12 +220,13 @@ func wind_branch() -> bool:
 func boss_fight() -> bool:
 	var boss: HollowWarden = game.room.get_node("Enemies/Warden")
 	var p: Player = game.player
-	var saw_verdict := false
+	var saw_court := false
+	var court_run_direction := 0.0
 	for i: int in range(18000):
 		if "warden_defeated" in Session.flags:
 			release()
 			await wait_frames(40)
-			return saw_verdict or fail("Boss route skipped the new sword court")
+			return saw_court or fail("Boss route skipped the sword court")
 		if p.state == Player.State.DEAD:
 			release()
 			return fail("Died during input-only boss battle")
@@ -240,10 +241,15 @@ func boss_fight() -> bool:
 				if boss.rush_attack:
 					jump = boss.timer < 0.20
 				else:
-					direction = -signf(dx) if absf(dx) < 112 else 0.0
+					var opening := boss.timer > 0.35 and absf(dx) < 66 and p.is_on_floor() and p.state == Player.State.MOVE
+					if opening and p.facing != signf(dx):
+						direction = signf(dx)
+					else:
+						attack = opening
+						direction = -signf(dx) if not opening and absf(dx) < 112 else 0.0
 			HollowWarden.State.STRIKE:
 				jump = boss.rush_attack
-			HollowWarden.State.RECOVER, HollowWarden.State.TRANSITION:
+			HollowWarden.State.RECOVER:
 				direction = signf(dx) if absf(dx) > 55 else 0.0
 				if absf(dx) < 66 and p.state == Player.State.MOVE:
 					if p.facing != signf(dx):
@@ -254,12 +260,26 @@ func boss_fight() -> bool:
 				var court_goal := 180.0 if p.position.x < boss.position.x else 480.0
 				direction = signf(court_goal-p.position.x) if absf(court_goal-p.position.x) > 5 else 0.0
 		if is_instance_valid(boss.sword_court):
-			saw_verdict = saw_verdict or boss.sword_court.round_index == 3
+			saw_court = true
+			var incoming_sword := false
 			for sword: RoyalSword in boss.sword_court.swords:
 				if is_instance_valid(sword) and sword.dangerous() and sword.global_position.distance_to(p.position) < 220:
-					jump = jump or p.is_on_floor()
+					incoming_sword = true
+			if incoming_sword:
+				# Homing blades require travel, not repeated stationary jumps.
+				if is_zero_approx(court_run_direction):
+					court_run_direction = 1.0 if p.position.x < 320.0 else -1.0
+				if p.position.x < 110.0:
+					court_run_direction = 1.0
+				elif p.position.x > 530.0:
+					court_run_direction = -1.0
+				direction = court_run_direction
+				jump = jump or p.is_on_floor()
+				attack = false
 			if not p.is_on_floor() and Input.is_action_pressed("jump") and p.velocity.y < 0:
 				jump = true
+		else:
+			court_run_direction = 0.0
 		hold("move_left", direction < 0)
 		hold("move_right", direction > 0)
 		hold("jump", jump)

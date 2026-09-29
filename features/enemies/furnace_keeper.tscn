@@ -6,6 +6,8 @@
 [ext_resource type="Script" path="res://features/combat/hurtbox.gd" id="5"]
 [ext_resource type="Script" path="res://features/combat/hitbox.gd" id="6"]
 [ext_resource type="Script" path="res://features/enemies/furnace_visual.gd" id="7"]
+[ext_resource type="Script" path="res://features/enemies/boss_state_machine.gd" id="8"]
+[ext_resource type="Script" path="res://features/enemies/furnace_keeper_attack_state.gd" id="9"]
 [sub_resource type="RectangleShape2D" id="shape"]
 size = Vector2(32,60)
 [sub_resource type="RectangleShape2D" id="dash_shape"]
@@ -17,6 +19,32 @@ collision_layer = 4
 collision_mask = 1
 script = ExtResource("1")
 config = ExtResource("2")
+[node name="BossStateMachine" type="Node" parent="."]
+script = ExtResource("8")
+[node name="Dash" type="Node" parent="BossStateMachine"]
+script = ExtResource("9")
+name_id = "dash"
+cooldown = 5.0
+[node name="Hop" type="Node" parent="BossStateMachine"]
+script = ExtResource("9")
+attack_id = 1
+name_id = "hop"
+cooldown = 3.0
+[node name="Slam" type="Node" parent="BossStateMachine"]
+script = ExtResource("9")
+attack_id = 2
+name_id = "slam"
+cooldown = 5.0
+[node name="Melee" type="Node" parent="BossStateMachine"]
+script = ExtResource("9")
+attack_id = 3
+name_id = "melee"
+cooldown = 0.75
+[node name="Combo" type="Node" parent="BossStateMachine"]
+script = ExtResource("9")
+attack_id = 4
+name_id = "combo"
+cooldown = 4.0
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 z_index = 2
 position = Vector2(0,-57.142857)

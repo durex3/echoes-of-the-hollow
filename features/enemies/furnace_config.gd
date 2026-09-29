@@ -1,16 +1,14 @@
 class_name FurnaceConfig
 extends Resource
 ## Read-only boss tuning; no player movement changes.
-@export var maximum_health := 14
+@export var maximum_health := 18
 @export var activation_x := 760.0
 @export var retreat_x := 620.0
 @export var intro_seconds := 1.2
 @export var warning_seconds := 0.9
 @export var recovery_seconds := 1.8
-@export var transition_seconds := 1.2
 @export var flight_height := 210.0
 @export var slam_x := 860.0
-@export var phase_two_recovery := 1.45
 @export var ascent_speed := 240.0
 @export var hover_seconds := 2.2
 @export var slam_speed := 860.0
@@ -18,6 +16,8 @@ extends Resource
 @export var dash_warning_seconds := 0.65
 @export var dash_seconds := 0.46
 @export var dash_speed := 440.0
+@export var dash_range := 300.0
+@export var dash_motion_curve: Curve
 @export var hop_warning_seconds := 0.55
 @export var hop_speed := 210.0
 @export var hop_velocity := -470.0
@@ -39,7 +39,7 @@ extends Resource
 @export var arena_max_x := 1140.0
 @export var floor_y := 480.0
 @export var trail_seconds := 0.22
-@export var trail_interval := 0.035
+@export var trail_interval := 0.05
 @export var aura_radius := 4.0
 @export var aura_strength := 0.7
 @export var charge_expansion := Vector2(1.12,1.06)
@@ -47,7 +47,7 @@ extends Resource
 @export var flame_aura_strength := 1.0
 @export var burst_seconds := 0.12
 @export var burst_height := 210.0
-@export var melee_range := 78.0
+@export var melee_range := 100.0
 @export var approach_speed := 140.0
 @export var approach_seconds := 1.2
 @export var melee_warning := 0.42

@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=4]
+[gd_scene load_steps=13 format=4]
 
 [ext_resource type="Script" path="res://features/world/room.gd" id="1"]
 [ext_resource type="Script" path="res://features/world/bell_court_landmarks.gd" id="2"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://features/enemies/bell_warden.tscn" id="5"]
 [ext_resource type="SpriteFrames" path="res://features/world/checkpoint_frames.tres" id="6"]
 [ext_resource type="Texture2D" path="res://assets/environment/forest.png" id="7"]
+[ext_resource type="Script" path="res://features/world/boss_battle_orchestrator.gd" id="8_battle"]
 
 [sub_resource type="RectangleShape2D" id="floor"]
 size = Vector2(576, 64)
@@ -94,6 +95,11 @@ script = ExtResource("4")
 kind = "goal"
 visible_after_flag = "bell_warden_defeated"
 prompt = "敲响终钟 · 让钟庭复苏"
+[node name="BossBattleOrchestrator" type="Node" parent="."]
+script = ExtResource("8_battle")
+boss_path = NodePath("Enemies/BellWarden")
+boss_name = "BELL WARDEN"
+
 [node name="Enemies" type="Node2D" parent="."]
 [node name="BellWarden" parent="Enemies" instance=ExtResource("5")]
 position = Vector2(432, 320)

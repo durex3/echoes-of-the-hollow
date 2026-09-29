@@ -7,7 +7,6 @@ func prepare(h: Node, game: Node, at := Vector2(180,480)) -> HollowWarden:
 	var boss: HollowWarden = game.room.get_node("Enemies/Warden")
 	game.player.revive(at)
 	boss.health.take_damage(6,game.player.position)
-	boss.phase = 2
 	boss.attack_count = 2
 	boss._start_attack()
 	return boss
@@ -40,7 +39,7 @@ func run(h: Node, game: Node) -> void:
 	var boss := await prepare(h,game)
 	var player: Player = game.player
 	var court := boss.sword_court
-	h.check(boss.state == HollowWarden.State.SWORD_COURT and court.swords.size() == 7, "Phase two opens the grounded seven-sword court")
+	h.check(boss.state == HollowWarden.State.SWORD_COURT and court.swords.size() == 7, "Attack loop opens the grounded seven-sword court")
 	var at := boss.position
 	await h.frames(15)
 	player.revive(boss.position + Vector2(-54,0))

@@ -62,7 +62,12 @@ func run() -> void:
 		add_child(game)
 		game.start_game(true)
 		game.player.died.connect(func() -> void: deaths += 1)
-		game.player.health.damaged.connect(func(_amount: int, _origin: Vector2) -> void: hurt_events += 1)
+		game.player.health.damaged.connect(func(_amount: int, origin: Vector2) -> void:
+			hurt_events += 1
+			if game.room.room_id == "furnace_core":
+				var keeper := game.room.get_node("Enemies/FurnaceKeeper") as FurnaceKeeper
+				samples.append({"route": run_name, "event": "keeper_damage", "seconds": snappedf(ticks/60.0,0.01), "hp": game.player.health.current, "player": str(game.player.position), "origin": str(origin), "boss": str(keeper.position), "state": keeper.state, "attack": keeper.attack})
+		)
 		await wait_frames(5)
 		# The new door deliberately has a narrower radius than older doors.
 		if not await walk_to(Vector2(320,480)) or not await use("ChapterDoor") or not await use("Shrine") or not await cross_steam(440):
@@ -105,18 +110,18 @@ func run() -> void:
 func keeper_fight() -> bool:
 	var boss := game.room.get_node("Enemies/FurnaceKeeper") as FurnaceKeeper
 	var p: Player = game.player
-	var saw_phase_two := false
+	var saw_combo := false
 	var saw_eruption := false
 	var ledge_jump_tick := -1
 	for tick: int in range(12000):
 		if "furnace_keeper_defeated" in Session.flags:
 			release()
 			await wait_frames(65)
-			return (saw_phase_two and saw_eruption and "steam_ward" not in Session.abilities) or fail("Keeper route skipped required patterns or depended on optional shield")
+			return (saw_combo and saw_eruption and "steam_ward" not in Session.abilities) or fail("Keeper route skipped required patterns or depended on optional shield")
 		if p.state == Player.State.DEAD:
-			return fail("Died during keeper battle without optional ward")
+			return fail("Died during keeper battle without optional ward at tick %d, boss attack %d, state %d, player x %.1f, boss x %.1f" % [tick, boss.attack, boss.state, p.position.x, boss.position.x])
 		var desired := boss.position.x-48
-		saw_phase_two = saw_phase_two or boss.phase == 2
+		saw_combo = saw_combo or boss.attack == FurnaceKeeper.Attack.COMBO and boss.state == FurnaceKeeper.State.CAST
 		saw_eruption = saw_eruption or (boss.state == FurnaceKeeper.State.LANDING)
 		var jump := false
 		var attack := false
@@ -125,13 +130,13 @@ func keeper_fight() -> bool:
 				desired = boss.position.x+boss.facing*78
 				jump = boss.timer < 0.18
 			else:
-				desired = boss.position.x + 100 if boss.position.x < boss.position.x else boss.position.x-100
+				desired = boss.position.x + 100 if p.position.x < boss.position.x else boss.position.x-100
 		elif boss.state == FurnaceKeeper.State.CAST:
 			if boss.attack == FurnaceKeeper.Attack.DASH:
 				desired = boss.position.x+boss.facing*78
 				jump = true
 			else:
-				desired = boss.position.x + 100 if boss.position.x < boss.position.x else boss.position.x-100
+				desired = boss.position.x + 100 if p.position.x < boss.position.x else boss.position.x-100
 		elif boss.state == FurnaceKeeper.State.RECOVER:
 			desired = boss.position.x + (-36 if p.position.x < boss.position.x else 36)
 			attack = absf(p.position.x-boss.position.x)<62 and tick%25<14
@@ -139,10 +144,10 @@ func keeper_fight() -> bool:
 				desired = 860.0
 		if boss.attack in [FurnaceKeeper.Attack.MELEE,FurnaceKeeper.Attack.COMBO] and boss.state != FurnaceKeeper.State.RECOVER:
 			desired = 540.0 if p.position.x < boss.position.x else 1160.0
-			jump = tick%30 == 0
+			jump = boss.state == FurnaceKeeper.State.WARNING and boss.timer < 0.18 or boss.state == FurnaceKeeper.State.CAST
 		# Reach a real ledge during ascent/charge, then jump over the arriving wall.
 		if boss.attack == FurnaceKeeper.Attack.SLAM and (boss.state in [FurnaceKeeper.State.TAKEOFF,FurnaceKeeper.State.WARNING,FurnaceKeeper.State.LANDING,FurnaceKeeper.State.IMPACT] or boss.flames.get_child_count() > 0):
-			desired = 638.0 if p.position.x < boss.config.slam_x else 1080.0
+			desired = 638.0 if p.position.x < boss.position.x else 1080.0
 			attack = false
 			jump = false
 			if ledge_jump_tick >= 0:

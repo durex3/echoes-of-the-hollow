@@ -9,6 +9,7 @@
 [ext_resource type="Resource" path="res://features/enemies/warden_config.tres" id="7_kfdnq"]
 [ext_resource type="Script" path="res://features/world/interaction.gd" id="8_qpmqr"]
 [ext_resource type="Script" path="res://features/world/furnace_arena_gate.gd" id="9_arena_gate"]
+[ext_resource type="Script" path="res://features/world/boss_battle_orchestrator.gd" id="10_battle"]
 
 [sub_resource type="RectangleShape2D" id="Boundary"]
 size = Vector2(32, 640)
@@ -71,6 +72,11 @@ position = Vector2(96, 480)
 
 [node name="chapter_return" type="Marker2D" parent="Spawns"]
 position = Vector2(560, 480)
+
+[node name="BossBattleOrchestrator" type="Node" parent="."]
+script = ExtResource("10_battle")
+boss_path = NodePath("Enemies/Warden")
+boss_name = "HOLLOW WARDEN"
 
 [node name="Enemies" type="Node2D" parent="." unique_id=1963065800]
 

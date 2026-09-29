@@ -54,7 +54,7 @@ func run(h: Node, game: Node) -> void:
 	await h.shot("46_warden_entry")
 	player.revive(Vector2(380,480))
 	await h.frames(2)
-	h.check(boss.state == HollowWarden.State.INTRO and game.ui.boss_panel.visible and game.ui.boss_bar.value == 12, "Crossing the arena starts a harmless introduction and full boss bar")
+	h.check(boss.state == HollowWarden.State.INTRO and game.ui.boss_panel.visible and game.ui.boss_bar.value == boss.config.maximum_health, "Crossing the arena starts a harmless introduction and full boss bar")
 	var arena_gate := game.room.get_node("ArenaGate") as FurnaceArenaGate
 	h.check(arena_gate.closed and not arena_gate.get_node("Shape").disabled, "Warden awakening seals the left entrance")
 	h.check(await wait_state(h,boss,HollowWarden.State.WINDUP), "Warden reaches a natural sweep windup")
@@ -90,11 +90,11 @@ func run(h: Node, game: Node) -> void:
 	# Rush starts after recovery and locks the current direction.
 	player.revive(boss.position+Vector2(-80,0))
 	h.check(await wait_state(h,boss,HollowWarden.State.WINDUP), "Second natural attack begins after its recovery")
-	h.check(boss.rush_attack and boss.timer > 0.9, "Second attack is a full one-second rush warning")
+	h.check(boss.rush_attack and boss.timer > 0.7, "Second attack keeps a readable rush warning")
 	h.check(boss.sprite.animation == "rush_windup" and boss.sprite.flip_h == (boss.facing < 0), "King rush uses its own attack strip with correct left-facing artwork")
-	await h.frames(38)
+	await h.frames(37)
 	await h.shot("55_warden_rush_warning")
-	await h.frames(10)
+	await h.frames(4)
 	Input.action_press("jump")
 	await h.frames(13)
 	await h.shot("48_warden_rush_jump")
@@ -102,13 +102,10 @@ func run(h: Node, game: Node) -> void:
 	Input.action_release("jump")
 	h.check(player.health.current == player.health.maximum, "Actual normal jump clears the warned rush without invulnerability")
 	h.check(boss.state == HollowWarden.State.RECOVER and not boss.attack_box.active, "Rush ends in a harmless punish window")
-	# A damaged boss completes its current recovery before phase transition.
-	var phase_changes := [0]
-	boss.phase_changed.connect(func(_phase: int) -> void: phase_changes[0] += 1)
+	# Damage does not interrupt recovery or gate the sword court by health.
 	boss.health.take_damage(6,player.position)
-	h.check(boss.phase == 1 and boss.state == HollowWarden.State.RECOVER, "Half health does not cancel an existing recovery window")
-	h.check(await wait_state(h,boss,HollowWarden.State.TRANSITION), "Half health starts the second phase at a safe boundary")
-	h.check(boss.phase == 2 and not boss.attack_box.active and game.ui.boss_title.text.contains("第二阶段"), "Second phase updates Chinese HUD and has no transition damage")
+	h.check(boss.state == HollowWarden.State.RECOVER and not boss.attack_box.active, "Half health does not cancel an existing recovery window")
+	h.check(game.ui.boss_title.text == "空谷守门者", "Boss HUD shows its name without a numbered phase")
 	var time_left := boss.timer
 	get_tree().paused = true
 	game.ui.show_menu("pause")
@@ -116,12 +113,12 @@ func run(h: Node, game: Node) -> void:
 	h.check(boss.timer == time_left, "Pause freezes the boss state timer")
 	game.resume()
 	await h.frames(2)
-	await h.shot("49_warden_phase_two")
-	# The second phase opens the grounded sword court; detailed projectile checks
+	await h.shot("49_warden_recovery")
+	# The opening sequence introduces the grounded sword court; detailed projectile checks
 	# live in sword_court_suite, not the old charged-melee fixture.
 	boss.position = Vector2(400,480)
 	player.revive(Vector2(150,480))
-	h.check(await wait_state(h,boss,HollowWarden.State.SWORD_COURT), "Phase two opens with the seven-sword summon")
+	h.check(await wait_state(h,boss,HollowWarden.State.SWORD_COURT), "Opening attack loop introduces the seven-sword summon")
 	h.check(boss.attack == HollowWarden.Attack.CHARGED and is_instance_valid(boss.sword_court) and not boss.charged_box.active, "Sword court replaces the old ground scar without invisible melee damage")
 	await h.frames(65)
 	await h.shot("58_warden_sword_court")
@@ -140,17 +137,17 @@ func run(h: Node, game: Node) -> void:
 	collision.shape = shape
 	wall.add_child(collision)
 	game.room.add_child(wall)
-	h.check(await wait_state(h,boss,HollowWarden.State.WINDUP), "Phase two continues into its sweep warning")
+	h.check(await wait_state(h,boss,HollowWarden.State.WINDUP), "Boss continues into its sweep warning")
 	h.check(boss.attack == HollowWarden.Attack.SWEEP, "Charged attack does not replace the basic sweep")
 	await wait_state(h,boss,HollowWarden.State.RECOVER)
 	await wait_state(h,boss,HollowWarden.State.WINDUP)
-	h.check(boss.rush_attack and boss.timer > 0.9, "Second phase retains the full rush warning duration")
+	h.check(boss.rush_attack and boss.timer > 0.7, "Rush retains its configured warning duration")
 	await wait_state(h,boss,HollowWarden.State.STRIKE)
 	await h.shot("57_warden_right_strike")
 	await h.frames(12)
 	h.check(boss.position.x <= 568.1 and boss.state == HollowWarden.State.RECOVER and not boss.attack_box.active, "Rush stops at a two-pixel wall and immediately enters recovery")
 	h.check(player.health.current == player.health.maximum, "Boss attacks cannot damage through a world wall")
-	h.check(phase_changes[0] == 1 and boss.config.sweep.recovery == 0.95, "Second phase occurs once and never mutates shared attack resources")
+	h.check(boss.config.sweep.recovery == 0.5, "Attack loop never mutates shared attack resources")
 	wall.queue_free()
 	await h.frames(2)
 	player.revive(Vector2(220,480))
@@ -160,7 +157,7 @@ func run(h: Node, game: Node) -> void:
 	h.check(player.position.x >= arena_gate.position.x+15 and game.room.room_id == "heart_chamber" and boss.state != HollowWarden.State.DORMANT, "Leftward movement cannot escape an active warden fight")
 	game.load_room("heart_chamber","entry")
 	boss = game.room.get_node("Enemies/Warden") as HollowWarden
-	h.check(boss.health.current == 12 and boss.phase == 1, "Reloading an unfinished fight resets health and phase")
+	h.check(boss.health.current == boss.config.maximum_health and boss.attack_count == 0, "Reloading an unfinished fight resets health and attack history")
 	player.revive(Vector2(380,480))
 	await h.frames(3)
 	h.check(await wait_state(h,boss,HollowWarden.State.STRIKE), "Retry encounter starts attacks normally")

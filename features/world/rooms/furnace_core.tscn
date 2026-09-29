@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://features/world/steam_vent.gd" id="13_i0scw"]
 [ext_resource type="Resource" path="res://features/world/steam_config.tres" id="14_o6iuf"]
 [ext_resource type="Script" path="res://features/world/furnace_arena_gate.gd" id="15_arena_gate"]
+[ext_resource type="Script" path="res://features/world/boss_battle_orchestrator.gd" id="16_battle"]
 
 [sub_resource type="Gradient" id="BrazierLightGradient"]
 offsets = PackedFloat32Array(0, 0.35, 1)
@@ -1285,6 +1286,12 @@ position = Vector2(620, 480)
 
 [node name="checkpoint" type="Marker2D" parent="Spawns" unique_id=2147063028]
 position = Vector2(620, 480)
+
+[node name="BossBattleOrchestrator" type="Node" parent="."]
+script = ExtResource("16_battle")
+boss_path = NodePath("Enemies/FurnaceKeeper")
+boss_name = "FURNACE KEEPER"
+deactivate_vents_on_awaken = true
 
 [node name="Enemies" type="Node2D" parent="." unique_id=1963065800]
 

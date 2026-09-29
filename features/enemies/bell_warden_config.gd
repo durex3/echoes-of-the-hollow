@@ -8,7 +8,6 @@ extends Resource
 @export var move_speed := 108.0
 @export var recovery_retreat_speed := 118.0
 @export var intro_seconds := 1.2
-@export var phase_transition_seconds := 0.9
 @export var attack_gap_seconds := 0.16
 @export var sweep_windup := 0.24
 @export var sweep_active := 0.16
@@ -41,8 +40,6 @@ extends Resource
 @export var drop_recovery := 1.2
 @export var stagger_seconds := 1.35
 @export var ghost_damage := 2
-@export var phase_two_threshold := 9
-@export var phase_three_threshold := 6
 @export var ghost_warning := 0.8
 @export var ghost_recovery := 1.3
 @export var ghost_radius := 28.0

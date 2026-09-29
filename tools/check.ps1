@@ -67,7 +67,9 @@ if ($heartLog -notmatch 'BELL_HEART_RESULT: \d+ checks, 0 failures') { throw 'Op
 Invoke-CheckedGodot -Name 'confluence_bridge' -Arguments @('--headless','--fixed-fps','60','res://tests/confluence_bridge_suite.tscn')
 $confluenceLog = Get-Content -LiteralPath (Join-Path $artifacts 'confluence_bridge.log') -Raw
 if ($confluenceLog -notmatch 'CONFLUENCE_RESULT: \d+ checks, 0 failures') { throw 'Confluence bridge composition must complete.' }
-Invoke-CheckedGodot -Name 'bell_warden' -Arguments @('--headless','--fixed-fps','60','res://tests/bell_warden_suite.tscn')
+$bellWardenArgs = @('--headless','--fixed-fps','60','res://tests/bell_warden_suite.tscn')
+if ($Visual) { $bellWardenArgs = @('--fixed-fps','60','--max-fps','60','res://tests/bell_warden_suite.tscn','--','--visual') }
+Invoke-CheckedGodot -Name 'bell_warden' -Arguments $bellWardenArgs
 $wardenLog = Get-Content -LiteralPath (Join-Path $artifacts 'bell_warden.log') -Raw
 if ($wardenLog -notmatch 'BELL_WARDEN_RESULT: \d+ checks, 0 failures') { throw 'Bell warden phases and echo marks must complete.' }
 if (-not $Full) {
