@@ -40,13 +40,23 @@ func _draw() -> void:
 			draw_texture_rect_region(ARCANE_IMPACT, impact_rect, Rect2(frame * 64, 0, 64, 64))
 	elif state == 5: # RESONANCE WARNING
 		var p := clampf(1.0 - timer / maxf(windup, 0.01), 0.0, 1.0)
-		for ring: int in range(3):
-			var radius := 18.0 + float(ring) * 13.0 + p * 12.0
-			draw_arc(Vector2(0, -50), radius, PI + 0.2, TAU - 0.2, 24, Color(1.0, 0.82, 0.35, 0.8 - ring * 0.16), 2.0)
-		draw_line(Vector2(-9, -68), Vector2(9, -68), Color("fff1a8"), 2.0)
+		# Memory recording: three beats, then replay. No future danger shape is drawn here.
+		var beat_count := 4 if phase == 3 else 3
+		for beat: int in range(beat_count):
+			var beat_progress := clampf(p * 1.35 - float(beat) * 0.29, 0.0, 1.0)
+			var x := (float(beat) - float(beat_count - 1) * 0.5) * 22.0
+			draw_circle(Vector2(x, -66), 5.0 + beat_progress * 3.0, Color(1.0, 0.82, 0.45, 0.35 + beat_progress * 0.6), false, 2.0)
+			draw_line(Vector2(x, -58), Vector2(x, -43), Color(1.0, 0.82, 0.45, 0.35 + beat_progress * 0.5), 2.0)
+		draw_line(Vector2(-34, -39), Vector2(34, -39), Color("8e739f"), 2.0)
 	elif state == 6: # RESONANCE ACTIVE
-		var frame := mini(15, int((1.0 - timer / maxf(active, 0.01)) * 16.0))
+		var replay := clampf(1.0 - timer / maxf(active, 0.01), 0.0, 1.0)
+		var frame := mini(15, int(replay * 16.0))
 		draw_texture_rect_region(ARCANE_EXPLOSION, Rect2(-42, -84, 84, 84), Rect2(frame * 64, 0, 64, 64))
+		var beat_count := 4 if phase == 3 else 3
+		for beat: int in range(beat_count):
+			var x := (float(beat) - float(beat_count - 1) * 0.5) * 22.0
+			var pulse := clampf(replay * float(beat_count) - float(beat), 0.0, 1.0)
+			draw_circle(Vector2(x, -66), 7.0 + pulse * 5.0, Color(0.86, 0.58, 1.0, 0.25 + pulse * 0.5), false, 2.0)
 	elif state == 12: # FALLING BELL WARNING
 		var p := clampf(1.0 - timer / maxf(windup, 0.01), 0.0, 1.0)
 		draw_arc(Vector2(0, -46), 18.0 + p * 22.0, PI + 0.2, TAU - 0.2, 24, Color("e8a5ff"), 3.0)

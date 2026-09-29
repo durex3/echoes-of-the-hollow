@@ -36,7 +36,7 @@
 | 1 | 两支路、承重和回桥 | 已完成第一版：两种先后顺序、真实返回捷径、门两端一致 | `level-design`、`godot-tilemap`、`godot-nodes-scenes`、`godot-resources` |
 | 2 | 静声藏室与钟庭之心 | 已完成第一版：可选壁跃/二段跳/冲刺路线，失败回安全下层；唯一 +1 上限与一次回血 | `platformer`、`level-design`、`save-systems` |
 | 3 | 合鸣桥廊 | 已完成第一版：两承重后开启；杖使与铃翼组合；后段安全祭坛 | `game-ai`、`level-design`、`game-feel` |
-| 4 | 终钟台与缚钟守望者 | 已接入三阶段：镰刀教学、终钟回响、逆相残像交换与幽魂反噬、断钟坠落；固定单屏与战前重试点。真人难度仍待验收 | `create-game-assets`、`godot-animation`、`godot-physics`、`game-ai`、`game-feel` |
+| 4 | 终钟台与缚钟守望者 | 已接入三阶段：记忆记录/节拍回放、地面/空中分支追击、伪忆诱导失衡；固定单屏与战前重试点。真人难度仍待验收 | `create-game-assets`、`godot-animation`、`godot-physics`、`game-ai`、`game-feel` |
 | 5 | 正式主线集成 | 第一版已接入：入口门槛、第三页地图/HUD、能力/奖励/桥/Boss/结局保存；仍需全量回归和旧档核验 | `save-systems`、`godot-signals-groups`、`godot-ui-control`、`game-ui-ux` |
 | 6 | 整章回归与真人难度验收 | 自动路线与存档回归、两种支路顺序、可选路线、5HP无盾基线；真人首次理解、失败原因、迷路/折返与第二关对比 | `level-design`、`game-design-theory` |
 

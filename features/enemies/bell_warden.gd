@@ -103,8 +103,16 @@ func _physics_process(delta: float) -> void:
 			if timer <= 0.0:
 				_enter(State.ECHO_ACTIVE)
 		State.ECHO_ACTIVE:
+			var pressure_direction := signf(target.global_position.x - global_position.x)
+			if is_zero_approx(pressure_direction):
+				pressure_direction = facing
+			velocity.x = move_toward(velocity.x, pressure_direction * config.move_speed * 1.25, 1000.0 * delta)
 			if timer <= 0.0:
-				_enter(State.RECOVER)
+				attack = Attack.SWEEP if target.is_on_floor() else Attack.DASH
+				facing = signf(target.global_position.x - global_position.x)
+				if is_zero_approx(facing):
+					facing = -1.0
+				_enter(State.WINDUP)
 		State.GHOST_WARNING:
 			if timer <= 0.0:
 				_enter(State.GHOST_ACTIVE)
@@ -145,7 +153,7 @@ func _physics_process(delta: float) -> void:
 	global_position.x = clampf(global_position.x, config.arena_min_x, config.arena_max_x)
 	_update_visual()
 	var effect_windup := config.resonance_warning + config.echo_stagger * 2.0 if state == State.ECHO_WARNING else config.drop_warning if state == State.DROP_WARNING else config.sweep_windup if attack == Attack.SWEEP else config.dash_windup
-	var effect_active := config.resonance_active + config.echo_stagger * 2.0 if state == State.ECHO_ACTIVE else config.drop_active if state == State.DROP_ACTIVE else config.sweep_active if attack == Attack.SWEEP else config.dash_active
+	var effect_active := config.memory_replay_seconds if state == State.ECHO_ACTIVE else config.drop_active if state == State.DROP_ACTIVE else config.sweep_active if attack == Attack.SWEEP else config.dash_active
 	combat_effect.configure(int(state), int(attack), facing, phase, timer, effect_windup, effect_active)
 
 func _start_attack() -> void:
@@ -155,9 +163,9 @@ func _start_attack() -> void:
 		_enter(State.GHOST_WARNING)
 		return
 	if phase == 3 and attack_count > 0 and attack_count % 4 == 3:
-		attack = Attack.DROP
+		attack = Attack.RESONANCE
 		attack_count += 1
-		_enter(State.DROP_WARNING)
+		_enter(State.ECHO_WARNING)
 		return
 	attack = Attack.SWEEP if attack_count == 0 else Attack.RESONANCE if phase >= 2 and attack_count % 3 == 2 else Attack.DASH if last_attack == Attack.SWEEP else Attack.SWEEP
 	if int(attack) == last_attack and attack not in [Attack.RESONANCE, Attack.DROP]:
@@ -197,14 +205,14 @@ func _enter(next: State) -> void:
 			attack_box.active = true
 			_clear_ghost_on_scythe()
 		State.ECHO_WARNING:
-			timer = config.resonance_warning + config.echo_stagger * 2.0
-			cue_changed.emit("终钟回响 / 找安全节拍")
+			timer = config.resonance_warning + config.echo_stagger * (3.0 if phase == 3 else 2.0)
+			cue_changed.emit("终钟回响 / 记住旧位置")
 			for old_mark: EchoMark in phase_marks:
 				if is_instance_valid(old_mark): old_mark.queue_free()
 			phase_marks.clear()
 			_spawn_resonance()
 		State.ECHO_ACTIVE:
-			timer = config.resonance_active + config.echo_stagger * 2.0
+			timer = config.memory_replay_seconds
 		State.GHOST_WARNING:
 			timer = config.ghost_warning
 			cue_changed.emit("逆相残像")
@@ -235,23 +243,20 @@ func _enter(next: State) -> void:
 			_set_strip_frame(29)
 
 func _spawn_resonance() -> void:
-	var center := _ground_target_position()
-	var center_x := clampf(target.global_position.x, config.arena_min_x + 90.0, config.arena_max_x - 90.0)
-	var total := maxi(1, config.resonance_lane_count)
-	for index: int in range(total):
+	for index: int in range(4 if phase == 3 else 3):
 		var lane := EchoMark.new()
 		lane.player = target
-		lane.pattern = "resonance"
-		lane.delay_seconds = config.resonance_warning
-		lane.phase_offset = float(index) * config.echo_stagger
+		lane.pattern = "memory"
+		lane.delay_seconds = 0.0
+		lane.phase_offset = float(index) * config.memory_record_gap
+		lane.replay_delay = config.resonance_warning + config.echo_stagger * (3.0 if phase == 3 else 2.0)
 		lane.active_seconds = config.resonance_active
-		lane.radius = 48.0
 		lane.damage = config.resonance_damage
-		lane.global_position = Vector2(clampf(center_x + (float(index) - float(total - 1) * 0.5) * config.resonance_lane_spacing, config.arena_min_x + 48.0, config.arena_max_x - 48.0), center.y - 3.0)
+		lane.global_position = target.global_position
 		get_parent().add_child(lane)
 		phase_marks.append(lane)
 	mark = phase_marks.back()
-	last_mark_position = center
+	last_mark_position = target.global_position
 
 func _spawn_drop() -> void:
 	var drop := EchoMark.new()
@@ -312,7 +317,7 @@ func _update_visual() -> void:
 		var duration := config.sweep_active if attack == Attack.SWEEP else config.dash_active
 		_set_strip_frame(20 + mini(3, int(action_elapsed / duration * 4.0)))
 	elif state in [State.ECHO_WARNING, State.ECHO_ACTIVE, State.GHOST_WARNING, State.GHOST_ACTIVE, State.DROP_WARNING, State.DROP_ACTIVE, State.STAGGER]:
-		var duration := config.resonance_warning if state == State.ECHO_WARNING else config.ghost_warning if state == State.GHOST_WARNING else config.resonance_active if state == State.ECHO_ACTIVE else config.ghost_travel_seconds
+		var duration := config.resonance_warning if state == State.ECHO_WARNING else config.ghost_warning if state == State.GHOST_WARNING else config.memory_replay_seconds if state == State.ECHO_ACTIVE else config.ghost_travel_seconds
 		var first := 40 if state in [State.ECHO_WARNING, State.GHOST_WARNING] else 44
 		_set_strip_frame(first + mini(3, int(action_elapsed / duration * 4.0)))
 		if state == State.STAGGER:

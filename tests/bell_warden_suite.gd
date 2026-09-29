@@ -91,13 +91,13 @@ func _run() -> void:
 	check(boss.phase == 2 and not boss.attack_box.active, "Second phase begins at twelve health with a harmless transition")
 	await shot("bell_warden_phase_two")
 	await until_state(BellWarden.State.ECHO_WARNING)
-	check(is_instance_valid(boss.mark) and boss.phase == 2, "Second phase introduces the three-beat resonance cast")
-	check(absf(boss.mark.global_position.y - 317.0) < 12.0, "Resonance lanes sit on the arena floor")
+	check(is_instance_valid(boss.mark) and boss.phase == 2, "Second phase starts the three-memory recording cast")
+	check(absf(boss.mark.global_position.y - 317.0) < 12.0, "Memory records sit on the arena floor")
 	await frames(28)
 	game.player.position.x = 280.0
 	await frames(26)
 	await shot("bell_warden_echo_mark")
-	check(boss.phase_marks.size() == 3, "Second phase creates three staggered resonance pins")
+	check(boss.phase_marks.size() == 3, "Second phase creates three staggered memory records")
 	check(absf(boss.phase_marks[0].global_position.x - boss.phase_marks[2].global_position.x) > 30.0, "Staggered pins lock separate player positions")
 	game.player.position = Vector2(100, 320)
 	game.player.health.restore_full()
@@ -107,8 +107,8 @@ func _run() -> void:
 	for pin: EchoMark in boss.phase_marks:
 		if is_instance_valid(pin) and pin.triggered:
 			resonance_triggered = true
-	check(resonance_triggered, "Resonance lanes activate on staggered release timings")
-	check(await until_state(BellWarden.State.RECOVER), "Second phase resonance cage ends in a punish window")
+	check(resonance_triggered, "Recorded memories replay on staggered release timings")
+	check(await until_state(BellWarden.State.WINDUP), "Memory replay ends by branching into a real boss attack")
 	game.player.revive(Vector2(100, 320))
 	boss.set_physics_process(false)
 	await frames(140)
@@ -116,7 +116,7 @@ func _run() -> void:
 	for pin: EchoMark in boss.phase_marks:
 		if is_instance_valid(pin):
 			resonance_expired = false
-	check(resonance_expired, "Resonance lanes expire after their single pulse")
+	check(resonance_expired, "Replayed memories expire after their single pulse")
 	check(game.player.health.current == game.player.health.maximum, "Leaving the mark avoids the single ghost pulse")
 	game.load_room("terminal_platform", "entry")
 	await frames(4)
@@ -177,25 +177,26 @@ func _run() -> void:
 		boss.set_physics_process(true)
 		await until_state(BellWarden.State.CHASE)
 		check(boss.timer > 0.0, "Ghost backlash grants a timed recovery before the next attack")
-		check(await until_state(BellWarden.State.DROP_WARNING, 720), "Final phase uses the locked falling bell shadow")
-		var has_drop := false
+		check(await until_state(BellWarden.State.ECHO_WARNING, 720), "Final phase records a four-beat memory sequence")
+		var memory_count := 0
 		for pin: EchoMark in boss.phase_marks:
-			if is_instance_valid(pin) and pin.pattern == "drop":
-				has_drop = true
-		check(has_drop, "Falling bell shadow locks an actual ground position")
+			if is_instance_valid(pin) and pin.pattern == "memory":
+				memory_count += 1
+		check(memory_count == 4, "Final memory sequence records four distinct beats")
 		await frames(3)
-		await shot("bell_warden_drop_warning")
-		check(await until_state(BellWarden.State.DROP_ACTIVE), "Falling bell shadow resolves after its warning")
+		await shot("bell_warden_final_memory")
+		check(await until_state(BellWarden.State.ECHO_ACTIVE), "Final memory sequence starts its replay after recording")
 	game.load_room("terminal_platform", "entry")
 	await frames(4)
+	(game.room.get_node("Enemies/BellWarden") as BellWarden).set_physics_process(false)
 	var crossing := EchoMark.new()
 	crossing.player = game.player
 	crossing.delay_seconds = 0.1
 	crossing.active_seconds = 0.8
 	crossing.travel_seconds = 0.8
 	crossing.travel_radius = 12.0
-	crossing.global_position = game.player.global_position + Vector2(-90, -21)
-	crossing.travel_target = game.player.global_position + Vector2(90, -21)
+	crossing.global_position = game.player.global_position + Vector2(-90, -50)
+	crossing.travel_target = game.player.global_position + Vector2(90, -50)
 	game.room.add_child(crossing)
 	var crossing_hp: int = game.player.health.current
 	await frames(40)

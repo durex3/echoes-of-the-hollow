@@ -26,6 +26,9 @@ extends Resource
 @export var echo_radius := 27.0
 @export var echo_damage := 1
 @export var echo_stagger := 0.42
+@export var memory_record_gap := 0.36
+@export var memory_replay_delay := 0.62
+@export var memory_replay_seconds := 1.55
 @export var resonance_lane_count := 3
 @export var resonance_lane_spacing := 112.0
 @export var resonance_warning := 0.9

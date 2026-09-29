@@ -15,12 +15,14 @@ const RESONANCE_RING := preload("res://assets/effects/bell_resonance_ring.png")
 @export var travel_target := Vector2.ZERO
 @export var travel_seconds := 0.0
 @export var travel_radius := 12.0
-@export_enum("target", "resonance", "drop") var pattern := "target"
+@export_enum("target", "resonance", "drop", "memory") var pattern := "target"
+@export var replay_delay := 0.62
 var player: Player
 var age := 0.0
 var triggered := false
 var hit := false
 var travel_origin := Vector2.ZERO
+var memory_recorded := false
 
 func dispel() -> void:
 	queue_free()
@@ -33,7 +35,15 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	age += delta
-	if not triggered and age >= delay_seconds + phase_offset:
+	if pattern == "memory":
+		if not memory_recorded and age >= delay_seconds + phase_offset and is_instance_valid(player):
+			global_position = player.global_position
+			memory_recorded = true
+			queue_redraw()
+		if memory_recorded and not triggered and age >= delay_seconds + phase_offset + replay_delay:
+			triggered = true
+			queue_redraw()
+	elif not triggered and age >= delay_seconds + phase_offset:
 		triggered = true
 		queue_redraw()
 	if triggered and travel_seconds > 0.0:
@@ -62,11 +72,17 @@ func _physics_process(delta: float) -> void:
 		if travel_seconds <= 0.0 and player.global_position.distance_to(global_position) <= radius:
 			hit = true
 			(player.get_node("Hurtbox") as Hurtbox).resolve_hit(damage, global_position)
-	if age > delay_seconds + phase_offset + active_seconds + 0.12:
+	var lifetime := delay_seconds + phase_offset + active_seconds + 0.12
+	if pattern == "memory":
+		lifetime = delay_seconds + phase_offset + replay_delay + active_seconds + 0.12
+	if age > lifetime:
 		queue_free()
 	queue_redraw()
 
 func _draw() -> void:
+	if pattern == "memory":
+		_draw_memory()
+		return
 	if pattern == "resonance":
 		_draw_resonance()
 		return
@@ -123,6 +139,31 @@ func _draw_resonance() -> void:
 	if triggered:
 		var frame := mini(15, int((age - delay_seconds - phase_offset) / maxf(active_seconds, 0.01) * 16.0))
 		draw_texture_rect_region(RESONANCE_RING, Rect2(-46, -46, 92, 92), Rect2(frame * 64, 0, 64, 64))
+
+func _draw_memory() -> void:
+	var record_progress := clampf((age - phase_offset) / maxf(delay_seconds + 0.01, 0.01), 0.0, 1.0)
+	var color := Color("ffe7a1") if not memory_recorded else Color("bf8cff")
+	if not memory_recorded:
+		draw_arc(Vector2.ZERO, 22.0 + record_progress * 12.0, 0.0, TAU, 24, color, 2.0)
+		draw_line(Vector2(-12, -2), Vector2(12, -2), color, 2.0)
+		return
+	var ghost_frame := mini(7, int((age - phase_offset) * 12.0) % 8)
+	draw_texture_rect_region(GHOST_SHEET, Rect2(-43, -57, 86, 57), Rect2((ghost_frame % 8) * 140, (6 + ghost_frame / 8) * 93, 140, 93))
+	# A readable player-shaped memory silhouette makes the recorded position clear at native scale.
+	var memory_color := Color(0.75, 0.55, 1.0, 0.72)
+	draw_circle(Vector2(0, -48), 5.0, memory_color)
+	draw_line(Vector2(0, -42), Vector2(0, -23), memory_color, 3.0)
+	draw_line(Vector2(0, -36), Vector2(-8, -29), memory_color, 2.0)
+	draw_line(Vector2(0, -36), Vector2(8, -29), memory_color, 2.0)
+	draw_line(Vector2(0, -23), Vector2(-7, -12), memory_color, 2.0)
+	draw_line(Vector2(0, -23), Vector2(7, -12), memory_color, 2.0)
+	var replay_progress := clampf((age - delay_seconds - phase_offset - replay_delay) / maxf(active_seconds, 0.01), 0.0, 1.0)
+	if not triggered:
+		draw_arc(Vector2.ZERO, 27.0 + sin(age * 12.0) * 3.0, 0.0, TAU, 24, Color("e7b6ff"), 2.0)
+	else:
+		var frame := mini(15, int(replay_progress * 16.0))
+		draw_texture_rect_region(ARCANE_EXPLOSION, Rect2(-42, -84, 84, 84), Rect2(frame * 64, 0, 64, 64))
+		draw_arc(Vector2.ZERO, 34.0 + (1.0 - replay_progress) * 18.0, 0.0, TAU, 28, Color(1.0, 0.8, 0.98, 0.72 * (1.0 - replay_progress)), 3.0)
 
 func _draw_drop() -> void:
 	var warning_progress := clampf((age - phase_offset) / maxf(delay_seconds, 0.01), 0.0, 1.0)
