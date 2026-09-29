@@ -73,7 +73,8 @@ func _physics_process(delta: float) -> void:
 					player_hurt.resolve_hit(damage, closest)
 			global_position = next_position
 	if triggered and not hit and age <= delay_seconds + phase_offset + active_seconds and is_instance_valid(player) and player.state != Player.State.DEAD:
-		if travel_seconds <= 0.0 and player.global_position.distance_to(global_position) <= radius:
+		var hit_center := (player.get_node("Hurtbox") as Hurtbox).hit_position()
+		if travel_seconds <= 0.0 and hit_center.distance_to(global_position) <= radius:
 			hit = true
 			(player.get_node("Hurtbox") as Hurtbox).resolve_hit(damage, global_position)
 	var lifetime := delay_seconds + phase_offset + active_seconds + 0.12

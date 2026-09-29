@@ -82,7 +82,7 @@ func _physics_process(delta: float) -> void:
 			var distance := absf(target.global_position.x - global_position.x)
 			if timer > 0.0:
 				velocity.x = move_toward(velocity.x, 0.0, 900.0 * delta)
-			elif distance <= config.sweep_range and distance >= 36.0:
+			elif distance <= config.sweep_range and distance >= 22.0:
 				_start_attack()
 			elif phase >= 2 and distance <= 260.0 and attack_count > 0 and attack_count % 3 == 2:
 				_start_attack()
@@ -227,6 +227,9 @@ func _enter(next: State) -> void:
 				var old_x := global_position.x
 				global_position.x = clampf(ghost.global_position.x, config.arena_min_x + 20.0, config.arena_max_x - 20.0)
 				ghost.global_position.x = old_x
+				var ghost_hurt := target.get_node("Hurtbox") as Hurtbox
+				if ghost_hurt.hit_position().distance_to(ghost.global_position) <= config.ghost_radius + 16.0:
+					ghost_hurt.resolve_hit(config.ghost_damage, ghost.global_position)
 		State.RECOVER:
 			timer = config.ghost_recovery if phase == 3 and attack_count % 3 == 0 else config.sweep_recovery if attack == Attack.SWEEP else config.dash_recovery if attack == Attack.DASH else config.drop_recovery if attack == Attack.DROP else config.echo_recovery
 			contact_box.begin_swing()

@@ -213,13 +213,17 @@ func _run() -> void:
 	game.load_room("terminal_platform", "entry")
 	await frames(4)
 	boss = game.room.get_node("Enemies/BellWarden") as BellWarden
-	game.player.position = boss.global_position + Vector2(-34.0, 0.0)
+	game.player.position = Vector2(maxf(boss.global_position.x - 34.0, boss.config.activation_x + 8.0), boss.global_position.y)
 	game.player.health.restore_full()
-	Input.action_press("attack")
-	await frames(600)
-	Input.action_release("attack")
-	check(boss.health.current > 0, "Stationary attack holding cannot defeat the bell warden")
-	check(game.player.health.current < game.player.health.maximum or game.player.state == Player.State.DEAD, "Stationary attack holding is punished by body pressure")
+	var close_attack_started := await until_state(BellWarden.State.WINDUP, 180)
+	check(close_attack_started or boss.state in [BellWarden.State.STRIKE, BellWarden.State.RECOVER], "贴脸站位会触发缚钟守望者的近身出招")
+	for _attempt: int in range(24):
+		Input.action_press("attack")
+		await frames(2)
+		Input.action_release("attack")
+		await frames(23)
+	check(boss.health.current > 0, "Stationary repeated attack presses cannot defeat the bell warden")
+	check(game.player.health.current < game.player.health.maximum or game.player.state == Player.State.DEAD, "Stationary repeated attacks are punished by body pressure")
 	game.load_room("terminal_platform", "entry")
 	await frames(4)
 	boss = game.room.get_node("Enemies/BellWarden") as BellWarden
@@ -251,5 +255,22 @@ func _run() -> void:
 	game.player.health.invulnerability_left = 0.0
 	await frames(16)
 	check(game.player.health.current == game.player.health.maximum - 2, "Pseudo-memory pulse deals its configured damage")
+	game.load_room("terminal_platform", "entry")
+	await frames(4)
+	boss = game.room.get_node("Enemies/BellWarden") as BellWarden
+	boss.set_physics_process(false)
+	var pseudo := EchoMark.new()
+	pseudo.player = game.player
+	pseudo.ghost_visual = true
+	pseudo.delay_seconds = 0.0
+	pseudo.active_seconds = 0.8
+	pseudo.radius = 40.0
+	pseudo.damage = 2
+	pseudo.global_position = game.player.get_node("Hurtbox").hit_position()
+	game.room.add_child(pseudo)
+	game.player.health.restore_full()
+	game.player.health.invulnerability_left = 0.0
+	await frames(8)
+	check(game.player.health.current == game.player.health.maximum - 2, "Pseudo-memory pulse damages the player at its visible center")
 	print("BELL_WARDEN_RESULT: %d checks, %d failures" % [checks, failures.size()])
 	get_tree().quit(0 if failures.is_empty() else 1)
