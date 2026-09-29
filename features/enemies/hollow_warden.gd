@@ -15,6 +15,16 @@ enum Attack { SWEEP, RUSH, CHARGED }
 @onready var attack_box: Hitbox = $AttackBox
 @onready var charged_box: Hitbox = $ChargedBox
 @onready var contact_box: Hitbox = $ContactBox
+const HollowWardenDecisionScript = preload("res://features/enemies/hollow_warden_decision.gd")
+const StateMachineScript = preload("res://features/enemies/boss_state_machine.gd")
+const AttackStateScript = preload("res://features/enemies/boss_attack_state.gd")
+var decision: RefCounted = HollowWardenDecisionScript.new()
+var state_machine: RefCounted = StateMachineScript.new()
+var attack_states := {
+	Attack.SWEEP: AttackStateScript.new("sweep", 0.55, 0.2, 0.8, 0.5),
+	Attack.RUSH: AttackStateScript.new("rush", 0.7, 0.35, 1.0, 1.5),
+	Attack.CHARGED: AttackStateScript.new("sword_court", 1.1, 2.0, 0.8, 5.0),
+}
 var target: Player
 var state := State.DORMANT
 var phase := 1
@@ -37,6 +47,7 @@ var ordinary_attacks_since_court := 0
 var sword_court: SwordCourt
 
 func _ready() -> void:
+	state_machine.setup(self)
 	($Hurtbox as Hurtbox).damage_guard = summon_guard
 	health.maximum = config.maximum_health
 	health.restore_full()
@@ -52,6 +63,7 @@ func _physics_process(delta: float) -> void:
 	attack_cooldown = maxf(0.0, attack_cooldown - delta)
 	stuck_left = maxf(0.0, stuck_left - delta)
 	court_cooldown_left = maxf(0.0, court_cooldown_left - delta)
+	state_machine.tick(delta)
 	recoil_left = maxf(0.0, recoil_left - delta)
 	if not is_instance_valid(target) or target.state == Player.State.DEAD:
 		attack_box.end_swing()
@@ -129,6 +141,8 @@ func _physics_process(delta: float) -> void:
 func _start_attack() -> void:
 	attack_cooldown = config.attack_gap_seconds
 	attack = _choose_attack()
+	state_machine.change(attack_states[attack])
+	(attack_states[attack] as BossAttackState).arm()
 	rush_attack = attack == Attack.RUSH
 	if int(attack) == last_attack:
 		repeated_attack_count += 1
@@ -156,32 +170,12 @@ func _choose_attack() -> Attack:
 		return Attack.CHARGED
 	var distance := absf(target.global_position.x - global_position.x)
 	var player_airborne := target.global_position.y < global_position.y - 24.0 or not target.is_on_floor()
-	var score := {Attack.SWEEP: 1.0, Attack.RUSH: 1.0, Attack.CHARGED: 1.5}
-	if distance < 52.0:
-		score[Attack.SWEEP] += 2.5
-		score[Attack.RUSH] -= 0.5
-	if distance > config.attack_range + 90.0:
-		score[Attack.RUSH] += 2.5
-		score[Attack.CHARGED] += 0.75
-	if player_airborne:
-		score[Attack.CHARGED] += 2.0
-		score[Attack.SWEEP] += 0.5
-	if target.velocity.x != 0.0 and signf(target.velocity.x) != signf(global_position.x - target.global_position.x):
-		score[Attack.RUSH] += 0.75
-	if last_attack >= 0:
-		score[last_attack as Attack] -= 1.5 + repeated_attack_count * 1.0
-	# Deterministic tie break keeps tests and replays stable without a fixed cycle.
-	var best := Attack.SWEEP
-	var best_score := -INF
-	for candidate: Attack in [Attack.SWEEP, Attack.RUSH, Attack.CHARGED]:
-		if candidate == Attack.CHARGED and (is_instance_valid(sword_court) or phase < 2 or court_cooldown_left > 0.0 or ordinary_attacks_since_court < config.court.ordinary_attacks_between):
-			continue
-		if score[candidate] > best_score:
-			best = candidate
-			best_score = score[candidate]
-	return best
+	var court_ready := phase >= 2 and not is_instance_valid(sword_court) and (not court_introduced or court_cooldown_left <= 0.0 and ordinary_attacks_since_court >= config.court.ordinary_attacks_between)
+	return decision.choose_attack(distance, player_airborne, last_attack, repeated_attack_count, court_ready) as Attack
 
 func _enter(next: State) -> void:
+	if next in [State.WINDUP, State.SWORD_COURT]:
+		state_machine.change(attack_states[attack])
 	state = next
 	attack_box.end_swing()
 	charged_box.end_swing()

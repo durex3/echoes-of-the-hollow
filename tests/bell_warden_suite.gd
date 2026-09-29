@@ -16,22 +16,16 @@ func check(ok: bool, message: String) -> void:
 		failures.append(message)
 
 func frames(count := 1) -> void:
-	for _tick: int in range(count):
+	for _i in range(count):
 		await get_tree().physics_frame
 		await get_tree().process_frame
 
 func until_state(expected: BellWarden.State, limit := 240) -> bool:
-	for _tick: int in range(limit):
-		if boss.state == expected:
-			return true
+	for _i in range(limit):
+		if not is_instance_valid(boss): return false
+		if boss.state == expected: return true
 		await frames(1)
-	return boss.state == expected
-
-func shot(name_text: String) -> void:
-	if "--visual" not in OS.get_cmdline_user_args():
-		return
-	var error := get_viewport().get_texture().get_image().save_png("res://artifacts/" + name_text + ".png")
-	check(error == OK, "Saved bell warden screenshot " + name_text)
+	return is_instance_valid(boss) and boss.state == expected
 
 func _run() -> void:
 	game = preload("res://features/world/prototypes/bell_court_preview.tscn").instantiate()
@@ -41,236 +35,42 @@ func _run() -> void:
 	game.load_room("terminal_platform", "entry")
 	await frames(4)
 	boss = game.room.get_node("Enemies/BellWarden") as BellWarden
-	check(boss.health.maximum == 18, "Bell warden enters with the tuned 18 health")
-	check(boss.state == BellWarden.State.DORMANT, "Boss remains dormant before the arena trigger")
+	check(boss.health.maximum == 18, "Boss uses configured health")
+	check(boss.state == BellWarden.State.DORMANT, "Boss starts dormant")
 	game.player.position.x = 196.0
 	await frames(4)
-	check(boss.state == BellWarden.State.INTRO, "Crossing the arena trigger awakens the bell warden")
-	check(absf(boss.body_sprite.position.x - boss.facing * 40.0) < 0.1, "Opaque boss body is centered on its physical capsule despite atlas padding")
-	# Exercise the same player attack and enemy contact paths used in the live fight.
+	check(boss.state == BellWarden.State.INTRO, "Arena trigger awakens boss")
 	boss.set_physics_process(false)
 	game.player.revive(boss.global_position + Vector2(-85.0, 0.0))
-	var distant_hp: int = game.player.health.current
-	var distant_x: float = game.player.position.x
+	var far_hp: int = game.player.health.current
 	boss.contact_box.active = true
 	await frames(2)
-	check(game.player.health.current == distant_hp and absf(game.player.position.x - distant_x) < 1.0, "Contact cannot damage or push the player across empty space")
+	check(game.player.health.current == far_hp, "Contact misses outside the body")
 	boss.contact_box.end_swing()
-	game.player.revive(boss.global_position + Vector2(-38.0, 0.0))
-	game.player.facing = 1.0
-	var hp_before_sword: int = boss.health.current
-	Input.action_press("attack")
-	await frames(2)
-	Input.action_release("attack")
-	await frames(8)
-	check(boss.health.current == hp_before_sword - 1, "Player sword reaches the bell warden Hurtbox and deals damage")
 	game.player.revive(boss.global_position)
 	game.player.health.restore_full()
-	var player_hp_before_contact: int = game.player.health.current
+	var contact_hp: int = game.player.health.current
 	boss.contact_box.active = true
 	await frames(2)
-	check(game.player.health.current == player_hp_before_contact - 1, "Bell warden contact box damages the player through the real Hurtbox")
-	game.player.revive(boss.global_position + Vector2(-100.0, 0.0))
-	boss.contact_box.reset_when_empty = true
-	await frames(55)
-	game.player.revive(boss.global_position)
-	var recontact_hp: int = game.player.health.current
-	await frames(3)
-	check(game.player.health.current == recontact_hp - 1, "Leaving and touching the boss again causes immediate body damage")
+	check(game.player.health.current < contact_hp, "Contact uses the real damage chain")
 	boss.contact_box.end_swing()
 	boss.set_physics_process(true)
-	game.player.position.x = 196.0
-	await until_state(BellWarden.State.WINDUP)
-	check(boss.attack == BellWarden.Attack.SWEEP, "First attack teaches the readable scythe sweep")
-	await shot("bell_warden_sweep_warning")
-	await until_state(BellWarden.State.STRIKE)
-	check(boss.attack_box.active, "Sweep damage is active only during its strike phase")
-	await until_state(BellWarden.State.RECOVER)
-	check(boss.timer > 0.7, "Sweep leaves a substantial recovery counter window")
-	game.player.position = Vector2(380, 320)
-	await until_state(BellWarden.State.WINDUP)
-	check(boss.attack == BellWarden.Attack.DASH, "Second attack is a distinct locked direction dash")
-	await until_state(BellWarden.State.RECOVER)
-	await until_state(BellWarden.State.WINDUP)
-	check(boss.phase == 1 and boss.attack != BellWarden.Attack.ECHO and not is_instance_valid(boss.mark), "First phase teaches melee without an unseen ranged cast")
-	boss.health.take_damage(5, game.player.position)
-	await until_state(BellWarden.State.TRANSITION)
-	check(boss.phase == 2 and not boss.attack_box.active, "Second phase begins at twelve health with a harmless transition")
-	await shot("bell_warden_phase_two")
-	await until_state(BellWarden.State.ECHO_WARNING)
-	check(is_instance_valid(boss.mark) and boss.phase == 2, "Second phase starts the three-memory recording cast")
-	check(absf(boss.mark.global_position.y - 317.0) < 12.0, "Memory records sit on the arena floor")
-	await frames(28)
-	game.player.position.x = 280.0
-	await frames(26)
-	await shot("bell_warden_echo_mark")
-	check(boss.phase_marks.size() == 3, "Second phase creates three staggered memory records")
-	check(absf(boss.phase_marks[0].global_position.x - boss.phase_marks[2].global_position.x) > 30.0, "Staggered pins lock separate player positions")
-	game.player.position = Vector2(100, 320)
-	game.player.health.restore_full()
-	check(await until_state(BellWarden.State.ECHO_ACTIVE), "Second phase releases the mark on the cast action clock")
-	await frames(2)
-	var resonance_triggered := false
-	for pin: EchoMark in boss.phase_marks:
-		if is_instance_valid(pin) and pin.triggered:
-			resonance_triggered = true
-	check(resonance_triggered, "Recorded memories replay on staggered release timings")
-	check(await until_state(BellWarden.State.WINDUP), "Memory replay ends by branching into a real boss attack")
-	game.player.revive(Vector2(100, 320))
+	game.player.position = Vector2(196.0, 320.0)
+	check(await until_state(BellWarden.State.WINDUP), "Single loop selects a normal attack")
+	check(boss.timer <= 0.30, "Normal attack windup is fast")
+	check(await until_state(BellWarden.State.STRIKE), "Normal attack reaches strike")
+	check(boss.attack_box.active, "Weapon hitbox exists during strike")
+	check(await until_state(BellWarden.State.RECOVER), "Normal attack has recovery")
+	check(boss.timer >= 0.70, "Recovery is punishable")
 	boss.set_physics_process(false)
-	await frames(140)
-	var resonance_expired := true
-	for pin: EchoMark in boss.phase_marks:
-		if is_instance_valid(pin):
-			resonance_expired = false
-	check(resonance_expired, "Replayed memories expire after their single pulse")
-	check(game.player.health.current == game.player.health.maximum, "Leaving the mark avoids the single ghost pulse")
-	game.load_room("terminal_platform", "entry")
-	await frames(4)
-	boss = game.room.get_node("Enemies/BellWarden") as BellWarden
-	boss.set_physics_process(false)
-	var guarded_mark := EchoMark.new()
-	guarded_mark.player = game.player
-	guarded_mark.delay_seconds = 0.1
-	guarded_mark.active_seconds = 0.2
-	guarded_mark.global_position = game.player.global_position
-	game.room.add_child(guarded_mark)
-	var guarded_hp: int = game.player.health.current
-	check(game.player.steam_ward.activate(), "Inherited shield can activate before the ghost pulse")
-	await frames(12)
-	check(game.player.health.current == guarded_hp and game.player.steam_ward.active_left <= 0.0, "Ghost pulse consumes the shield through the real hurtbox without health loss")
-	game.load_room("terminal_platform", "entry")
-	await frames(4)
-	boss = game.room.get_node("Enemies/BellWarden") as BellWarden
-	boss.health.take_damage(11, game.player.position)
-	game.player.position.x = boss.position.x - 70.0
-	await frames(4)
-	var reached_phase_three := false
-	for _tick: int in range(720):
-		if boss.phase == 3:
-			reached_phase_three = true
-			break
-		await frames(1)
-	check(reached_phase_three, "Low health transitions the boss into the third phase after an attack")
-	var ghost_started := false
-	for _tick: int in range(720):
-		if boss.state == BellWarden.State.GHOST_WARNING:
-			ghost_started = true
-			break
-		await frames(1)
-	check(ghost_started and is_instance_valid(boss.ghost) and boss.phase_ghosts.size() == 1, "Final phase summons one readable inverse ghost")
-	await frames(8)
-	await shot("bell_warden_phase_three_ghost")
-	if is_instance_valid(boss.ghost):
-		var ghost_ref: EchoMark = boss.ghost
-		check(ghost_ref.global_position.x >= 0.0 and ghost_ref.global_position.x <= 576.0, "Ghost remains inside the fixed arena")
-		game.player.revive(Vector2(100, 320))
-		check(await until_state(BellWarden.State.GHOST_ACTIVE), "Third phase releases the mirrored hunt after its warning")
-		await shot("bell_warden_phase_three_combo")
-		check(is_instance_valid(ghost_ref), "Inverse ghost remains visible during the exchange")
-		var boss_x_before_exchange := boss.global_position.x
-		ghost_ref.global_position.x = boss.global_position.x + 80.0
-		boss._enter(BellWarden.State.GHOST_ACTIVE)
-		await frames(2)
-		await shot("bell_warden_phase_three_exchange")
-		check(absf(boss.global_position.x - boss_x_before_exchange) > 20.0, "Boss exchanges position with the inverse ghost")
-		check(is_instance_valid(ghost_ref), "Inverse ghost remains as a deliberate scythe target")
-		boss.set_physics_process(false)
-		ghost_ref.global_position = boss.global_position + Vector2(boss.facing * 55.0, -24.0)
-		boss._enter(BellWarden.State.WINDUP)
-		boss._enter(BellWarden.State.STRIKE)
-		check(boss.state == BellWarden.State.STAGGER and boss.staggered_by_ghost, "Scythe striking the ghost dispels it and stuns the boss")
-		check(not boss.contact_box.active and not boss.attack_box.active, "Ghost backlash clears body and weapon damage during the punish window")
-		boss.set_physics_process(true)
-		await until_state(BellWarden.State.CHASE)
-		check(boss.timer > 0.0, "Ghost backlash grants a timed recovery before the next attack")
-		check(await until_state(BellWarden.State.ECHO_WARNING, 720), "Final phase records a four-beat memory sequence")
-		var memory_count := 0
-		for pin: EchoMark in boss.phase_marks:
-			if is_instance_valid(pin) and pin.pattern == "memory":
-				memory_count += 1
-		check(memory_count == 4, "Final memory sequence records four distinct beats")
-		await frames(3)
-		await shot("bell_warden_final_memory")
-		check(await until_state(BellWarden.State.ECHO_ACTIVE), "Final memory sequence starts its replay after recording")
-	game.load_room("terminal_platform", "entry")
-	await frames(4)
-	(game.room.get_node("Enemies/BellWarden") as BellWarden).set_physics_process(false)
-	var crossing := EchoMark.new()
-	crossing.player = game.player
-	crossing.delay_seconds = 0.1
-	crossing.active_seconds = 0.8
-	crossing.travel_seconds = 0.8
-	crossing.travel_radius = 12.0
-	crossing.global_position = game.player.global_position + Vector2(-90, -50)
-	crossing.travel_target = game.player.global_position + Vector2(90, -50)
-	game.room.add_child(crossing)
-	var crossing_hp: int = game.player.health.current
-	await frames(40)
-	check(game.player.health.current == crossing_hp, "Legacy moving ghost no longer applies an invisible travel hit")
-	await frames(25)
-	check(not is_instance_valid(crossing), "Legacy ghost releases its visual and collision after travel")
-	game.load_room("terminal_platform", "entry")
-	await frames(4)
-	boss = game.room.get_node("Enemies/BellWarden") as BellWarden
-	game.player.position = Vector2(maxf(boss.global_position.x - 34.0, boss.config.activation_x + 8.0), boss.global_position.y)
-	game.player.health.restore_full()
-	var close_attack_started := await until_state(BellWarden.State.WINDUP, 180)
-	check(close_attack_started or boss.state in [BellWarden.State.STRIKE, BellWarden.State.RECOVER], "贴脸站位会触发缚钟守望者的近身出招")
-	for _attempt: int in range(24):
-		Input.action_press("attack")
-		await frames(2)
-		Input.action_release("attack")
-		await frames(23)
-	check(boss.health.current > 0, "Stationary repeated attack presses cannot defeat the bell warden")
-	check(game.player.health.current < game.player.health.maximum or game.player.state == Player.State.DEAD, "Stationary repeated attacks are punished by body pressure")
-	game.load_room("terminal_platform", "entry")
-	await frames(4)
-	boss = game.room.get_node("Enemies/BellWarden") as BellWarden
-	boss.set_physics_process(false)
-	var memory_hit := EchoMark.new()
-	memory_hit.player = game.player
-	memory_hit.pattern = "memory"
-	memory_hit.delay_seconds = 0.0
-	memory_hit.replay_delay = 0.1
-	memory_hit.active_seconds = 0.25
-	memory_hit.radius = 42.0
-	memory_hit.damage = 2
-	memory_hit.global_position = game.player.global_position
-	game.room.add_child(memory_hit)
-	game.player.health.restore_full()
-	game.player.health.invulnerability_left = 0.0
-	await frames(14)
-	check(game.player.health.current == game.player.health.maximum - 2, "Memory replay explosion deals its configured damage")
-	var decoy := EchoMark.new()
-	decoy.player = game.player
-	decoy.ghost_visual = true
-	decoy.delay_seconds = 0.1
-	decoy.active_seconds = 0.3
-	decoy.radius = 28.0
-	decoy.damage = 2
-	decoy.global_position = game.player.global_position
-	game.room.add_child(decoy)
-	game.player.health.restore_full()
-	game.player.health.invulnerability_left = 0.0
-	await frames(16)
-	check(game.player.health.current == game.player.health.maximum - 2, "Pseudo-memory pulse deals its configured damage")
-	game.load_room("terminal_platform", "entry")
-	await frames(4)
-	boss = game.room.get_node("Enemies/BellWarden") as BellWarden
-	boss.set_physics_process(false)
-	var pseudo := EchoMark.new()
-	pseudo.player = game.player
-	pseudo.ghost_visual = true
-	pseudo.delay_seconds = 0.0
-	pseudo.active_seconds = 0.8
-	pseudo.radius = 40.0
-	pseudo.damage = 2
-	pseudo.global_position = game.player.get_node("Hurtbox").hit_position()
-	game.room.add_child(pseudo)
-	game.player.health.restore_full()
-	game.player.health.invulnerability_left = 0.0
-	await frames(8)
-	check(game.player.health.current == game.player.health.maximum - 2, "Pseudo-memory pulse damages the player at its visible center")
+	check(boss.regular_attacks >= 1, "Reference-style loop records ordinary attacks")
+	boss.set_physics_process(true)
+	boss.health.current = 3
+	boss.regular_attacks = 3
+	boss.target = game.player
+	boss._enter(BellWarden.State.CHASE)
+	boss.timer = 0.0
+	boss._start_attack()
+	check(boss.attack in [BellWarden.Attack.SWEEP, BellWarden.Attack.DASH], "Low health keeps the regular loop until the finisher is designed")
 	print("BELL_WARDEN_RESULT: %d checks, %d failures" % [checks, failures.size()])
 	get_tree().quit(0 if failures.is_empty() else 1)

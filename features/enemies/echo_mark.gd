@@ -15,7 +15,9 @@ const RESONANCE_RING := preload("res://assets/effects/bell_resonance_ring.png")
 @export var travel_target := Vector2.ZERO
 @export var travel_seconds := 0.0
 @export var travel_radius := 12.0
-@export_enum("target", "resonance", "drop", "memory") var pattern := "target"
+@export var alternate_delay := 0.9
+@export var start_offset := 0.0
+@export_enum("target", "resonance", "drop", "memory", "anchor", "clone") var pattern := "target"
 @export var replay_delay := 0.62
 var player: Player
 var age := 0.0
@@ -25,6 +27,11 @@ var travel_origin := Vector2.ZERO
 var memory_recorded := false
 var memory_texture: Texture2D
 var memory_flip_h := false
+var clone_phase := 0
+var clone_clock := 0.0
+var clone_hit := false
+var anchor_pulse_clock := 0.0
+var anchor_hit := false
 
 func dispel() -> void:
 	queue_free()
@@ -33,10 +40,52 @@ func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	z_index = 6
 	travel_origin = global_position
+	clone_clock = start_offset
 	queue_redraw()
 
 func _physics_process(delta: float) -> void:
 	age += delta
+	if pattern == "clone":
+		clone_clock += delta
+		if clone_clock >= alternate_delay:
+			clone_clock = 0.0
+			clone_phase = 1 - clone_phase
+			clone_hit = false
+			if is_instance_valid(player):
+				var side := -1.0 if player.global_position.x > 288.0 else 1.0
+				global_position.x = clampf(player.global_position.x + side * 150.0, 42.0, 534.0)
+				global_position.y = player.global_position.y + (64.0 if clone_phase == 1 else 0.0)
+		if clone_clock <= 0.42 and not clone_hit and is_instance_valid(player) and player.state != Player.State.DEAD:
+			var hurt := player.get_node("Hurtbox") as Hurtbox
+			var center := hurt.hit_position()
+			var dangerous := absf(center.x - global_position.x) <= (220.0 if clone_phase == 0 else 88.0)
+			if clone_phase == 1:
+				dangerous = dangerous and center.y < global_position.y - 42.0
+			else:
+				dangerous = dangerous and absf(center.y - global_position.y) <= 30.0
+			if dangerous:
+				clone_hit = true
+				hurt.resolve_hit(damage, global_position)
+		queue_redraw()
+		return
+	if pattern == "anchor":
+		anchor_pulse_clock += delta
+		if not memory_recorded and age >= delay_seconds + phase_offset and is_instance_valid(player):
+			global_position = player.global_position
+			memory_texture = player.sprite.sprite_frames.get_frame_texture(player.sprite.animation, player.sprite.frame)
+			memory_flip_h = player.sprite.flip_h
+			memory_recorded = true
+		if memory_recorded and is_instance_valid(player) and player.state != Player.State.DEAD:
+			if anchor_pulse_clock >= 1.0:
+				anchor_pulse_clock = 0.0
+				anchor_hit = false
+			if not anchor_hit and anchor_pulse_clock <= 0.18 and player.get_node("Hurtbox").hit_position().distance_to(global_position) <= 42.0:
+				anchor_hit = true
+				(player.get_node("Hurtbox") as Hurtbox).resolve_hit(maxi(1, damage), global_position)
+		queue_redraw()
+		if age > active_seconds:
+			queue_free()
+		return
 	if pattern == "memory":
 		if not memory_recorded and age >= delay_seconds + phase_offset and is_instance_valid(player):
 			global_position = player.global_position
@@ -85,6 +134,21 @@ func _physics_process(delta: float) -> void:
 	queue_redraw()
 
 func _draw() -> void:
+	if pattern == "clone":
+		var pulse := 0.5 + 0.5 * sin(age * 8.0)
+		draw_texture_rect_region(GHOST_SHEET, Rect2(-56, -94, 112, 75), Rect2(0, 93, 140, 93), Color(0.42, 0.78, 1.0, 0.68 + pulse * 0.16))
+		draw_arc(Vector2.ZERO, 34.0 + pulse * 4.0, 0.0, TAU, 28, Color("8fefff"), 2.0)
+		if clone_clock <= 0.42:
+			if clone_phase == 0:
+				draw_line(Vector2(-220, -21), Vector2(220, -21), Color("ff82d9"), 5.0)
+				draw_string(ThemeDB.fallback_font, Vector2(-18, -102), "地面", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("ffb6df"))
+			else:
+				draw_arc(Vector2(0, -62), 42.0 + pulse * 8.0, PI, TAU, 24, Color("b68cff"), 4.0)
+				draw_string(ThemeDB.fallback_font, Vector2(-18, -108), "高位", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("d9c4ff"))
+		return
+	if pattern == "anchor":
+		_draw_memory()
+		return
 	if pattern == "memory":
 		_draw_memory()
 		return
@@ -156,6 +220,7 @@ func _draw_memory() -> void:
 	if not memory_recorded:
 		draw_arc(Vector2.ZERO, 22.0 + record_progress * 12.0, 0.0, TAU, 24, color, 2.0)
 		draw_line(Vector2(-12, -2), Vector2(12, -2), color, 2.0)
+		draw_string(ThemeDB.fallback_font, Vector2(-22, -48), "回响", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, color)
 		return
 	if memory_texture:
 		var frame_size := memory_texture.get_size()
@@ -163,6 +228,7 @@ func _draw_memory() -> void:
 		draw_texture_rect(memory_texture, Rect2(-frame_size.x * 0.5, -40.0 - frame_size.y * 0.5, frame_size.x, frame_size.y), false, Color(0.72, 0.57, 1.0, 0.72))
 		draw_set_transform(Vector2.ZERO)
 	draw_arc(Vector2(0, -37), 25.0, 0.0, TAU, 28, Color("bfb0ff"), 2.0)
+	draw_string(ThemeDB.fallback_font, Vector2(-30, -68), "回响危险", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("e7c7ff"))
 	var replay_progress := clampf((age - delay_seconds - phase_offset - replay_delay) / maxf(active_seconds, 0.01), 0.0, 1.0)
 	if not triggered:
 		draw_arc(Vector2.ZERO, 27.0 + sin(age * 12.0) * 3.0, 0.0, TAU, 24, Color("e7b6ff"), 2.0)

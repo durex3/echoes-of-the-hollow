@@ -154,25 +154,22 @@ func load_room(room_id: String, spawn: String, rehearsal := false) -> void:
 	for enemy: Node in room.get_node("Enemies").get_children():
 		if enemy is FurnaceKeeper:
 			enemy.target = player
+			var furnace_orchestrator := BossBattleOrchestrator.new()
+			room.add_child(furnace_orchestrator)
+			furnace_orchestrator.setup(room, enemy, ui, "FURNACE KEEPER", _on_keeper_defeated)
 			enemy.awakened.connect(func() -> void:
-				ui.show_boss(enemy.health.current,enemy.health.maximum,"FURNACE KEEPER")
 				for vent: SteamVent in room.get_node("Hazards").get_children():
 					vent.deactivate())
-			enemy.withdrawn.connect(ui.hide_boss)
-			enemy.health.changed.connect(ui.update_boss_health)
-			enemy.phase_changed.connect(ui.update_boss_phase)
 			enemy.impact.connect($Feedback.show_impact.bind(false))
-			enemy.defeated.connect(_on_keeper_defeated.bind(room.get_instance_id()),CONNECT_DEFERRED)
 		if enemy is WingedChest or enemy is RoseSentinel:
 			enemy.target = player
 			enemy.impact.connect($Feedback.show_impact.bind(false))
 		if enemy is HollowWarden:
 			enemy.target = player
-			enemy.awakened.connect(func() -> void: ui.show_boss(enemy.health.current,enemy.health.maximum))
-			enemy.health.changed.connect(ui.update_boss_health)
-			enemy.phase_changed.connect(ui.update_boss_phase)
+			var warden_orchestrator := BossBattleOrchestrator.new()
+			room.add_child(warden_orchestrator)
+			warden_orchestrator.setup(room, enemy, ui, "HOLLOW WARDEN", _on_warden_defeated)
 			enemy.impact.connect($Feedback.show_impact.bind(false))
-			enemy.defeated.connect(_on_warden_defeated.bind(room.get_instance_id()),CONNECT_DEFERRED)
 		if enemy is DoomScribe:
 			enemy.target = player
 		if enemy is LivingArmor:
@@ -185,11 +182,10 @@ func load_room(room_id: String, spawn: String, rehearsal := false) -> void:
 			enemy.defeated.connect(_on_chapter_three_enemy_defeated.bind(room.get_instance_id()), CONNECT_DEFERRED)
 		if enemy is BellWarden:
 			enemy.target = player
-			enemy.awakened.connect(func() -> void: ui.show_boss(enemy.health.current, enemy.health.maximum, "BELL WARDEN"))
-			enemy.phase_changed.connect(ui.update_boss_phase)
-			enemy.health.changed.connect(ui.update_boss_health)
+			var bell_orchestrator := BossBattleOrchestrator.new()
+			room.add_child(bell_orchestrator)
+			bell_orchestrator.setup(room, enemy, ui, "BELL WARDEN", _on_bell_warden_defeated)
 			enemy.impact.connect($Feedback.show_impact.bind(false))
-			enemy.defeated.connect(_on_bell_warden_defeated.bind(room.get_instance_id()), CONNECT_DEFERRED)
 	player.global_position = room.spawn_position(spawn)
 	player.velocity = Vector2.ZERO
 	Session.visit(room_id)

@@ -12,6 +12,10 @@
 size = Vector2(576, 64)
 [sub_resource type="RectangleShape2D" id="wall"]
 size = Vector2(32, 384)
+[sub_resource type="RectangleShape2D" id="low_platform"]
+size = Vector2(96, 16)
+[sub_resource type="RectangleShape2D" id="high_platform"]
+size = Vector2(128, 16)
 
 [node name="TerminalPlatform" type="Node2D"]
 script = ExtResource("1")
@@ -42,6 +46,20 @@ shape = SubResource("wall")
 position = Vector2(592, 192)
 [node name="Collision" type="CollisionShape2D" parent="RightBoundary"]
 shape = SubResource("wall")
+
+[node name="WallJumpPlatforms" type="Node2D" parent="."]
+[node name="LeftLow" type="StaticBody2D" parent="WallJumpPlatforms"]
+position = Vector2(112, 236)
+[node name="Collision" type="CollisionShape2D" parent="WallJumpPlatforms/LeftLow"]
+shape = SubResource("low_platform")
+[node name="RightLow" type="StaticBody2D" parent="WallJumpPlatforms"]
+position = Vector2(464, 236)
+[node name="Collision" type="CollisionShape2D" parent="WallJumpPlatforms/RightLow"]
+shape = SubResource("low_platform")
+[node name="CenterHigh" type="StaticBody2D" parent="WallJumpPlatforms"]
+position = Vector2(288, 176)
+[node name="Collision" type="CollisionShape2D" parent="WallJumpPlatforms/CenterHigh"]
+shape = SubResource("high_platform")
 
 [node name="Spawns" type="Node2D" parent="."]
 [node name="entry" type="Marker2D" parent="Spawns"]

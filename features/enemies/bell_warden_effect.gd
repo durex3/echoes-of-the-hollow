@@ -4,6 +4,7 @@ extends Node2D
 const ARCANE_SLASH := preload("res://assets/effects/bell_arcane_slash.png")
 const ARCANE_IMPACT := preload("res://assets/effects/bell_arcane_impact.png")
 const ARCANE_EXPLOSION := preload("res://assets/effects/bell_arcane_explosion.png")
+const GHOST_SHEET := preload("res://assets/characters/bell_warden_sheet.png")
 
 ## Visuals follow the boss state; collision and damage stay on its hitboxes.
 var state := 0
@@ -35,6 +36,11 @@ func _draw() -> void:
 		var frame := mini(15, int(progress * 16.0))
 		var destination := Rect2(12, -43, 64, 64) if facing > 0 else Rect2(-76, -43, 64, 64)
 		draw_texture_rect_region(ARCANE_SLASH, destination, Rect2(frame * 64, 0, 64, 64))
+		if attack == 1:
+			for trail: int in range(3):
+				var trail_alpha := 0.30 - float(trail) * 0.08
+				var trail_x := -facing * float(trail + 1) * 26.0
+				draw_texture_rect_region(GHOST_SHEET, Rect2(trail_x - 34.0, -78.0, 68.0, 46.0), Rect2(0, 93, 140, 93), Color(0.95, 0.35, 0.65, trail_alpha))
 		if frame < 8:
 			var impact_rect := Rect2(38, -33, 38, 38) if facing > 0 else Rect2(-76, -33, 38, 38)
 			draw_texture_rect_region(ARCANE_IMPACT, impact_rect, Rect2(frame * 64, 0, 64, 64))
@@ -60,8 +66,12 @@ func _draw() -> void:
 	elif state == 12: # FALLING BELL WARNING
 		var p := clampf(1.0 - timer / maxf(windup, 0.01), 0.0, 1.0)
 		draw_arc(Vector2(0, -46), 18.0 + p * 22.0, PI + 0.2, TAU - 0.2, 24, Color("e8a5ff"), 3.0)
+		draw_line(Vector2(-250, -8), Vector2(250, -8), Color(1.0, 0.72, 0.38, 0.18 + p * 0.45), 3.0)
 	elif state == 13: # FALLING BELL ACTIVE
 		draw_arc(Vector2(0, -46), 42.0, PI + 0.2, TAU - 0.2, 24, Color("ffb8f3"), 3.0)
+		for wave: int in range(3):
+			var wave_x := float(wave + 1) * 46.0
+			draw_line(Vector2(-wave_x, -8), Vector2(wave_x, -8), Color(1.0, 0.35, 0.72, 0.7 - float(wave) * 0.16), 5.0)
 	elif state == 14: # STAGGER
 		for ring: int in range(3):
 			draw_arc(Vector2(0, -42), 24.0 + float(ring) * 12.0, 0.0, TAU, 24, Color(1.0, 0.9, 0.45, 0.8 - ring * 0.2), 3.0)

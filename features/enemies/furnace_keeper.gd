@@ -15,6 +15,18 @@ enum Attack { DASH, HOP, SLAM, MELEE, COMBO }
 @onready var flames: Node2D = $Flames
 @onready var dash_hitbox: Hitbox = $DashHitbox
 @onready var contact_box: Hitbox = $ContactBox
+const FurnaceKeeperDecisionScript = preload("res://features/enemies/furnace_keeper_decision.gd")
+const StateMachineScript = preload("res://features/enemies/boss_state_machine.gd")
+const AttackStateScript = preload("res://features/enemies/boss_attack_state.gd")
+var decision: RefCounted = FurnaceKeeperDecisionScript.new()
+var state_machine: RefCounted = StateMachineScript.new()
+var attack_states := {
+	Attack.DASH: AttackStateScript.new("dash", 0.7, 0.35, 1.0, 1.5),
+	Attack.HOP: AttackStateScript.new("hop", 0.55, 0.25, 0.9, 1.5),
+	Attack.SLAM: AttackStateScript.new("slam", 2.2, 0.3, 1.8, 5.0),
+	Attack.MELEE: AttackStateScript.new("melee", 0.45, 0.35, 0.85, 1.0),
+	Attack.COMBO: AttackStateScript.new("combo", 0.8, 0.4, 1.8, 4.0),
+}
 var target: Player
 var state := State.DORMANT
 var attack := Attack.DASH
@@ -25,8 +37,10 @@ var facing := -1.0
 var flash_left := 0.0
 var combo_left := 0
 var home_position := Vector2.ZERO
+var last_attack := -1
 
 func _ready() -> void:
+	state_machine.setup(self)
 	home_position = position
 	flames.top_level = true
 	($Hurtbox as Hurtbox).damage_guard = pressure_guard
@@ -48,6 +62,7 @@ func _physics_process(delta: float) -> void:
 	contact_box.active = state not in [State.DORMANT, State.INTRO, State.TRANSITION, State.DEAD]
 	timer = maxf(0,timer-delta)
 	flash_left = maxf(0,flash_left-delta)
+	state_machine.tick(delta)
 	match state:
 		State.DORMANT:
 			if target.position.x >= config.activation_x:
@@ -123,12 +138,20 @@ func _physics_process(delta: float) -> void:
 
 func start_attack() -> void:
 	facing = -1 if target.position.x < position.x else 1
-	attack = [Attack.DASH,Attack.HOP,Attack.SLAM,Attack.MELEE,Attack.COMBO][attack_count % 5]
+	var distance := absf(target.global_position.x - global_position.x)
+	var airborne := target.global_position.y < global_position.y - 24.0 or not target.is_on_floor()
+	var selected: int = decision.choose_attack(distance, airborne, attack_count, last_attack, true)
+	attack = selected as Attack
+	state_machine.change(attack_states[attack])
+	(attack_states[attack] as BossAttackState).arm()
+	last_attack = selected
 	attack_count += 1
 	combo_left = config.combo_strikes if attack == Attack.COMBO else 0
 	_enter(State.TAKEOFF if attack == Attack.SLAM else State.APPROACH if attack == Attack.MELEE else State.WARNING)
 
 func _enter(next: State) -> void:
+	if next in [State.WARNING, State.TAKEOFF, State.APPROACH]:
+		state_machine.change(attack_states[attack])
 	if state == State.CAST and attack in [Attack.DASH,Attack.MELEE,Attack.COMBO]:
 		dash_hitbox.end_swing()
 	state = next
