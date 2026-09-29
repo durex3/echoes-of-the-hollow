@@ -38,7 +38,8 @@ func _run() -> void:
 	await frames(4)
 	boss = game.room.get_node("Enemies/BellWarden") as BellWarden
 	check(boss.health.maximum == 18, "Boss uses configured health")
-	check(boss.state == BellWarden.State.DORMANT, "Boss starts dormant")
+	check(boss.config.activation_x <= game.player.global_position.x, "Entry spawn is inside the Boss activation range")
+	check(boss.state == BellWarden.State.INTRO, "Boss awakens from the room entry without requiring the player to advance")
 	boss.velocity.x = boss.config.move_speed
 	boss.state = BellWarden.State.CHASE
 	boss._update_visual()
@@ -55,7 +56,7 @@ func _run() -> void:
 	boss.velocity.x = 0.0
 	game.player.position.x = 196.0
 	await frames(4)
-	check(boss.state == BellWarden.State.INTRO, "Arena trigger awakens boss")
+	check(boss.state == BellWarden.State.INTRO, "Arena trigger keeps the Boss in its opening animation")
 	boss.set_physics_process(false)
 	game.player.revive(boss.global_position + Vector2(-85.0, 0.0))
 	var far_hp: int = game.player.health.current
@@ -106,6 +107,7 @@ func _run() -> void:
 	check((boss.attack_states[BellWarden.Attack.DOUBLE_ECHO] as BossAttackState).cooldown != (boss.attack_states[BellWarden.Attack.LAYER_RESONANCE] as BossAttackState).cooldown, "Special attacks keep independent cooldowns")
 	await _check_resonance_damage()
 	await _check_double_echo()
+	await _check_idle_corner()
 	print("BELL_WARDEN_RESULT: %d checks, %d failures" % [checks, failures.size()])
 	get_tree().quit(0 if failures.is_empty() else 1)
 
@@ -123,8 +125,8 @@ func _check_boss_decisions() -> void:
 	check(hollow.choose_attack(50.0, false, 0, 0, false, false, true) == HollowWarden.Attack.RUSH, "King excludes a cooling sweep")
 	var bell := BellWardenDecision.new()
 	check(bell.choose_attack(180.0, false, 3, true, true) == BellWarden.Attack.DASH, "Bell warden dashes after three sweeps at mid-range")
-	check(bell.choose_attack(80.0, false, 3, true, true) == BellWarden.Attack.SWEEP, "Bell warden does not dash at point-blank range")
-	check(bell.choose_attack(180.0, false, 3, false, true) == BellWarden.Attack.SWEEP, "Bell warden respects dash cooldown")
+	check(bell.choose_attack(60.0, false, 3, true, true) == BellWarden.Attack.SWEEP, "Bell warden does not dash at point-blank range")
+	check(bell.choose_attack(180.0, false, 3, false, true) == -1, "Bell warden closes distance when dash is cooling instead of swinging out of range")
 	check(bell.choose_attack(180.0, false, 2, true, true, true, true, true) == BellWarden.Attack.DOUBLE_ECHO, "Grounded player after ordinary attacks enables double echo")
 	check(bell.choose_attack(180.0, false, 2, true, true, true, true, false) != BellWarden.Attack.DOUBLE_ECHO, "Airborne player is not recorded as a landing")
 	check(bell.choose_attack(180.0, false, 1, true, true, false, true, true) == BellWarden.Attack.LAYER_RESONANCE, "Resonance has its own selection path")
@@ -185,6 +187,7 @@ func _check_double_echo() -> void:
 	boss.timer = 0.0
 	echo._update_echo(boss)
 	check(echo.hazards.size() == 2 and boss.state == BellWarden.State.STRIKE, "Two fixed ghosts release in sequence")
+	check(is_equal_approx((echo.hazards[1] as BellWardenEchoClone).delay_seconds - (echo.hazards[0] as BellWardenEchoClone).delay_seconds, boss.config.double_echo_record_gap), "Echo clones swing on separate beats")
 	await shot("bell_warden_double_echo")
 	game.player.global_position = Vector2(470.0, 320.0)
 	boss.timer = 0.31
@@ -196,20 +199,36 @@ func _check_double_echo() -> void:
 	check(absf(boss.global_position.x - 330.0) < 3.0 and boss.state == BellWarden.State.RECOVER, "Swap lands at the fixed ghost and enters recovery")
 	boss.state_machine.finish()
 	game.player.revive(Vector2(210.0, 320.0))
-	var ghost := EchoMark.new()
-	ghost.pattern = "target"
-	ghost.ghost_visual = true
+	game.player.set_physics_process(false)
+	var ghost := BellWardenEchoClone.new()
 	ghost.player = game.player
-	ghost.delay_seconds = 0.12
+	ghost.delay_seconds = 0.3
 	ghost.active_seconds = 0.24
-	ghost.radius = 38.0
 	ghost.damage = 1
+	ghost.facing = -1.0
 	game.room.add_child(ghost)
-	ghost.global_position = Vector2(210.0, 320.0)
+	ghost.global_position = Vector2(265.0, 320.0)
 	var ghost_hp: int = game.player.health.current
-	await frames(20)
-	check(game.player.health.current == ghost_hp - 1 and ghost.hit, "Ghost's visible attack resolves through the player hurtbox once")
+	await frames(12)
+	check(game.player.health.current == ghost_hp and not ghost.attack_started, "Echo clone windup does not damage early")
+	await shot("bell_warden_clone_windup")
+	await frames(16)
+	check(game.player.health.current == ghost_hp - 1 and ghost.hit, "Echo clone sweep damages the player in front once")
+	await shot("bell_warden_clone_strike")
 	ghost.queue_free()
+	game.player.revive(Vector2(320.0, 320.0))
+	var behind := BellWardenEchoClone.new()
+	behind.player = game.player
+	behind.delay_seconds = 0.05
+	behind.active_seconds = 0.24
+	behind.facing = -1.0
+	game.room.add_child(behind)
+	behind.global_position = Vector2(265.0, 320.0)
+	ghost_hp = game.player.health.current
+	await frames(17)
+	check(game.player.health.current == ghost_hp and not behind.hit, "Echo clone sweep misses behind its facing")
+	behind.queue_free()
+	game.player.set_physics_process(true)
 	boss.global_position = Vector2(432.0, 320.0)
 	game.player.global_position = Vector2(210.0, 320.0)
 	await frames(3)
@@ -222,6 +241,27 @@ func _check_double_echo() -> void:
 	echo._update_echo(boss)
 	check(echo.hazards.size() == 1, "Repeated landing collapses to one ghost instead of stacking hits")
 	boss.state_machine.finish()
+
+func _check_idle_corner() -> void:
+	boss.state_machine.finish()
+	boss.global_position = Vector2(432.0, 320.0)
+	boss.health.restore_full()
+	game.player.set_physics_process(false)
+	game.player.revive(Vector2(32.0, 320.0))
+	boss.state = BellWarden.State.CHASE
+	boss.timer = 0.0
+	boss.regular_attacks = 0
+	boss.attack = BellWarden.Attack.SWEEP
+	boss.set_physics_process(true)
+	var hp: int = game.player.health.current
+	var closest := boss.global_position.x
+	for _step in range(360):
+		await frames(1)
+		closest = minf(closest, boss.global_position.x)
+	check(closest < 105.0 and boss.attack_count > 0, "Boss closes on a stationary player at the left wall")
+	check(game.player.health.current < hp, "Boss can damage a stationary player at the left wall")
+	boss.set_physics_process(false)
+	game.player.set_physics_process(true)
 
 func shot(label: String) -> void:
 	if "--visual" not in OS.get_cmdline_user_args():

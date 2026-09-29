@@ -69,9 +69,8 @@ func _physics_process(delta: float) -> void:
 			facing = signf(target.global_position.x - global_position.x)
 			if is_zero_approx(facing): facing = -1.0
 			var distance := absf(target.global_position.x - global_position.x)
-			if timer <= 0.0 and distance <= 260.0:
-				_start_attack()
-			else:
+			var attacking := timer <= 0.0 and distance <= 260.0 and _start_attack()
+			if not attacking:
 				var direction := facing if distance > config.sweep_range else -facing
 				velocity.x = move_toward(velocity.x, direction * config.move_speed, 1400.0 * delta)
 			if contact_refresh <= 0.0:
@@ -88,14 +87,14 @@ func _physics_process(delta: float) -> void:
 	_update_visual()
 	combat_effect.configure(int(state), int(attack), facing, timer, _windup(), _active())
 
-func _start_attack() -> void:
+func _start_attack() -> bool:
 	if not state_machine.can_decide():
-		return
+		return false
 	var distance := absf(target.global_position.x - global_position.x)
 	var airborne := target.global_position.y < global_position.y - 34.0
 	var selected: int = decision.choose_attack(distance, airborne, regular_attacks, (attack_states[Attack.DASH] as BossAttackState).ready(), (attack_states[Attack.SWEEP] as BossAttackState).ready(), (attack_states[Attack.DOUBLE_ECHO] as BossAttackState).ready(), (attack_states[Attack.LAYER_RESONANCE] as BossAttackState).ready(), target.is_on_floor(), int(attack))
 	if selected < 0:
-		return
+		return false
 	attack = selected as Attack
 	(attack_states[attack] as BossAttackState).arm()
 	state_machine.change(attack_states[attack])
@@ -104,6 +103,7 @@ func _start_attack() -> void:
 		regular_attacks = 0
 	else:
 		regular_attacks += 1
+	return true
 
 func _enter(next: State) -> void:
 	state = next

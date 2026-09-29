@@ -1,7 +1,7 @@
 class_name BellWardenAttackState
 extends BossAttackState
 
-const ECHO_MARK := preload("res://features/enemies/echo_mark.gd")
+const ECHO_CLONE := preload("res://features/enemies/bell_warden_echo_clone.gd")
 const RESONANCE := preload("res://features/enemies/bell_warden_resonance.gd")
 const GHOST_SHEET := preload("res://assets/characters/bell_warden_sheet.png")
 var recorded: Array[Vector2] = []
@@ -75,7 +75,7 @@ func _begin_phase(next: BellWarden.State) -> void:
 			boss.attack_box.position.x = boss.facing * (34.0 if attack_id == BellWarden.Attack.SWEEP else 42.0)
 			boss.attack_box.damage = boss.config.sweep_damage if attack_id == BellWarden.Attack.SWEEP else boss.config.dash_damage
 			boss.attack_box.begin_swing()
-			boss.cue_changed.emit("红色横扫：后撤或绕后" if attack_id == BellWarden.Attack.SWEEP else "红色突进：跳过或绕后")
+			boss.cue_changed.emit("横扫蓄势" if attack_id == BellWarden.Attack.SWEEP else "突进蓄势")
 		BellWarden.State.STRIKE:
 			boss.timer = boss._active()
 			boss.attack_box.active = attack_id in [BellWarden.Attack.SWEEP, BellWarden.Attack.DASH]
@@ -94,14 +94,12 @@ func _update_echo(boss: BellWarden) -> void:
 			if recorded.is_empty():
 				recorded.append(boss.target.global_position)
 			for index in range(mini(2, recorded.size())):
-				var mark := ECHO_MARK.new() as EchoMark
-				mark.pattern = "target"
-				mark.ghost_visual = true
+				var mark := ECHO_CLONE.new() as BellWardenEchoClone
 				mark.delay_seconds = boss.config.double_echo_warning + float(index) * boss.config.double_echo_record_gap
 				mark.active_seconds = boss.config.double_echo_active
-				mark.radius = 38.0
 				mark.damage = boss.config.double_echo_damage
 				mark.player = boss.target
+				mark.facing = -1.0 if boss.target.global_position.x < recorded[index].x else 1.0
 				boss.get_parent().add_child(mark)
 				mark.global_position = recorded[index]
 				hazards.append(mark)

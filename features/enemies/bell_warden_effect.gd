@@ -24,10 +24,7 @@ func configure(next_state: int, next_attack: int, next_facing: float, next_timer
 
 func _draw() -> void:
 	if state == 3: # WINDUP
-		var p := clampf(1.0 - timer / windup, 0.0, 1.0)
-		var glow := Color("f8c879") if attack == 0 else Color("ff739a") if attack == 1 else Color("9feafa")
-		draw_arc(Vector2(facing * 11.0, -9), 18.0 + p * 4.0, -2.2, 1.1, 16, glow, 2.0 + p * 2.0)
-		draw_circle(Vector2(facing * 16.0, -12), 3.0 + p * 3.0, glow)
+		return
 	elif state == 4: # STRIKE
 		if attack >= 2:
 			return

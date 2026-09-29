@@ -2,7 +2,7 @@ class_name BellWardenConfig
 extends Resource
 
 @export var maximum_health := 18
-@export var activation_x := 192.0
+@export var activation_x := 96.0
 @export var arena_min_x := 32.0
 @export var arena_max_x := 500.0
 @export var move_speed := 108.0
@@ -13,7 +13,7 @@ extends Resource
 @export var sweep_active := 0.16
 @export var sweep_damage := 1
 @export var sweep_recovery := 0.76
-@export var sweep_range := 92.0
+@export var sweep_range := 64.0
 @export var dash_windup := 0.28
 @export var dash_active := 0.34
 @export var dash_recovery := 0.76

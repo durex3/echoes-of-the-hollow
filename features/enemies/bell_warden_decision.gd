@@ -12,4 +12,4 @@ func choose_attack(distance: float, airborne: bool, regular_attacks: int, dash_r
 		return RESONANCE
 	if dash_ready and distance >= 130.0 and distance <= 260.0 and (regular_attacks >= 3 or distance > 220.0 or airborne):
 		return DASH
-	return SWEEP if sweep_ready else -1
+	return SWEEP if sweep_ready and distance <= 64.0 else -1
