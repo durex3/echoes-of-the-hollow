@@ -8,6 +8,7 @@ const AURA := preload("res://features/combat/pixel_aura.gdshader")
 @export var tall := false
 @export var outward := false
 @export var instant := false
+@export var damage_override := -1
 var direction := -1.0
 var warning_left := 0.0
 var active_left := 0.0
@@ -148,7 +149,7 @@ func _physics_process(delta: float) -> void:
 		return
 	for area: Area2D in get_overlapping_areas():
 		if area is Hurtbox and area.get_instance_id() not in handled:
-			var result: Hurtbox.HitResult = area.resolve_hit(config.damage,global_position)
+			var result: Hurtbox.HitResult = area.resolve_hit(config.damage if damage_override < 0 else damage_override,global_position)
 			handled.append(area.get_instance_id())
 			if result == Hurtbox.HitResult.DAMAGED:
 				impact.emit(area.hit_position(),area.health.current == 0)

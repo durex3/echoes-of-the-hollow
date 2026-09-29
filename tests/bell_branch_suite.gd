@@ -70,6 +70,7 @@ func east_first() -> void:
 	await use("EastWeight")
 	check("east_weight_restored" in game.preview_flags, "East weight persists as an in-memory branch flag")
 	check(game.room.get_node("BridgeCollision/Collision").disabled == false, "East bridge collision opens after the weight is restored")
+	check(game.player.position.x < 1000.0 and game.player.is_on_floor(), "Enabling the east bridge clears the reward-side collision overlap")
 	game.cleared_rooms.append("bell_weight_chamber")
 	game.load_room("bell_weight_chamber", "bridge")
 	await frames(5)

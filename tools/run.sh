@@ -5,9 +5,10 @@ project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 godot_bin="${GODOT_BIN:-}"
 mode=game
 baseline=false
+boss=false
 
 usage() {
-    echo 'Usage: tools/run.sh [--editor | --preview [--baseline]] [--godot PATH]' >&2
+    echo 'Usage: tools/run.sh [--editor | --preview [--baseline] [--boss]] [--godot PATH]' >&2
 }
 
 while (($#)); do
@@ -15,6 +16,7 @@ while (($#)); do
         --editor) mode=editor ;;
         --preview) mode=preview ;;
         --baseline) baseline=true ;;
+        --boss) boss=true ;;
         --godot)
             if (($# < 2)); then usage; exit 2; fi
             godot_bin="$2"
@@ -25,7 +27,7 @@ while (($#)); do
     shift
 done
 
-if "$baseline" && [[ "$mode" != preview ]]; then
+if { "$baseline" || "$boss"; } && [[ "$mode" != preview ]]; then
     echo '--baseline requires --preview.' >&2
     exit 2
 fi
@@ -47,8 +49,11 @@ fi
 case "$mode" in
     editor) exec "$godot_bin" --path "$project_root" --editor ;;
     preview)
-        if "$baseline"; then
-            exec "$godot_bin" --path "$project_root" res://features/world/prototypes/bell_court_preview.tscn -- --baseline
+        preview_args=()
+        if "$baseline"; then preview_args+=(--baseline); fi
+        if "$boss"; then preview_args+=(--boss); fi
+        if ((${#preview_args[@]})); then
+            exec "$godot_bin" --path "$project_root" res://features/world/prototypes/bell_court_preview.tscn -- "${preview_args[@]}"
         fi
         exec "$godot_bin" --path "$project_root" res://features/world/prototypes/bell_court_preview.tscn ;;
     game) exec "$godot_bin" --path "$project_root" ;;

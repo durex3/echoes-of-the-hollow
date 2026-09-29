@@ -1469,6 +1469,23 @@ texture = ExtResource("6_jpr8r")
 region_enabled = true
 region_rect = Rect2(0, 0, 32, 32)
 
+[node name="ChapterThreeDoor" type="Node2D" parent="Interactions"]
+position = Vector2(1040, 480)
+script = ExtResource("5_of04d")
+kind = "exit"
+visible_after_flag = "furnace_keeper_defeated"
+required_flags = Array[String](["cistern_restored", "furnace_keeper_defeated"])
+target_room = "windworn_steps"
+target_spawn = "entry"
+prompt = "E / ENTER THE BELL COURT"
+
+[node name="ForgeDoor" type="Sprite2D" parent="Interactions/ChapterThreeDoor"]
+position = Vector2(0, -32)
+scale = Vector2(2, 2)
+texture = ExtResource("6_jpr8r")
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 32)
+
 [node name="Hazards" type="Node2D" parent="." unique_id=1486015267]
 
 [node name="SteamVent" type="Area2D" parent="Hazards" unique_id=574332795 instance=ExtResource("7_jpr8r")]
@@ -1497,5 +1514,8 @@ region_rect = Rect2(0, 0, 32, 32)
 
 [node name="pump_return" type="Marker2D" parent="Spawns"]
 position = Vector2(925, 480)
+
+[node name="chapter_three_return" type="Marker2D" parent="Spawns"]
+position = Vector2(1040, 480)
 
 [node name="ExpansionMarker" type="Node" parent="."]

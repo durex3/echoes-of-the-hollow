@@ -29,12 +29,14 @@ var finished := false
 var map_open := false
 var status_text := ""
 var baseline := false
+var boss_only := false
 
 func _enter_tree() -> void:
 	Session.save_path = "user://test_bell_preview_%s.json" % OS.get_process_id()
 	Session.settings_path = "user://test_bell_preview_%s.cfg" % OS.get_process_id()
 	Session.reset()
 	baseline = "--baseline" in OS.get_cmdline_user_args()
+	boss_only = "--boss" in OS.get_cmdline_user_args()
 	Session.abilities.assign(["double_jump", "dash"] if baseline else ["double_jump", "dash", "steam_ward"])
 	if not baseline:
 		Session.flags.assign(["heart_bloom"])
@@ -45,8 +47,13 @@ func _ready() -> void:
 	player.process_mode = Node.PROCESS_MODE_PAUSABLE
 	player.died.connect(_retry.call_deferred)
 	player.impact.connect($Feedback.show_impact)
-	load_room("windworn_steps", "entry")
-	show_notice("第三关前半段试玩｜进度仅在本次试玩内保留\n先观察阶庭的鸣石，再向东进入守钟外廊。")
+	if boss_only:
+		preview_flags.assign(["east_weight_restored", "west_weight_restored", "wall_passage_open"])
+		load_room("terminal_platform", "entry")
+		show_notice("第三关 Boss 单独试玩｜进度仅在本次试玩内保留\n按 J 攻击，观察三阶段招式、移动动画和接触碰撞。")
+	else:
+		load_room("windworn_steps", "entry")
+		show_notice("第三关前半段试玩｜进度仅在本次试玩内保留\n先观察阶庭的鸣石，再向东进入守钟外廊。")
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("pause") and not event.is_echo():
@@ -167,7 +174,11 @@ func _refresh() -> void:
 	var bridge_collision := room.get_node_or_null("BridgeCollision/Collision") as CollisionShape2D
 	if bridge_collision:
 		var restored := "east_weight_restored" in preview_flags if room.room_id == "bell_weight_chamber" else "west_weight_restored" in preview_flags
+		var bridge_was_closed := bridge_collision.disabled
 		bridge_collision.set_deferred("disabled", not restored)
+		if restored and bridge_was_closed and room.room_id == "bell_weight_chamber" and is_instance_valid(player):
+			if player.global_position.x > 1000.0 and player.global_position.y > 292.0:
+				player.global_position = Vector2(976.0, 320.0)
 	var west_bridge := room.get_node_or_null("BridgeTerrain") as TileMapLayer
 	if west_bridge:
 		west_bridge.enabled = "west_weight_restored" in preview_flags

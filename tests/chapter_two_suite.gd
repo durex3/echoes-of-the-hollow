@@ -159,6 +159,9 @@ func run(h: Node, game: Node) -> void:
 	await h.shot("76_chapter_two_map")
 	game.ui.chapter_button.pressed.emit()
 	await h.frames(3)
+	if game.ui.world_map.chapter == 3:
+		game.ui.chapter_button.pressed.emit()
+		await h.frames(3)
 	h.check(game.ui.world_map.chapter == 1 and game.ui.map_progress.text.contains("守望者"), "Map can switch back to Chapter I with its own progress checklist")
 	await h.shot("77_chapter_one_map_page")
 	game.resume()

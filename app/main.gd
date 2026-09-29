@@ -17,7 +17,16 @@ const ROOMS := {
 	"furnace_core": preload("res://features/world/rooms/furnace_core.tscn"),
 	"sluice_shaft": preload("res://features/world/rooms/sluice_shaft.tscn"),
 	"pump_chamber": preload("res://features/world/rooms/pump_chamber.tscn"),
-	"echo_vault": preload("res://features/world/rooms/echo_vault.tscn")
+	"echo_vault": preload("res://features/world/rooms/echo_vault.tscn"),
+	"windworn_steps": preload("res://features/world/rooms/windworn_steps.tscn"),
+	"bell_guard_walk": preload("res://features/world/rooms/bell_guard_walk.tscn"),
+	"broken_bell_atrium": preload("res://features/world/rooms/broken_bell_atrium.tscn"),
+	"echo_cloister": preload("res://features/world/rooms/echo_cloister.tscn"),
+	"hanging_gallery": preload("res://features/world/rooms/hanging_gallery.tscn"),
+	"bell_weight_chamber": preload("res://features/world/rooms/bell_weight_chamber.tscn"),
+	"quiet_reliquary": preload("res://features/world/rooms/quiet_reliquary.tscn"),
+	"confluence_bridge": preload("res://features/world/rooms/confluence_bridge.tscn"),
+	"terminal_platform": preload("res://features/world/rooms/terminal_platform.tscn")
 }
 const Repository := preload("res://core/save_repository.gd")
 @onready var room_host: Node2D = $RoomHost
@@ -65,7 +74,7 @@ func start_game(load_save: bool) -> void:
 	ui.update_progress()
 
 func start_boss_challenge(chapter: int) -> void:
-	if chapter not in [1, 2]:
+	if chapter not in [1, 2, 3]:
 		return
 	get_tree().paused = false
 	ui.hide_map()
@@ -78,7 +87,9 @@ func start_boss_challenge(chapter: int) -> void:
 	Session.reset()
 	Session.unlock("double_jump")
 	Session.unlock("dash")
-	if chapter == 2:
+	if chapter >= 2:
+		# Chapter II and III practice starts after the first chapter's permanent vitality reward.
+		Session.set_flag("heart_bloom")
 		Session.unlock("steam_ward")
 	boss_challenge = chapter
 	ui.challenge_chapter = chapter
@@ -90,7 +101,7 @@ func start_boss_challenge(chapter: int) -> void:
 	player.died.connect(_on_player_died)
 	player.impact.connect($Feedback.show_impact)
 	running = true
-	load_room("heart_chamber" if chapter == 1 else "furnace_core", "entry", true)
+	load_room({1: "heart_chamber", 2: "furnace_core", 3: "terminal_platform"}[chapter], "entry", true)
 	ui.show_hud()
 	ui.update_health(player.health.current, player.health.maximum)
 	ui.update_progress()
@@ -168,6 +179,17 @@ func load_room(room_id: String, spawn: String, rehearsal := false) -> void:
 			enemy.target = player
 			# Player damage already owns its sound; the enemy event adds visuals.
 			enemy.impact.connect($Feedback.show_impact.bind(false))
+		if enemy is BellInvoker or enemy is BellSkimmer:
+			enemy.target = player
+			enemy.impact.connect($Feedback.show_impact.bind(false))
+			enemy.defeated.connect(_on_chapter_three_enemy_defeated.bind(room.get_instance_id()), CONNECT_DEFERRED)
+		if enemy is BellWarden:
+			enemy.target = player
+			enemy.awakened.connect(func() -> void: ui.show_boss(enemy.health.current, enemy.health.maximum, "BELL WARDEN"))
+			enemy.phase_changed.connect(ui.update_boss_phase)
+			enemy.health.changed.connect(ui.update_boss_health)
+			enemy.impact.connect($Feedback.show_impact.bind(false))
+			enemy.defeated.connect(_on_bell_warden_defeated.bind(room.get_instance_id()), CONNECT_DEFERRED)
 	player.global_position = room.spawn_position(spawn)
 	player.velocity = Vector2.ZERO
 	Session.visit(room_id)
@@ -279,6 +301,14 @@ func _on_interaction(point: WorldInteraction) -> void:
 				Session.checkpoint_room = "ember_quay"
 				Session.checkpoint_spawn = "checkpoint"
 				_save("Progress saved")
+			if point.target_room == "windworn_steps" and room.room_id == "ember_quay":
+				Session.checkpoint_room = "ember_quay"
+				Session.checkpoint_spawn = "checkpoint"
+				_save("Progress saved / Chapter III opened")
+			if point.target_room == "terminal_platform" and room.room_id == "confluence_bridge":
+				Session.checkpoint_room = "terminal_platform"
+				Session.checkpoint_spawn = "checkpoint"
+				_save("Boss approach saved")
 			if point.target_room == "ember_quay" and room.room_id == "heart_chamber" and "journey_restored" not in Session.flags:
 				Session.set_flag("journey_restored")
 				room.update_progress()
@@ -299,7 +329,7 @@ func _on_interaction(point: WorldInteraction) -> void:
 			Audio.play_sound("ability_acquire")
 			_save_reward(point.stable_id)
 		"upgrade":
-			if point.stable_id != "heart_bloom" or point.stable_id in Session.flags:
+			if point.stable_id not in ["heart_bloom", "bell_heart"] or point.stable_id in Session.flags:
 				return
 			Session.set_flag(point.stable_id)
 			player.health.maximum = Session.maximum_health()
@@ -337,6 +367,19 @@ func _on_interaction(point: WorldInteraction) -> void:
 			ui.finale_saved = saved
 			ui.show_menu("finale")
 		"goal":
+			if room.room_id == "terminal_platform":
+				if "bell_warden_defeated" not in Session.flags:
+					return
+				if "bell_court_restored" in Session.flags:
+					return
+				Session.set_flag("bell_court_restored")
+				Session.completed = true
+				Session.progress_changed.emit()
+				room.update_progress()
+				_save("钟庭复苏 / Chapter III complete")
+				get_tree().paused = true
+				ui.show_menu("win")
+				return
 			if not Session.abilities.has("double_jump"):
 				ui.notify("The shrine awaits an echo from the eastern ruins")
 				return
@@ -380,7 +423,7 @@ func _on_player_died() -> void:
 	if player != fallen_player or room != fallen_room or not is_instance_valid(player) or not is_instance_valid(room):
 		return
 	if boss_challenge != 0:
-		load_room("heart_chamber" if boss_challenge == 1 else "furnace_core", "entry", true)
+		load_room({1: "heart_chamber", 2: "furnace_core", 3: "terminal_platform"}[boss_challenge], "entry", true)
 		player.revive(room.spawn_position("entry"))
 		return
 	load_room(Session.checkpoint_room, Session.checkpoint_spawn)
@@ -416,6 +459,29 @@ func _on_keeper_defeated(room_instance: int) -> void:
 	Session.set_flag("furnace_keeper_defeated")
 	room.update_progress()
 	_save_reward("furnace_keeper_defeated")
+
+func _on_chapter_three_enemy_defeated(room_instance: int) -> void:
+	if is_instance_valid(room) and room.get_instance_id() == room_instance:
+		if room.is_cleared():
+			var clear_flag: String = {"bell_guard_walk":"bell_guard_cleared", "bell_weight_chamber":"bell_weight_cleared", "hanging_gallery":"hanging_gallery_cleared", "confluence_bridge":"confluence_bridge_cleared"}.get(room.room_id, "")
+			if not clear_flag.is_empty() and clear_flag not in Session.flags:
+				Session.set_flag(clear_flag)
+				_save("Hall cleared / Route saved")
+		room.update_progress()
+
+func _on_bell_warden_defeated(room_instance: int) -> void:
+	if not is_instance_valid(room) or room.get_instance_id() != room_instance or player.state == Player.State.DEAD:
+		return
+	if boss_challenge != 0:
+		_finish_boss_challenge()
+		return
+	ui.hide_boss()
+	if "bell_warden_defeated" in Session.flags:
+		return
+	Session.set_flag("bell_warden_defeated")
+	room.update_progress()
+	player.health.restore_full()
+	_save_reward("bell_warden_defeated")
 
 func _finish_boss_challenge() -> void:
 	ui.hide_boss()

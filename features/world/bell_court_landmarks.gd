@@ -6,14 +6,23 @@ extends Node2D
 @export var courtyard := false
 @export_enum("entry","guard","hub","cloister","gallery") var theme := "entry"
 const STONE := preload("res://assets/environment/forest.png")
+const BELFRY_SKY := preload("res://assets/environment/chapter_three/belfry_sky.png")
+const BELFRY_MOUNTAINS := preload("res://assets/environment/chapter_three/belfry_mountains.png")
 
 func _draw() -> void:
-	draw_rect(Rect2(0,0,room_width,room_height),Color("71879a"))
-	# Hand-authored, low-contrast sky bands and clouds retain empty combat space.
+	# Establish the cool dusk base first; the licensed chapter-three matte is
+	# deliberately drawn afterwards so its silhouette and moon remain visible.
+	draw_rect(Rect2(0,0,room_width,room_height),Color("3d5268"))
 	for index: int in range(24):
 		var y := index*room_height/24
-		var shade := Color("637a91").lerp(Color("849caa"),float(index)/24)
+		var shade := Color("33485f").lerp(Color("71889b"),float(index)/24)
 		draw_rect(Rect2(0,y,room_width,room_height/24+1),shade)
+	# The source art is atmospheric rather than opaque. Keep the palette muted
+	# while retaining enough contrast for the player and hazards in front.
+	var sky_height := room_width * 0.5625
+	draw_texture_rect(BELFRY_SKY,Rect2(0,0,room_width,sky_height),false,Color(0.72,0.60,0.78,0.60))
+	draw_texture_rect(BELFRY_MOUNTAINS,Rect2(0,room_height-232,room_width,232),true,Color(0.42,0.50,0.62,0.78))
+	# Hand-authored, low-contrast clouds retain readable combat space.
 	for index: int in range(6):
 		var x := 72.0+index*258
 		var y := 94.0+(index%3)*74
@@ -84,6 +93,13 @@ func architecture() -> void:
 	var floor_y := room_height-64
 	var stone := Color("647079")
 	match theme:
+		"entry":
+			# The entry is an exterior threshold, but its distant wall should still
+			# read as a built space instead of an empty sky rectangle.
+			masonry(Rect2(0,128,room_width,room_height-256),Color("526875"))
+			for x: int in range(96,int(room_width),256):
+				lancet(Vector2(x,430),178)
+			masonry(Rect2(0,room_height-216,room_width,20),Color("71848a"))
 		"hub":
 			# Tall belfry bays frame the suspended bell and both playable levels.
 			masonry(Rect2(304,72,416,632),Color("59666e"))
@@ -103,12 +119,22 @@ func architecture() -> void:
 			for y: int in [80,384]:
 				masonry(Rect2(0,y,room_width,16),stone)
 		"guard":
+			# Repeat shallow bays between the playable doors so the long corridor
+			# keeps architectural rhythm at every camera position.
+			masonry(Rect2(0,136,room_width,room_height-264),Color("506873"))
+			for x: int in range(80,int(room_width),256):
+				lancet(Vector2(x,426),172)
+			masonry(Rect2(0,room_height-224,room_width,18),Color("73858a"))
 			for x: int in [240,576,912,1248]:
 				masonry(Rect2(x-48,floor_y-280,96,280),Color("536773"))
 				lancet(Vector2(x,floor_y-40),176)
 				banner(Vector2(x+68,floor_y-228),110)
 			masonry(Rect2(0,floor_y-48,room_width,48),Color("455d69"))
 		"gallery":
+			masonry(Rect2(40,72,room_width-80,room_height-136),Color("4c626e"))
+			for x: int in range(128,int(room_width),256):
+				lancet(Vector2(x,220),112)
+			masonry(Rect2(40,room_height-96,room_width-80,16),Color("72858a"))
 			for x: int in [0,304,608,912]:
 				masonry(Rect2(x,0,40,floor_y),Color("536471"))
 				masonry(Rect2(x,0,240,32),stone)

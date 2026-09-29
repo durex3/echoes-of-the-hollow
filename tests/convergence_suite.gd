@@ -156,7 +156,26 @@ func check_route_graph(h: Node, game: Node) -> void:
 						flags.append(gate.stable_id)
 		if visited.size()+abilities.size()+flags.size() == prior:
 			break
-	h.check(visited.size() == rooms.size() and "furnace_core" in visited, "Room and prerequisite graph reaches all thirteen rooms from a fresh start")
+	var chapter_one_two := ["forest", "ruins", "training", "scriptorium", "sanctuary", "wind_hall", "belfry", "atrium", "heart_chamber", "ember_quay", "valve_gallery", "sluice_shaft", "echo_vault", "cistern_archive", "pump_chamber", "furnace_core"]
+	var first_two_complete := true
+	for id: String in chapter_one_two:
+		first_two_complete = first_two_complete and id in visited
+	h.check(first_two_complete and visited.size() == chapter_one_two.size(), "First two chapter graph remains complete without relying on Chapter III")
 	h.check("heart_bloom" not in flags, "Main route graph requires neither optional health nor high-shrine completion")
+	var third_ids := ["windworn_steps", "bell_guard_walk", "broken_bell_atrium", "echo_cloister", "hanging_gallery", "bell_weight_chamber", "quiet_reliquary", "confluence_bridge", "terminal_platform"]
+	var third_graph_valid := true
+	for id: String in third_ids:
+		third_graph_valid = third_graph_valid and rooms.has(id)
+		if rooms.has(id):
+			var third_room: GameRoom = rooms[id]
+			for point: WorldInteraction in third_room.get_node("Interactions").get_children():
+				if point.kind == "exit":
+					third_graph_valid = third_graph_valid and rooms.has(point.target_room) and rooms[point.target_room].has_node("Spawns/"+point.target_spawn)
+	h.check(third_graph_valid, "All nine Chapter III rooms and authored exit spawns are registered")
+	var quay_door := (rooms["ember_quay"].get_node("Interactions/ChapterThreeDoor") as WorldInteraction)
+	h.check(not quay_door.locked_message([], ["cistern_restored"]).is_empty(), "Legacy cistern-only save cannot enter Chapter III")
+	h.check(quay_door.locked_message([], ["cistern_restored", "furnace_keeper_defeated"]).is_empty(), "Chapter III entry opens only after actual Furnace Keeper victory")
+	var old_goal := JourneyProgress.objective([], ["cistern_restored"], [])
+	h.check(old_goal.contains("Furnace Keeper") and not old_goal.contains("Echo Cloister"), "Legacy objective still points to the unbeaten Chapter II boss")
 	for room: GameRoom in rooms.values():
 		room.free()

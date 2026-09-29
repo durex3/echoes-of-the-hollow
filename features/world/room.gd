@@ -35,6 +35,14 @@ func _ready() -> void:
 			$Enemies.remove_child(enemy)
 			enemy.queue_free()
 			continue
+		if enemy is BellWarden and not rehearsal and "bell_warden_defeated" in Session.flags:
+			$Enemies.remove_child(enemy)
+			enemy.queue_free()
+			continue
+		if room_id == "bell_guard_walk" and "bell_guard_cleared" in Session.flags or room_id == "bell_weight_chamber" and "bell_weight_cleared" in Session.flags or room_id == "hanging_gallery" and "hanging_gallery_cleared" in Session.flags or room_id == "confluence_bridge" and "confluence_bridge_cleared" in Session.flags:
+			$Enemies.remove_child(enemy)
+			enemy.queue_free()
+			continue
 		if enemy is DoomScribe:
 			enemy.cast_requested.connect(_spawn_bolt.bind(enemy.get_instance_id()))
 			enemy.defeated.connect(clear_projectiles.bind(enemy.get_instance_id()))
@@ -114,6 +122,30 @@ func update_progress() -> void:
 	if hazards and "cistern_restored" in Session.flags:
 		for vent: SteamVent in hazards.get_children():
 			vent.deactivate()
+	var return_gate := get_node_or_null("ReturnGate")
+	if return_gate and "wall_passage_open" in Session.flags:
+		(return_gate.get_node("Collision") as CollisionShape2D).set_deferred("disabled", true)
+		(return_gate.get_node("Art") as CanvasItem).hide()
+	var east_bridge := get_node_or_null("ReturnBridge") as TileMapLayer
+	if east_bridge:
+		east_bridge.enabled = "east_weight_restored" in Session.flags
+	var east_collision := get_node_or_null("BridgeCollision/Collision") as CollisionShape2D
+	if east_collision:
+		var restored := "east_weight_restored" in Session.flags if room_id == "bell_weight_chamber" else "west_weight_restored" in Session.flags
+		var bridge_was_closed := east_collision.disabled
+		east_collision.set_deferred("disabled", not restored)
+		# The east-weight interaction sits beside the newly enabled bridge. If the
+		# player is still overlapping its edge, clear that one-frame overlap before
+		# physics resolves it as a hard trap.
+		if restored and bridge_was_closed and room_id == "bell_weight_chamber" and is_instance_valid(player):
+			if player.global_position.x > 1000.0 and player.global_position.y > 292.0:
+				player.global_position = Vector2(976.0, 320.0)
+	var west_bridge := get_node_or_null("BridgeTerrain") as TileMapLayer
+	if west_bridge:
+		west_bridge.enabled = "west_weight_restored" in Session.flags
+	var bridge_art := get_node_or_null("BridgeArt") as CanvasItem
+	if bridge_art and room_id in ["bell_weight_chamber", "hanging_gallery"]:
+		bridge_art.visible = "east_weight_restored" in Session.flags if room_id == "bell_weight_chamber" else "west_weight_restored" in Session.flags
 	for child: Node in $Interactions.get_children():
 		var point := child as WorldInteraction
 		if challenge_mode:
@@ -121,6 +153,10 @@ func update_progress() -> void:
 			continue
 		point.visible = true
 		if point.kind == "exit" and point.name == "Return" and room_id in ["heart_chamber", "furnace_core"]:
+			point.visible = is_cleared()
+		elif point.kind == "exit" and room_id == "terminal_platform" and point.name == "Return":
+			point.visible = "bell_warden_defeated" in Session.flags
+		elif point.kind == "exit" and point.required_flag == "clear":
 			point.visible = is_cleared()
 		elif point.kind == "ability":
 			point.visible = not Session.abilities.has(point.stable_id)

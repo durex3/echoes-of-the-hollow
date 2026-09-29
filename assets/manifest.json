@@ -584,5 +584,21 @@
     "source_url": "https://clembod.itch.io/bringer-of-death-free",
     "sha256": "fe17ba9f2e13877d0bbefb9274cc4a32bd1deff647df10ca64e1e8dc8e1178e3",
     "license_status": "Original pack license."
+  },
+  {
+    "file": "assets/environment/chapter_three/belfry_sky.png",
+    "source_pack": "Gothicvania Cemetery",
+    "source_relative_path": "resouce/gothicvania-cemetery-files/Assets/Environment/background.png",
+    "source_url": "https://ansimuz.itch.io/gothicvania-cemetery",
+    "sha256": "216c03e6068c5d9bc55b659654c34b18871ffd65af1c70f7c181b7b94120bdc0",
+    "license_status": "Bundled public license; see resouce/gothicvania-cemetery-files/public-license.pdf."
+  },
+  {
+    "file": "assets/environment/chapter_three/belfry_mountains.png",
+    "source_pack": "Gothicvania Cemetery",
+    "source_relative_path": "resouce/gothicvania-cemetery-files/Assets/Environment/mountains.png",
+    "source_url": "https://ansimuz.itch.io/gothicvania-cemetery",
+    "sha256": "73edf71a9041051094e36c6113ef378ab9162c6c2e9e8ad1dda9aebf9deba94c",
+    "license_status": "Bundled public license; see resouce/gothicvania-cemetery-files/public-license.pdf."
   }
 ]

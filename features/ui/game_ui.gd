@@ -33,6 +33,8 @@ var boss_bar: ProgressBar
 var finale_saved := false
 var settings_panel: SettingsPanel
 var vitality_pips: VitalityPips
+var vitality_bar: ProgressBar
+var vitality_icon: TextureRect
 var dash_label: Label
 var dash_status := "Dash locked"
 var ward_label: Label
@@ -78,8 +80,37 @@ func _ready() -> void:
 	left.add_child(health_row)
 	health_label.add_theme_font_size_override("font_size", 14)
 	health_row.add_child(health_label)
-	vitality_pips = VitalityPips.new()
-	health_row.add_child(vitality_pips)
+	vitality_icon = TextureRect.new()
+	vitality_icon.name = "VitalityIcon"
+	var heart_texture := AtlasTexture.new()
+	heart_texture.atlas = preload("res://assets/props/bell_heart.png")
+	heart_texture.region = Rect2(0, 0, 10, 10)
+	vitality_icon.texture = heart_texture
+	vitality_icon.custom_minimum_size = Vector2(20, 20)
+	vitality_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	vitality_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	vitality_icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	health_row.add_child(vitality_icon)
+	vitality_bar = ProgressBar.new()
+	vitality_bar.name = "VitalityBar"
+	vitality_bar.custom_minimum_size = Vector2(128, 14)
+	vitality_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	vitality_bar.show_percentage = false
+	var vitality_background := StyleBoxFlat.new()
+	vitality_background.bg_color = Color("28383e")
+	vitality_background.corner_radius_top_left = 3
+	vitality_background.corner_radius_top_right = 3
+	vitality_background.corner_radius_bottom_left = 3
+	vitality_background.corner_radius_bottom_right = 3
+	var vitality_fill := StyleBoxFlat.new()
+	vitality_fill.bg_color = Color("d96f7d")
+	vitality_fill.corner_radius_top_left = 3
+	vitality_fill.corner_radius_top_right = 3
+	vitality_fill.corner_radius_bottom_left = 3
+	vitality_fill.corner_radius_bottom_right = 3
+	vitality_bar.add_theme_stylebox_override("background", vitality_background)
+	vitality_bar.add_theme_stylebox_override("fill", vitality_fill)
+	health_row.add_child(vitality_bar)
 	dash_label = label("Dash locked", 11, Color("94e4ce"))
 	health_row.add_child(dash_label)
 	objective = label("Find the echo in the eastern ruins", 12, Color("b4c6c2"))
@@ -171,7 +202,8 @@ func _ready() -> void:
 	chapter_button = Button.new()
 	chapter_button.name = "ChapterPage"
 	chapter_button.pressed.connect(func() -> void:
-		world_map.chapter = 2 if world_map.chapter == 1 else 1
+		var maximum_page := 3 if "cistern_restored" in Session.flags and "furnace_keeper_defeated" in Session.flags else 2
+		world_map.chapter = world_map.chapter % maximum_page + 1
 		world_map.queue_redraw()
 		_refresh_map_page())
 	map_layout.add_child(chapter_button)
@@ -222,7 +254,8 @@ func show_map(room_id: String, door_target := "") -> void:
 func _refresh_map_page() -> void:
 	chapter_button.visible = "journey_restored" in Session.flags
 	world_map.custom_minimum_size.y = 168 if chapter_button.visible else 202
-	chapter_button.text = TextCatalog.text("Chapter II / Show Chapter I" if world_map.chapter == 2 else "Chapter I / Show Chapter II")
+	var maximum_page := 3 if "cistern_restored" in Session.flags and "furnace_keeper_defeated" in Session.flags else 2
+	chapter_button.text = TextCatalog.text("Show Chapter %d" % (world_map.chapter % maximum_page + 1))
 	map_progress.text = world_map.mark_summary()
 
 func hide_map() -> void:
@@ -238,8 +271,8 @@ func label(text: String, font_size: int, color: Color) -> Label:
 func show_menu(mode: String, can_continue := false) -> void:
 	menu_mode = mode
 	menu_can_continue = can_continue
-	modal.offset_top = -160 if mode == "challenge_select" else -138
-	modal.offset_bottom = 160 if mode == "challenge_select" else 138
+	modal.offset_top = -190 if mode == "challenge_select" else -138
+	modal.offset_bottom = 190 if mode == "challenge_select" else 138
 	if mode == "challenge_complete":
 		hud.hide()
 	for child: Node in menu.get_children():
@@ -281,6 +314,7 @@ func show_menu(mode: String, can_continue := false) -> void:
 	elif mode == "challenge_select":
 		button("Chapter I / Hollow Warden", func() -> void: challenge_requested.emit(1))
 		button("Chapter II / Furnace Keeper", func() -> void: challenge_requested.emit(2))
+		button("Chapter III / Bell Warden", func() -> void: challenge_requested.emit(3))
 		button("Back", func() -> void: title_requested.emit())
 	elif mode == "challenge_complete":
 		button("Challenge again", func() -> void: challenge_requested.emit(challenge_chapter))
@@ -332,7 +366,8 @@ func update_health(current: int, maximum: int) -> void:
 	health_current = current
 	health_maximum = maximum
 	health_label.text = TextCatalog.text("VITALITY") + " %d/%d" % [current, maximum]
-	vitality_pips.update_health(current, maximum)
+	vitality_bar.max_value = maximum
+	vitality_bar.value = current
 
 func update_progress() -> void:
 	set_text(objective,JourneyProgress.objective(Session.abilities,Session.flags,Session.visited))
@@ -350,7 +385,7 @@ func update_boss_health(current: int, maximum: int) -> void:
 	boss_bar.value = current
 
 func update_boss_phase(phase: int) -> void:
-	set_text(boss_title,boss_name + (" / II" if phase == 2 else " / I"))
+	set_text(boss_title,boss_name + " / " + ["I", "II", "III"][clampi(phase - 1, 0, 2)])
 
 func hide_boss() -> void:
 	boss_panel.hide()

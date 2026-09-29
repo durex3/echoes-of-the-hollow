@@ -201,6 +201,7 @@ func _enter(next: State) -> void:
 func _slam_impact() -> void:
 	var center := position.x
 	var burst := spawn_flame(Vector2(center,position.y),false,true,true)
+	burst.damage_override = config.slam_damage
 	# A shield or hit resolves the whole release once, including its two walls.
 	var cast_handled: Array[int] = []
 	burst.handled = cast_handled
@@ -209,6 +210,9 @@ func _slam_impact() -> void:
 		flame.config = config
 		flame.outward = true
 		flame.instant = true
+		# The central landing is the heavy hit; each readable outward wall is a
+		# separate one-point hazard so a jump is still a fair answer.
+		flame.damage_override = config.damage
 		flame.direction = direction
 		flame.handled = cast_handled
 		flame.impact.connect(func(at: Vector2, killed: bool) -> void: impact.emit(at,killed))

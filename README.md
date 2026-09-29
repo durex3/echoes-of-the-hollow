@@ -2,12 +2,12 @@
 
 Godot 4.7.2 + GDScript 的 2D 类银河恶魔城工程基础，使用本机《类银河恶魔城锻造坊》素材。
 默认窗口 1600×900，内部像素视口 800×450；使用整数倍显示和最近邻采样，非整数窗口/全屏尺寸可能留黑边。Boss 开战前后保持相同镜头倍率。
-项目版本字段仍为 **0.14.0**；其后的第三关试玩与战斗修订记录在 CHANGELOG 的 Unreleased。正式主线共十六个可编辑房间（第一关九区、第二关七区）、两个章节终点，另有第三关独立试玩；第三关完整章节与主线接线尚未完成。第一关已获用户整体试玩认可，第二关人工体验与发布验收仍待完成。
+项目版本字段仍为 **0.14.0**；其后的第三关与战斗修订记录在 CHANGELOG 的 Unreleased。正式主线现有二十五个可编辑房间（第一关九区、第二关七区、第三关九区）和三章流程；第三关入口、分页地图、踏壁能力、钟庭之心、承重回桥、Boss胜利与存档已接入。第三关完整真人难度与美术体验仍待验收。第一关已获用户整体试玩认可，第二关人工体验与发布验收仍待完成。
 当前优先完成游戏内容；Windows 打包与浏览器兼容放到内容完成后的发布阶段。每轮照常执行开发回归，不要求先制作试玩包或等待用户试玩才能继续。
 
 ## 立即运行
 
-**第三关独立试玩**：Windows 双击 `Preview-Chapter-Three.cmd`，Mac 双击 `Preview-Chapter-Three.command`。试玩包含双承重支路、静声藏室生命奖励、合鸣桥廊和缚钟守望者第一可玩切片；默认6生命，继承二段跳/冲刺/护盾。进度只保留在本次试玩内，不改主线存档。Boss 真人难度、正式第三关存档与结局仍未完成。内容与验证边界见[试玩说明](docs/tasks/chapter_three_preview.md)。`Play.cmd` / `Play.command` 仍启动前两章主线。
+**第三关独立试玩**：Windows 双击 `Preview-Chapter-Three.cmd`，Mac 双击 `Preview-Chapter-Three.command`。只测 Boss 可运行 Windows `Preview-Chapter-Three-Boss.cmd` 或 Mac `Preview-Chapter-Three-Boss.command`。试玩入口用于隔离测试路线，不写主线存档；正式流程请运行 `Play.cmd` / `Play.command`，从第二关击败炉心监守者后进入失谐钟庭。主线第三关包含双承重支路、静声藏室生命奖励、合鸣桥廊和缚钟守望者。Boss真人难度、整章难度曲线和地图美术仍待真人验收。内容与边界见[试玩说明](docs/tasks/chapter_three_preview.md)。
 
 **试玩反馈修订**：杖使新增远程钟波与锁定旧落点的地面咒印，分开两场教学；补齐命中火花/音效/敌人受伤闪烁。踏壁新增贴墙、蹬离组合动作及石屑，地图完成第二轮钟塔/修院建筑层次细化。原图没有专用攀墙序列，目前组合已有姿势；动作自然度和地图审美仍待再次真人试玩，不能视为最终验收。
 
@@ -109,13 +109,13 @@ docs/                 设计、架构、流程、测试与决策记录
 artifacts/            本机检查日志和截图（不提交）
 ```
 
-新版第二关设计见 [重设计任务](docs/tasks/chapter_two_redesign.md)，各章后续开发遵守 [探索与难度递进规范](docs/level_progression.md)。第三关 [失谐钟庭设计](docs/tasks/chapter_three.md)及[九房间制作规格](docs/tasks/chapter_three_scene_plan.md)已明确：踏壁回响、可选生命奖励、上层回环及独立技能型敌人/Boss，整体难度目标高于第二关。除原壁跃压力白盒外，现有[前半段试玩](docs/tasks/chapter_three_preview.md)：编辑器打开`features/world/prototypes/bell_court_preview.tscn`按F6，或用根目录专用启动器。正式第三关尚未接入主线，Play.cmd仍运行原两章。
+新版第二关设计见 [重设计任务](docs/tasks/chapter_two_redesign.md)，各章后续开发遵守 [探索与难度递进规范](docs/level_progression.md)。第三关 [失谐钟庭设计](docs/tasks/chapter_three.md)及[九房间制作规格](docs/tasks/chapter_three_scene_plan.md)定义了踏壁回响、可选生命奖励、上层回环及独立技能型敌人/Boss。九个原生房间现已接入正式主线；独立试玩仍可从`features/world/prototypes/bell_court_preview.tscn`或专用启动器启动，用于隔离路线测试。
 
 本次能力的规则、旧档兼容与验收见 [水闸回响任务](docs/tasks/steam_ward.md)。旧设置若已把 L / LB 用于其他动作，会保留原绑定并为新能力选择空闲键，实际操作以HUD/设置显示为准。
 
 ## 文档阅读顺序
 
-换机继续开发：先看[开发交接与下一步](docs/next-development.md)和[本机 Skills 清单与迁移](docs/local-skills.md)。第三关下一项内容任务是缚钟守望者完整验收与正式主线接线；Windows 先拉取 `fix/enemy-art-separation` 并运行 `tools/check.ps1 -Full`。
+换机继续开发：先看[开发交接与下一步](docs/next-development.md)和[本机 Skills 清单与迁移](docs/local-skills.md)。当前第三关主线接线已完成第一版；下一步核对全量回归、修正地图/文本细节，并进行真人难度递进与视觉验收。
 
 首先阅读 [项目执行规则](AGENTS.md) 与 [第一、二关开发经验](docs/development_lessons.md)，避免重复出现清晰度、伤害判定、Boss房边界及门/地图不一致的问题。
 
@@ -134,5 +134,5 @@ artifacts/            本机检查日志和截图（不提交）
 
 原始桌面素材保持不变；复制文件的源路径与 SHA-256 在 `assets/manifest.json`。
 解压章节未附完整授权文本，因此来源已记录、授权状态标为待核对，尚未公开发布工程或素材。
-本版已有中英文界面、设置和重绑、十六房间分页地图、冲刺路线、两阶段 Boss、第二关蒸汽路线与两个章节终点。第一关整体试玩已获用户认可；第二关人工难度/听感、实体手柄与正式发布包验收仍待完成。细节见 [第二关任务](docs/tasks/chapter_two.md) 和 [连续通关记录](docs/chapter_two_playthrough.md)。
+本版已有中英文界面、设置和重绑、二十五房间分页地图、冲刺/踏壁路线、三名章节Boss与三章结局。第一关整体试玩已获用户认可；第二关人工难度/听感、第三关整章难度与地图美术、实体手柄和正式发布包验收仍待完成。细节见 [第二关任务](docs/tasks/chapter_two.md) 和 [连续通关记录](docs/chapter_two_playthrough.md)。
 中文使用随工程携带的 Noto Sans CJK SC，字体授权和来源见 assets/fonts/noto_sans_sc_license.txt 与 assets/manifest.json；这不改变原课程素材的待核对状态。

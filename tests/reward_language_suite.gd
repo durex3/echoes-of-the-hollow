@@ -75,16 +75,23 @@ func run(h: Node, game: Node) -> void:
 	h.check(Session.language == "zh_CN" and ui.area_label.text == "07 / 寂静钟楼", "Reloading settings restores language and refreshes existing UI")
 	h.check(Session.set_language("invalid") == ERR_INVALID_PARAMETER and Session.language == "zh_CN", "Unsupported language is rejected without changing current selection")
 	var catalog_complete := true
+	var missing_catalog_entries: Array[String] = []
 	for packed: PackedScene in game.ROOMS.values():
 		var room := packed.instantiate() as GameRoom
-		catalog_complete = catalog_complete and TextCatalog.ZH.has(room.display_name)
+		if not TextCatalog.ZH.has(room.display_name):
+			catalog_complete = false
+			missing_catalog_entries.append(room.display_name)
 		for point: WorldInteraction in room.get_node("Interactions").get_children():
-			catalog_complete = catalog_complete and TextCatalog.ZH.has(point.prompt)
+			if not TextCatalog.ZH.has(point.prompt):
+				catalog_complete = false
+				missing_catalog_entries.append(point.prompt)
 		room.free()
 	for values: Array in RewardNotice.REWARDS.values():
 		for source: String in values:
 			catalog_complete = catalog_complete and TextCatalog.ZH.has(source)
 	h.check(catalog_complete, "Every authored room interaction and reward has Chinese translation")
+	if not catalog_complete:
+		push_warning("Missing Chinese catalog entries: " + " | ".join(missing_catalog_entries))
 	Session.set_language("en")
 	ui.show_menu("pause")
 	get_tree().paused = true

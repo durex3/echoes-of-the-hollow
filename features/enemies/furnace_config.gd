@@ -34,6 +34,7 @@ extends Resource
 @export var pillar_width := 66.0
 @export var pillar_height := 210.0
 @export var damage := 1
+@export var slam_damage := 2
 @export var arena_min_x := 580.0
 @export var arena_max_x := 1140.0
 @export var floor_y := 480.0

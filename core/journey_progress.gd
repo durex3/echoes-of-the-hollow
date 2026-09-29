@@ -3,6 +3,15 @@ extends RefCounted
 ## Pure guidance derived from existing progress; no second quest save state.
 
 static func objective(abilities: Array[String], flags: Array[String], visited: Array[String]) -> String:
+	if "cistern_restored" in flags and "furnace_keeper_defeated" in flags and "bell_court_restored" not in flags:
+		if "wall_echo" not in abilities:
+			return "Learn the wall echo in Echo Cloister"
+		if "east_weight_restored" not in flags or "west_weight_restored" not in flags:
+			return "Restore both bell weights / Return to the upper atrium"
+		if "bell_court_restored" not in flags:
+			return "Cross the Confluence Bridge / Face the Bell Warden"
+	if "bell_court_restored" in flags:
+		return "Bell Court restored / Explore all three chapters"
 	if "cistern_restored" in flags:
 		if "furnace_keeper_defeated" not in flags:
 			return "Cistern restored / Face the Furnace Keeper"

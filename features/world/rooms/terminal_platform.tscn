@@ -70,6 +70,12 @@ kind = "exit"
 target_room = "confluence_bridge"
 target_spawn = "altar"
 prompt = "向西 · 返回合鸣桥廊"
+[node name="ChapterEnd" type="Node2D" parent="Interactions"]
+position = Vector2(512, 320)
+script = ExtResource("4")
+kind = "goal"
+visible_after_flag = "bell_warden_defeated"
+prompt = "敲响终钟 · 让钟庭复苏"
 [node name="Enemies" type="Node2D" parent="."]
 [node name="BellWarden" parent="Enemies" instance=ExtResource("5")]
 position = Vector2(432, 320)

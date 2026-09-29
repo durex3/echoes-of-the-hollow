@@ -68,6 +68,16 @@ kind = "exit"
 target_room = "bell_guard_walk"
 prompt = "向东 · 守钟外廊"
 
+[node name="QuayReturn" type="Node2D" parent="Interactions"]
+position = Vector2(32, 704)
+script = ExtResource("4_jidtb")
+kind = "exit"
+visible_after_flag = "furnace_keeper_defeated"
+required_flags = Array[String](["cistern_restored", "furnace_keeper_defeated"])
+target_room = "ember_quay"
+target_spawn = "chapter_three_return"
+prompt = "向西 · 返回余烬渡口"
+
 [node name="Enemies" type="Node2D" parent="." unique_id=174690855]
 
 [node name="Hazards" type="Node2D" parent="." unique_id=1232390070]

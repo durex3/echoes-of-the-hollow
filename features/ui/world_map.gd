@@ -24,6 +24,18 @@ const CHAPTER_TWO := {
 	"furnace_core": {"title":"FURNACE CORE", "at":Vector2(195,168)}
 }
 const SECOND_LINKS := [["heart_chamber","ember_quay"],["ember_quay","valve_gallery"],["ember_quay","cistern_archive"],["ember_quay","furnace_core"],["valve_gallery","sluice_shaft"],["sluice_shaft","echo_vault"],["cistern_archive","pump_chamber"],["sluice_shaft","cistern_archive"],["ember_quay","pump_chamber"]]
+const CHAPTER_THREE := {
+	"windworn_steps":{"title":"WINDWORN STEPS", "at":Vector2(15,88)},
+	"bell_guard_walk":{"title":"BELL GUARD WALK", "at":Vector2(195,88)},
+	"broken_bell_atrium":{"title":"BROKEN BELL ATRIUM", "at":Vector2(375,88)},
+	"echo_cloister":{"title":"ECHO CLOISTER", "at":Vector2(375,8)},
+	"hanging_gallery":{"title":"HANGING GALLERY", "at":Vector2(375,168)},
+	"bell_weight_chamber":{"title":"BELL WEIGHT CHAMBER", "at":Vector2(195,8)},
+	"quiet_reliquary":{"title":"QUIET RELIQUARY", "at":Vector2(15,8)},
+	"confluence_bridge":{"title":"CONFLUENCE BRIDGE", "at":Vector2(195,168)},
+	"terminal_platform":{"title":"TERMINAL PLATFORM", "at":Vector2(15,168)}
+}
+const THIRD_LINKS := [["windworn_steps","bell_guard_walk"],["bell_guard_walk","broken_bell_atrium"],["broken_bell_atrium","echo_cloister"],["echo_cloister","broken_bell_atrium"],["broken_bell_atrium","bell_weight_chamber"],["bell_weight_chamber","broken_bell_atrium"],["broken_bell_atrium","hanging_gallery"],["hanging_gallery","broken_bell_atrium"],["broken_bell_atrium","quiet_reliquary"],["broken_bell_atrium","confluence_bridge"],["confluence_bridge","terminal_platform"]]
 var chapter := 1
 var current_room := "forest"
 var door_target := ""
@@ -34,7 +46,7 @@ var abilities: Array[String] = []
 
 func configure(current: String, explored: Array[String], checkpoint: String, progress: Array[String], unlocked: Array[String]) -> void:
 	current_room = current
-	chapter = 2 if current in CHAPTER_TWO and current != "heart_chamber" else 1
+	chapter = 3 if current in CHAPTER_THREE else (2 if current in CHAPTER_TWO and current != "heart_chamber" else 1)
 	visited.assign(explored)
 	checkpoint_room = checkpoint
 	flags.assign(progress)
@@ -50,9 +62,11 @@ func revealed(id: String) -> bool:
 		return true
 	if id == "sanctuary":
 		return "forest" in visited and "double_jump" in abilities
+	if id in CHAPTER_THREE and ("cistern_restored" not in flags or "furnace_keeper_defeated" not in flags):
+		return false
 	if id in CHAPTER_TWO and id != "heart_chamber" and "journey_restored" not in flags:
 		return false
-	for pair: Array in LINKS + SECOND_LINKS:
+	for pair: Array in LINKS + SECOND_LINKS + THIRD_LINKS:
 		if id in pair and (pair[0] in visited or pair[1] in visited):
 			return true
 	return false
@@ -62,12 +76,21 @@ func room_label(id: String) -> String:
 
 func mark_summary() -> String:
 	var parts: Array[String] = []
-	var marks := [["training_cleared", "Watchers seal"], ["scriptorium_cleared", "Ink seal"], ["belfry_cleared", "Wind beacon"]] if chapter == 1 else [["flow_seal", "Flow seal"], ["pressure_seal", "Pressure seal"], ["cistern_restored", "Cistern core"]]
+	var marks := [["training_cleared", "Watchers seal"], ["scriptorium_cleared", "Ink seal"], ["belfry_cleared", "Wind beacon"]] if chapter == 1 else ([["wall_echo", "Wall echo"], ["east_weight_restored", "East weight"], ["west_weight_restored", "West weight"], ["bell_court_restored", "Bell Warden"]] if chapter == 3 else [["flow_seal", "Flow seal"], ["pressure_seal", "Pressure seal"], ["cistern_restored", "Cistern core"]])
 	for item: Array in marks:
-		parts.append(("[+] " if item[0] in flags else "[ ] ") + TextCatalog.text(item[1]))
+		var completed: bool = item[0] in abilities if item[0] == "wall_echo" else item[0] in flags
+		parts.append(("[+] " if completed else "[ ] ") + TextCatalog.text(item[1]))
 	return "   ".join(parts)
 
 func target_room() -> String:
+	if chapter == 3:
+		if "wall_echo" not in abilities:
+			return "echo_cloister"
+		if "east_weight_restored" not in flags:
+			return "bell_weight_chamber"
+		if "west_weight_restored" not in flags:
+			return "hanging_gallery"
+		return "terminal_platform" if "bell_court_restored" not in flags else ""
 	if "cistern_restored" in flags:
 		return "" if "furnace_keeper_defeated" in flags else "furnace_core"
 	if "journey_restored" in flags:
@@ -96,6 +119,10 @@ func gate_requirement(a: String, b: String) -> String:
 	# Requirements are only shown for exits whose source room is known.
 	if a not in visited:
 		return ""
+	if b == "terminal_platform" and ("east_weight_restored" not in flags or "west_weight_restored" not in flags):
+		return "Two bell weights"
+	if b == "quiet_reliquary" and "wall_echo" not in abilities:
+		return "Wall echo"
 	if a == "sluice_shaft" and b == "cistern_archive" and "flow_seal" not in flags:
 		return "Flow seal"
 	if a == "ember_quay" and b == "pump_chamber" and "pressure_seal" not in flags:
@@ -117,8 +144,8 @@ func gate_requirement(a: String, b: String) -> String:
 	return ""
 
 func _draw() -> void:
-	var rooms := ROOMS if chapter == 1 else CHAPTER_TWO
-	var links := LINKS if chapter == 1 else SECOND_LINKS
+	var rooms := ROOMS if chapter == 1 else (CHAPTER_TWO if chapter == 2 else CHAPTER_THREE)
+	var links := LINKS if chapter == 1 else (SECOND_LINKS if chapter == 2 else THIRD_LINKS)
 	var scale_factor := minf(size.x / 540.0, size.y / 242.0)
 	draw_set_transform(Vector2.ZERO,0,Vector2.ONE*scale_factor)
 	var font := get_theme_default_font()
@@ -128,7 +155,7 @@ func _draw() -> void:
 		var a: Vector2 = rooms[pair[0]].at + Vector2(75,26)
 		var b: Vector2 = rooms[pair[1]].at + Vector2(75,26)
 		var selected := current_room in pair and door_target in pair
-		var boss_route: bool = chapter == 2 and pair[0] == "ember_quay" and pair[1] == "furnace_core" and target_room() == "furnace_core"
+		var boss_route: bool = chapter == 2 and pair[0] == "ember_quay" and pair[1] == "furnace_core" and target_room() == "furnace_core" or chapter == 3 and pair[0] == "confluence_bridge" and pair[1] == "terminal_platform" and target_room() == "terminal_platform"
 		draw_line(a,b,Color("efce8e") if selected or boss_route else Color("526d64"),3 if selected or boss_route else 2)
 		var requirement := gate_requirement(pair[0], pair[1])
 		if not requirement.is_empty():
@@ -147,11 +174,12 @@ func _draw() -> void:
 		if not revealed(id):
 			continue
 		var at: Vector2 = rooms[id].at
-		var tint := Color("efce8e") if id == door_target or id == "furnace_core" and id == target_room() else Color("94e4ce") if id == current_room or id == target_room() else Color("526d64")
+		var is_boss_target := id in ["furnace_core", "terminal_platform"] and id == target_room()
+		var tint := Color("efce8e") if id == door_target or is_boss_target else Color("94e4ce") if id == current_room or id == target_room() else Color("526d64")
 		draw_rect(Rect2(at,Vector2(150,52)),Color("10292c") if id in visited else Color("131f28"))
 		draw_rect(Rect2(at,Vector2(150,52)),tint,false,2 if id == current_room else 1)
 		_draw_label(font, at+Vector2(8,19), room_label(id), 136, 12, Color("e9d4a3"), scale_factor)
-		var status := TextCatalog.text("DOOR" if id == door_target else "HERE" if id == current_room else "BOSS" if id == "furnace_core" and id == target_room() else ("VISITED" if id in visited else "?"))
+		var status := TextCatalog.text("DOOR" if id == door_target else "HERE" if id == current_room else "BOSS" if is_boss_target else ("VISITED" if id in visited else "?"))
 		if id == checkpoint_room:
 			status += " / " + TextCatalog.text("SAVE")
 		if id == "sanctuary" and "heart_bloom" in flags:

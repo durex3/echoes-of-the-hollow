@@ -98,6 +98,7 @@ position = Vector2(576, 272)
 
 [node name="Collision" type="CollisionShape2D" parent="BridgeCollision"]
 shape = SubResource("bridge")
+one_way_collision = true
 
 [node name="BridgeArt" type="Node2D" parent="."]
 visible = false

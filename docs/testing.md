@@ -12,10 +12,11 @@
 | `tools/check.sh` | macOS 默认检查，与 `tools/check.ps1` 使用相同测试场景和结果标记 |
 | `tools/check.sh --full --visual` | macOS 全量和图形检查；须打开图片核对 |
 | `Play.command` / `Preview-Chapter-Three.command` | macOS 双击入口，分别运行主线或第三关独立试玩 |
+| `Preview-Chapter-Three-Boss.cmd` / `Preview-Chapter-Three-Boss.command` | 只进入第三关终钟台 Boss 房，隔离测试三阶段、移动动画、攻击扣血与实体碰撞 |
 | `Check.command` / `Check-Full.command` | macOS 双击入口，分别运行默认或全量检查；日志写入 `artifacts/` |
 | GitHub Actions现有workflow | Windows默认检查；未配置Full/Visual或Mac任务；实际远程运行结果尚未核验 |
 
-第三关路线覆盖九个独立试玩房间，但不能代表正式章节、Boss 真人难度或正式第三关存档已经验证。当前已增加两种支路先后顺序、回桥两端、中央桥门槛、钟庭之心、合鸣桥廊和终钟台第一可玩切片；后续主线接线仍需 5HP 无盾路线证据。Mac入口适配不得减少这些检查，准备事项见[交接](next-development.md)。
+第三关自动覆盖包括隔离试玩中的5HP无盾路线、两种支路先后顺序、回桥两端、中央桥门槛、钟庭之心、合鸣桥廊和终钟台Boss。正式主线接线还需通过 `-Full` 检查入口条件、存档/旧档和跨进程读写。自动路线与组件检查不能代替真人难度、视觉可读性或完整首通验收；Mac入口适配不得减少覆盖，准备事项见[交接](next-development.md)。
 
 纯文档修改核对本地相对链接、实现/规划状态、技能清单与 `git diff --check`；没有改行为时不重复跑全量游戏，也不把既有结果当作本次新运行。Windows 使用 `tools/check.ps1`，macOS 使用 `tools/check.sh`；两者必须保持测试场景、完成标记和存档隔离规则一致。
 

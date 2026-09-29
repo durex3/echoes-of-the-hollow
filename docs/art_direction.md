@@ -16,7 +16,7 @@
 
 第三关主题已确定为失谐钟庭；后续未规划章节不把素材尚未支持的雪原、沙漠等列为已确定内容。下一阶段沿用已手工细化的五房间，新增支路先验证可达性与战斗空间，再补环境；不重新生成覆盖整章。
 
-第三关法师使用Evil Wizard 2、铃翼使用Monsters Creatures Fantasy 2的Bat，正式PNG/来源记录已入库。法师当前Sprite倍率1.0、固定脚底锚点，原静态初选5/7已按用户反馈放大40%；不要在换机或继续导入时恢复旧比例。Boss选定Bringer Of Death但尚未正式接入；原包、许可和Mac迁移边界见[素材清单](tasks/chapter_three_assets.md)。图形检查在目标平台重新看图，Windows截图不能代替Mac验证。
+第三关法师使用Evil Wizard 2、铃翼使用Monsters Creatures Fantasy 2的Bat，正式PNG/来源记录已入库。法师当前Sprite倍率1.0、固定脚底锚点，原静态初选5/7已按用户反馈放大40%；不要在换机或继续导入时恢复旧比例。缚钟守望者使用已登记的Bringer Of Death精选图集，已进入终钟台；原包、许可和Mac迁移边界见[素材清单](tasks/chapter_three_assets.md)。图形检查在目标平台重新看图，Windows截图不能代替Mac验证。
 
 ## 第二关原图选区
 
