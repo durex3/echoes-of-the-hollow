@@ -149,7 +149,7 @@ func _physics_process(delta: float) -> void:
 				else:
 					_enter(State.CHASE)
 	move_and_slide()
-	contact_box.active = state in [State.CHASE, State.STRIKE, State.ECHO_ACTIVE, State.GHOST_ACTIVE]
+	contact_box.active = state in [State.CHASE, State.WINDUP, State.STRIKE, State.ECHO_WARNING, State.ECHO_ACTIVE, State.GHOST_ACTIVE]
 	global_position.x = clampf(global_position.x, config.arena_min_x, config.arena_max_x)
 	_update_visual()
 	var effect_windup := config.resonance_warning + config.echo_stagger * 2.0 if state == State.ECHO_WARNING else config.drop_warning if state == State.DROP_WARNING else config.sweep_windup if attack == Attack.SWEEP else config.dash_windup
@@ -197,6 +197,7 @@ func _enter(next: State) -> void:
 			attack_box.position.x = facing * (34.0 if attack == Attack.SWEEP else 42.0)
 			attack_box.damage = config.sweep_damage if attack == Attack.SWEEP else config.dash_damage
 			attack_box.begin_swing()
+			contact_box.begin_swing()
 			contact_box.hit_ids = attack_box.hit_ids
 			cue_changed.emit("镰刀横扫 / 后撤或绕到身后" if attack == Attack.SWEEP else "锁向镰突 / 跳过或绕后")
 		State.STRIKE:
@@ -206,6 +207,7 @@ func _enter(next: State) -> void:
 			_clear_ghost_on_scythe()
 		State.ECHO_WARNING:
 			timer = config.resonance_warning + config.echo_stagger * (3.0 if phase == 3 else 2.0)
+			contact_box.begin_swing()
 			cue_changed.emit("终钟回响 / 记住旧位置")
 			for old_mark: EchoMark in phase_marks:
 				if is_instance_valid(old_mark): old_mark.queue_free()
@@ -282,7 +284,10 @@ func _spawn_ghost() -> void:
 	next_ghost.radius = config.ghost_radius
 	next_ghost.damage = 1
 	next_ghost.ghost_visual = true
-	next_ghost.global_position = Vector2(clampf(center.x, config.arena_min_x + 20.0, config.arena_max_x - 20.0), center.y - 26.0)
+	var ghost_side := signf(center.x - global_position.x)
+	if is_zero_approx(ghost_side):
+		ghost_side = facing
+	next_ghost.global_position = Vector2(clampf(center.x + ghost_side * 82.0, config.arena_min_x + 20.0, config.arena_max_x - 20.0), center.y - 26.0)
 	get_parent().add_child(next_ghost)
 	phase_ghosts.append(next_ghost)
 	ghost = next_ghost

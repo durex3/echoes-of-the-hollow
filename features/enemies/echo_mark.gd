@@ -23,6 +23,8 @@ var triggered := false
 var hit := false
 var travel_origin := Vector2.ZERO
 var memory_recorded := false
+var memory_texture: Texture2D
+var memory_flip_h := false
 
 func dispel() -> void:
 	queue_free()
@@ -38,6 +40,8 @@ func _physics_process(delta: float) -> void:
 	if pattern == "memory":
 		if not memory_recorded and age >= delay_seconds + phase_offset and is_instance_valid(player):
 			global_position = player.global_position
+			memory_texture = player.sprite.sprite_frames.get_frame_texture(player.sprite.animation, player.sprite.frame)
+			memory_flip_h = player.sprite.flip_h
 			memory_recorded = true
 			queue_redraw()
 		if memory_recorded and not triggered and age >= delay_seconds + phase_offset + replay_delay:
@@ -103,8 +107,13 @@ func _draw() -> void:
 			draw_set_transform(Vector2.ZERO)
 	else:
 		if ghost_visual:
-			var ghost_frame := mini(7, int(warning_progress * 8.0)) if not triggered else 8 + mini(7, int((age - delay_seconds - phase_offset) / maxf(active_seconds, 0.01) * 8.0))
-			draw_texture_rect_region(GHOST_SHEET, Rect2(-49, -61, 98, 65), Rect2((ghost_frame % 8) * 140, (6 + ghost_frame / 8) * 93, 140, 93))
+			var ghost_color := Color(0.67, 0.89, 1.0, 0.7 + pulse * 0.22)
+			draw_texture_rect_region(GHOST_SHEET, Rect2(-56, -94, 112, 75), Rect2(0, 93, 140, 93), ghost_color)
+			draw_arc(Vector2(0, -53), 39.0 + pulse * 3.0, 0.0, TAU, 32, Color(0.58, 0.95, 1.0, 0.75), 2.0)
+			draw_line(Vector2(-26, -15), Vector2(26, -15), Color("a7f4ff"), 3.0)
+			for spark: int in range(3):
+				var spark_x := -18.0 + float(spark) * 18.0
+				draw_circle(Vector2(spark_x, -83.0 - pulse * 4.0), 3.0, Color("c8faff"))
 		draw_arc(Vector2.ZERO, radius + 4.0, 0, TAU, 24, color, 2.0)
 		return
 	var ground_center := Vector2(0, -5)
@@ -147,16 +156,12 @@ func _draw_memory() -> void:
 		draw_arc(Vector2.ZERO, 22.0 + record_progress * 12.0, 0.0, TAU, 24, color, 2.0)
 		draw_line(Vector2(-12, -2), Vector2(12, -2), color, 2.0)
 		return
-	var ghost_frame := mini(7, int((age - phase_offset) * 12.0) % 8)
-	draw_texture_rect_region(GHOST_SHEET, Rect2(-43, -57, 86, 57), Rect2((ghost_frame % 8) * 140, (6 + ghost_frame / 8) * 93, 140, 93))
-	# A readable player-shaped memory silhouette makes the recorded position clear at native scale.
-	var memory_color := Color(0.75, 0.55, 1.0, 0.72)
-	draw_circle(Vector2(0, -48), 5.0, memory_color)
-	draw_line(Vector2(0, -42), Vector2(0, -23), memory_color, 3.0)
-	draw_line(Vector2(0, -36), Vector2(-8, -29), memory_color, 2.0)
-	draw_line(Vector2(0, -36), Vector2(8, -29), memory_color, 2.0)
-	draw_line(Vector2(0, -23), Vector2(-7, -12), memory_color, 2.0)
-	draw_line(Vector2(0, -23), Vector2(7, -12), memory_color, 2.0)
+	if memory_texture:
+		var frame_size := memory_texture.get_size()
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2(-1.0, 1.0) if memory_flip_h else Vector2.ONE)
+		draw_texture_rect(memory_texture, Rect2(-frame_size.x * 0.5, -40.0 - frame_size.y * 0.5, frame_size.x, frame_size.y), false, Color(0.72, 0.57, 1.0, 0.72))
+		draw_set_transform(Vector2.ZERO)
+	draw_arc(Vector2(0, -37), 25.0, 0.0, TAU, 28, Color("bfb0ff"), 2.0)
 	var replay_progress := clampf((age - delay_seconds - phase_offset - replay_delay) / maxf(active_seconds, 0.01), 0.0, 1.0)
 	if not triggered:
 		draw_arc(Vector2.ZERO, 27.0 + sin(age * 12.0) * 3.0, 0.0, TAU, 24, Color("e7b6ff"), 2.0)
