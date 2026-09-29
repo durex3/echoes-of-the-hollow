@@ -150,6 +150,8 @@ func _physics_process(delta: float) -> void:
 					_enter(State.CHASE)
 	move_and_slide()
 	contact_box.active = state in [State.CHASE, State.WINDUP, State.STRIKE, State.ECHO_WARNING, State.ECHO_ACTIVE, State.GHOST_ACTIVE]
+	contact_box.reset_when_empty = state == State.CHASE
+	contact_box.damage = 1 if phase == 1 else 2
 	global_position.x = clampf(global_position.x, config.arena_min_x, config.arena_max_x)
 	_update_visual()
 	var effect_windup := config.resonance_warning + config.echo_stagger * 2.0 if state == State.ECHO_WARNING else config.drop_warning if state == State.DROP_WARNING else config.sweep_windup if attack == Attack.SWEEP else config.dash_windup
@@ -253,7 +255,8 @@ func _spawn_resonance() -> void:
 		lane.phase_offset = float(index) * config.memory_record_gap
 		lane.replay_delay = config.resonance_warning + config.echo_stagger * (3.0 if phase == 3 else 2.0)
 		lane.active_seconds = config.resonance_active
-		lane.damage = config.resonance_damage
+		lane.radius = 42.0
+		lane.damage = config.echo_damage
 		lane.global_position = target.global_position
 		get_parent().add_child(lane)
 		phase_marks.append(lane)
@@ -282,7 +285,7 @@ func _spawn_ghost() -> void:
 	next_ghost.delay_seconds = config.ghost_warning
 	next_ghost.active_seconds = 2.8
 	next_ghost.radius = config.ghost_radius
-	next_ghost.damage = 1
+	next_ghost.damage = config.ghost_damage
 	next_ghost.ghost_visual = true
 	var ghost_side := signf(center.x - global_position.x)
 	if is_zero_approx(ghost_side):

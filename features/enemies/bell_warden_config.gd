@@ -24,7 +24,7 @@ extends Resource
 @export var echo_active := 0.28
 @export var echo_recovery := 1.0
 @export var echo_radius := 27.0
-@export var echo_damage := 1
+@export var echo_damage := 2
 @export var echo_stagger := 0.42
 @export var memory_record_gap := 0.36
 @export var memory_replay_delay := 0.62
@@ -45,7 +45,7 @@ extends Resource
 @export var phase_three_threshold := 7
 @export var ghost_warning := 0.8
 @export var ghost_recovery := 1.3
-@export var ghost_radius := 18.0
+@export var ghost_radius := 28.0
 @export var ghost_stagger := 0.2
 @export var ghost_spacing := 150.0
 @export var ghost_travel_seconds := 0.8

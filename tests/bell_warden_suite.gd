@@ -70,6 +70,13 @@ func _run() -> void:
 	boss.contact_box.active = true
 	await frames(2)
 	check(game.player.health.current == player_hp_before_contact - 1, "Bell warden contact box damages the player through the real Hurtbox")
+	game.player.revive(boss.global_position + Vector2(-100.0, 0.0))
+	boss.contact_box.reset_when_empty = true
+	await frames(55)
+	game.player.revive(boss.global_position)
+	var recontact_hp: int = game.player.health.current
+	await frames(3)
+	check(game.player.health.current == recontact_hp - 1, "Leaving and touching the boss again causes immediate body damage")
 	boss.contact_box.end_swing()
 	boss.set_physics_process(true)
 	game.player.position.x = 196.0
@@ -213,5 +220,36 @@ func _run() -> void:
 	Input.action_release("attack")
 	check(boss.health.current > 0, "Stationary attack holding cannot defeat the bell warden")
 	check(game.player.health.current < game.player.health.maximum or game.player.state == Player.State.DEAD, "Stationary attack holding is punished by body pressure")
+	game.load_room("terminal_platform", "entry")
+	await frames(4)
+	boss = game.room.get_node("Enemies/BellWarden") as BellWarden
+	boss.set_physics_process(false)
+	var memory_hit := EchoMark.new()
+	memory_hit.player = game.player
+	memory_hit.pattern = "memory"
+	memory_hit.delay_seconds = 0.0
+	memory_hit.replay_delay = 0.1
+	memory_hit.active_seconds = 0.25
+	memory_hit.radius = 42.0
+	memory_hit.damage = 2
+	memory_hit.global_position = game.player.global_position
+	game.room.add_child(memory_hit)
+	game.player.health.restore_full()
+	game.player.health.invulnerability_left = 0.0
+	await frames(14)
+	check(game.player.health.current == game.player.health.maximum - 2, "Memory replay explosion deals its configured damage")
+	var decoy := EchoMark.new()
+	decoy.player = game.player
+	decoy.ghost_visual = true
+	decoy.delay_seconds = 0.1
+	decoy.active_seconds = 0.3
+	decoy.radius = 28.0
+	decoy.damage = 2
+	decoy.global_position = game.player.global_position
+	game.room.add_child(decoy)
+	game.player.health.restore_full()
+	game.player.health.invulnerability_left = 0.0
+	await frames(16)
+	check(game.player.health.current == game.player.health.maximum - 2, "Pseudo-memory pulse deals its configured damage")
 	print("BELL_WARDEN_RESULT: %d checks, %d failures" % [checks, failures.size()])
 	get_tree().quit(0 if failures.is_empty() else 1)
