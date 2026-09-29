@@ -1,5 +1,9 @@
 # 本机验证记录
 
+## 2026-09-29：缚钟守望者二、三阶段
+
+用户确认一阶段及碰撞范围可接受。本轮重做二阶段「追魂钟柱」与三阶段「逆相围猎」：前者逐次锁定玩家旧位置并错峰爆发，后者由左右幽魂错峰穿越锁定区域；设计借鉴 Nightmare King Grimm 的连续柱与 Sisters of Battle 的交叉协同。Windows Godot 4.7.2 独立 `bell_warden_suite` 无头33项0失败、图形39项0失败，覆盖三枚独立落点、错峰释放、移动幽魂真实命中与消失、护盾和原本的身体碰撞。实际查看 `bell_warden_echo_mark.png`、`bell_warden_phase_three_combo.png`、`bell_warden_phase_three_crossing.png`，移动核心已使用登记过的钟庭法术弹图集。`tools/check.ps1` 静态0错误、77份素材摘要、当前章节174项0失败。依用户要求未重跑 `-Full`；此前 Full-Visual 的 `tests/polish_suite.gd:16` 空对象错误仍待单独排查。自动化不能证明二、三阶段真人难度或手感已达目标。
+
 ## 2026-09-28：Mac 检查入口
 
 - macOS 新增 `tools/check.sh`，与 Windows `tools/check.ps1` 执行相同静态检查、导入、敌人受击/反击、两组 AI、壁跃、第三关默认与 5HP 基线路线、旧集成、前两章连续路线、秘库及跨进程存档/设置。`tools/run.sh` 提供主线、编辑器和第三关试玩启动入口。Windows 原入口保留。
@@ -8,11 +12,11 @@
 - 新增可双击的 `Check.command`、`Check-Full.command`，分别执行默认和全量检查；`Play.command`、`Preview-Chapter-Three.command`、`Open-Editor.command` 提供主线、第三关试玩和编辑器入口。启动脚本使用项目相对路径，Windows 的 `.cmd` 入口保持不变。
 - 新增承钟机室和东西承重回桥的独立试玩回归：`BELL_BRANCH_RESULT: 10 checks, 0 failures`（无头 7 项，图形含 3 张分支截图）。机室石墙、拱洞和木桥复用已登记的 `assets/environment/forest.png`；与桌面原始图集 SHA-256 相同，没有复制或修改原始素材。
 
-## 交接状态：玩法基线 `3ba389f`
+## 历史交接状态：玩法基线 `3ba389f`
 
 本轮文档核验：扫描根目录和docs内Markdown的本地链接，核对37个用户级skill目录与清单一致，并执行Git差异空白检查；均通过。没有执行新的游戏行为或Mac实机测试。
 
-玩法基线已提交并成功推送到GitHub的 `fix/enemy-art-separation` 分支，远程地址为 `https://github.com/durex3/echoes-of-the-hollow.git`。下方每次修复记录里的“未提交/推送”描述的是当次检查结束时的历史状态，不代表本次交接状态。GitHub Actions运行结果尚未核验。
+玩法基线当时已提交并成功推送到GitHub的 `fix/enemy-art-separation` 分支。下方每次修复记录里的“未提交/推送”描述的是当次检查结束时的历史状态，不代表当前工作区状态。GitHub Actions运行结果尚未核验。
 
 最新玩法证据仍是下节 `close_counter_full_visual_final.log` 的 Windows 全量/图形运行；本轮仅更新文档、技能迁移与下一步任务，不新增玩法验证记录，不改变现有通过数字。Mac实机、完整第三关、第三关Boss与正式进度接线均未验收。日志与截图在被忽略的 `artifacts/` 中，不随克隆传输；可在目标机器重跑对应检查生成。
 
@@ -367,3 +371,17 @@
 - `./tools/check.sh --full`：静态检查 75 项资源摘要 0 错误；第三关默认/5HP 无盾路线、双支路、钟庭之心、合鸣桥廊和 Boss 均通过；旧集成 663 项、第一/二关连续路线、跨进程存档与语言读写均通过，0 失败。
 - Boss 单独图形检查使用 Godot 4.7.2 Compatibility / Apple M1：18 项 0 失败，实际查看 `bell_warden_sweep_warning.png` 与 `bell_warden_echo_mark.png`。镰刀读招、回声印记、幽魂脉冲、护盾抵挡和固定单屏边界可辨；视觉与碰撞位置一致。
 - 自动测试不会替代真人难度、听感、实体手柄、多比例窗口和正式发布许可验收。Windows 换机后应拉取当前分支并复跑 `tools/check.ps1 -Full`；试玩入口为 `Preview-Chapter-Three.cmd`，Mac 为 `Preview-Chapter-Three.command`。
+
+# 2026-09-28：Windows 接回 Mac 主线接线后的全量回归
+
+- 补齐第三关九房间新增交互、门提示、机关和奖励的中文目录键；语言覆盖检查从 1 项失败修复为通过。
+- `tools/check.ps1 -Full`：静态检查 75 项资源摘要 0 错误；组件、三章 AI、壁跃、第三关默认/5HP 无盾路线与 Boss 检查通过；旧集成 `667 checks, 0 failures`。
+- 第一关两种顺序 `93.28s / 102.80s`，均 0 死亡、7 次受伤；第二关两种顺序 `69.60s / 71.83s`，均 0 死亡、4 次受伤。水道探索、第一/二关跨进程存档与语言设置读写均通过，脚本输出 `All required checks passed.`
+- 当前结果证明第三关第一版主线接线和自动回归成立；不替代真人首通、难度高于第二关的主观验收、地图美术审查、实体设备和发布许可检查。
+- 随后的 `tools/check.ps1 -Full -Visual` 在用户游戏期间停止：第一轮图形检查跑过壁跃与第三关默认/5HP无盾路线并生成截图，但未完成全部视觉套件。后续尝试隐藏启动仍抢占游戏焦点，已立即停止专属 PowerShell/Godot 进程；隔离到另一个 Windows 桌面失败（CreateDesktop 返回错误87，未启动测试进程）。只从文件查看了已生成的壁跃白盒/试玩截图，没有完成九房间主线的视觉审查。待用户游戏结束后再运行完整图形检查并看图。
+
+# 2026-09-28：第三关远景美术层修正
+
+- 用户提供的 `C:\Users\liuge\Desktop\resouce` 中 Gothicvania Cemetery 远景已复制为项目内 `belfry_sky.png` 与 `belfry_mountains.png`，来源、许可说明和摘要已登记在 `assets/manifest.json`；桌面原始素材未修改。
+- 修正 `features/world/bell_court_landmarks.gd` 的绘制顺序：先绘制冷色天空带，再叠加月光天空和山脊远景，避免素材被天空色带完全覆盖。地图 TileMap、碰撞、平台、路线和物理节点未改动。
+- 第三关图形回归 `bell_court_suite.tscn -- --visual`：`BELL_COURT_RESULT: 118 checks, 0 failures`，并实际查看入口、守钟外廊和断钟中庭截图；灰色空背景已替换为连续石墙与紫色山脊远景，角色、敌人和 HUD 清晰可见。

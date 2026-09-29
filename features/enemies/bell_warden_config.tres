@@ -4,3 +4,8 @@
 
 [resource]
 script = ExtResource("1")
+recovery_retreat_speed = 118.0
+sweep_damage = 1
+dash_damage = 1
+echo_damage = 2
+ghost_damage = 2

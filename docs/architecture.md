@@ -1,10 +1,16 @@
 # 架构与编码规范
 
+## 缚钟守望者二、三阶段修订（2026-09-29）
+
+用户已认可一阶段与本体碰撞范围，因此本轮只改变二、三阶段技能。二阶段「追魂钟柱」在施法期间每隔0.42秒读取一次玩家位置，逐次留下三枚独立地面预警；每枚从生成起有完整1.05秒预警，再按顺序短暂爆发。玩家持续移动可躲开旧位置，但需要规划后续落脚点。三阶段「逆相围猎」在玩家两侧生成镜像幽魂，预警后错开0.2秒向对侧穿越；目标点在起手时锁定，幽魂不会跟踪玩家，完整穿越结束后Boss进入反击窗口。一阶段普通横扫、普通突进与碰撞盒保持原值。
+
+机制参考《空洞骑士》Nightmare King Grimm 的连续 Flame Pillars 和 Sisters of Battle 的错峰交叉协同，但结合钟庭主题、美术和本项目玩家移动指标重新实现，没有复制第二关的升空落地焰浪。钟柱使用已登记的 arcane explosion，幽魂使用 Bringer 图集与 bell spell bolt；视觉只跟随技能状态，命中由EchoMark物理时钟和玩家Hurtbox处理。移动幽魂用扫掠查询检查实体墙，并沿位移段检测玩家，危险持续时间覆盖全程；装饰层不改变Boss身体碰撞。独立Boss套件覆盖独立落点、错峰、实际穿越伤害、护盾和生命周期。自动检查不代表真人已认可二、三阶段难度。
+
 ## 当前运行边界与后续接线
 
-正式入口 `app/main.tscn` 仍服务前两章16房间；第三关通过 `features/world/prototypes/bell_court_preview.tscn` 独立运行九房间，复用已有角色/战斗组件，但进度为内存状态。已实现 `WallEcho`、`ResonantSlab`、`BellInvoker`、`BellSkimmer`、双承重回桥、钟庭之心和 `BellWarden` 第一可玩切片；正式第三关 Session/SaveRepository/WorldMap 接线待做。
+正式入口 `app/main.tscn` 注册三章共25个原生房间；第三关九房间的入口、门、地图/HUD、踏壁能力、钟庭之心、承重回桥、Boss胜利与存档已接入主线。`features/world/prototypes/bell_court_preview.tscn` 仍作为隔离试玩入口，进度只存在内存。第三关独立使用 `WallEcho`、`ResonantSlab`、`BellInvoker`、`BellSkimmer` 与 `BellWarden`，不复用前两章敌人阵容。
 
-下一项为 Boss 完整验收和正式主线接线，保持已认可的物理/地图和只读 Resource 约定。正式集成时再按[第三关设计](tasks/chapter_three.md)扩展稳定 ID 与存档白名单，不提前让试玩房间进入主线。开发顺序与 Windows/Mac 边界见[交接](next-development.md)。下方按专题及版本保留演进记录，后续修订优先于历史实现。
+下一项是核验完整主线存档/旧档门槛与全量回归，并进行第三关真人难度递进、视觉和路线可读性验收。保留已认可的物理和原生手工地图；不得用自动测试代替真人难度验收。开发顺序与 Windows/Mac 边界见[交接](next-development.md)。下方按专题及版本保留演进记录，后续修订优先于历史实现。
 
 ## 杖使贴身反击的选招距离
 
@@ -58,7 +64,7 @@ Session.maximum_health只返回5加heart_bloom收益；cistern_heart保留为历
 
 ## 第二关旧修复档与首领进度分离（2026-09-27）
 
-GameRoom仅按furnace_keeper_defeated移除炉心监守者，cistern_restored仅保留环境修复/停喷口和既有终点交互收益。仅修复的旧档仍生成首领、锁住左右出口并隐藏回忆交互；JourneyProgress与WorldMap指向未击败的炉心。Main的chapter_end在重复标记分支之前也检查首领胜利和清场，避免旧标记绕过战斗。实际获胜新增击败标记并保存，旧能力/生命/修复标记不删，不改schema或玩家文件。真正完成后可在可见场地x=860回忆练习；练习胜利刷新双门，不保存进度。本节是第二关存档修订；第三关独立试玩模块现已实现，正式章节进度尚未接线。
+GameRoom仅按furnace_keeper_defeated移除炉心监守者，cistern_restored仅保留环境修复/停喷口和既有终点交互收益。仅修复的旧档仍生成首领、锁住左右出口并隐藏回忆交互；JourneyProgress与WorldMap指向未击败的炉心。Main的chapter_end在重复标记分支之前也检查首领胜利和清场，避免旧标记绕过战斗。实际获胜新增击败标记并保存，旧能力/生命/修复标记不删，不改schema或玩家文件。真正完成后可在可见场地x=860回忆练习；练习胜利刷新双门，不保存进度。本节是第二关存档修订；第三关正式进度另由对应稳定ID与存档白名单管理，独立试玩仍与主线存档隔离。
 
 ## 无招式文字与保存不回血（2026-09-27）
 

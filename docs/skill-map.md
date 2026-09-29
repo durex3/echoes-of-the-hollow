@@ -2,6 +2,8 @@
 
 本机 37 个用户级 skills 的完整名称、用途、系统/插件区别及 Mac 迁移步骤见[本机 Skills 清单与换机交接](local-skills.md)。下面记录的是工程采用方法与验证，不代表每个已安装 skill 都必须启用。后续任务顺序见[开发交接与下一步](next-development.md)。
 
+2026-09-29 Boss二、三阶段重设计：`game-design-theory` 用明确预警、走位选择和反击窗口校验挑战曲线；`game-ai` 将逐次锁旧位与双侧错峰穿越置于原有FSM；`game-feel` 使蓄力、爆发和穿越有区别，且不移动物理节点；`create-game-assets` 复用已登记的 Bringer/钟庭特效并在游戏尺度检查。机制参考 Nightmare King Grimm Flame Pillars 与 Sisters of Battle 交叉协同，最终难度仍待真人试玩。
+
 2026-09-28第三关支路/Boss试玩：`create-game-assets` 用于桥梁、齿轮、法术和 Bringer 图集来源/许可/实际显示尺度；`godot-animation`、`godot-physics` 用于镰刀帧、幽魂脉冲、回声印记及同次伤害去重；`game-ai`、`level-design` 用于双承重回环、休整点、Boss 阶段与反击窗口；`game-feel` 用于不改变碰撞的短暂视觉反馈。九个可编辑房间和内存试玩状态见[试玩说明](tasks/chapter_three_preview.md)，正式主线和真人难度待完成。
 
 2026-09-27第三关前半段实现：create-game-assets先核对原包/许可与固定锚点，再导入12张原图并查看实际800×450左右攻击截图；godot-animation/godot-physics把状态、显示帧、凹形法术查询及身体去重统一到物理时钟；game-ai分别实现杖使双式和蝙蝠锁旧站位/低位收招；level-design根据实测把压力竖井拆成两段224px、每段3次壁跃与中继平台；godot-tilemap/godot-nodes-scenes保存五个可编辑房间、稳定门/出生点和独立试玩宿主。见[tasks/chapter_three_preview.md](tasks/chapter_three_preview.md)。没有为了套用skill引入新框架；图形初版和真人难度仍需反馈。
