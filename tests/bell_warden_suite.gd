@@ -91,25 +91,32 @@ func _run() -> void:
 	check(boss.phase == 2 and not boss.attack_box.active, "Second phase begins at twelve health with a harmless transition")
 	await shot("bell_warden_phase_two")
 	await until_state(BellWarden.State.ECHO_WARNING)
-	check(is_instance_valid(boss.mark) and boss.phase == 2, "Second phase introduces a delayed mark at the committed position")
-	check(absf(boss.mark.global_position.y - 320.0) < 3.0, "Locked echo mark sits on the arena floor")
+	check(is_instance_valid(boss.mark) and boss.phase == 2, "Second phase introduces the three-beat resonance cast")
+	check(absf(boss.mark.global_position.y - 317.0) < 12.0, "Resonance lanes sit on the arena floor")
 	await frames(28)
 	game.player.position.x = 280.0
 	await frames(26)
 	await shot("bell_warden_echo_mark")
 	check(boss.phase_marks.size() == 3, "Second phase creates three staggered resonance pins")
 	check(absf(boss.phase_marks[0].global_position.x - boss.phase_marks[2].global_position.x) > 30.0, "Staggered pins lock separate player positions")
-	var first_mark: EchoMark = boss.phase_marks[0]
 	game.player.position = Vector2(100, 320)
 	game.player.health.restore_full()
 	check(await until_state(BellWarden.State.ECHO_ACTIVE), "Second phase releases the mark on the cast action clock")
 	await frames(2)
-	check(first_mark.triggered or boss.phase_marks[1].triggered, "Resonance pins activate on staggered release timings")
+	var resonance_triggered := false
+	for pin: EchoMark in boss.phase_marks:
+		if is_instance_valid(pin) and pin.triggered:
+			resonance_triggered = true
+	check(resonance_triggered, "Resonance lanes activate on staggered release timings")
 	check(await until_state(BellWarden.State.RECOVER), "Second phase resonance cage ends in a punish window")
 	game.player.revive(Vector2(100, 320))
 	boss.set_physics_process(false)
 	await frames(140)
-	check(not is_instance_valid(first_mark), "Resonance pin expires after its single pulse")
+	var resonance_expired := true
+	for pin: EchoMark in boss.phase_marks:
+		if is_instance_valid(pin):
+			resonance_expired = false
+	check(resonance_expired, "Resonance lanes expire after their single pulse")
 	check(game.player.health.current == game.player.health.maximum, "Leaving the mark avoids the single ghost pulse")
 	game.load_room("terminal_platform", "entry")
 	await frames(4)
@@ -144,7 +151,7 @@ func _run() -> void:
 			ghost_started = true
 			break
 		await frames(1)
-	check(ghost_started and is_instance_valid(boss.ghost) and boss.phase_ghosts.size() == 2, "Final phase summons two mirrored hunting ghosts")
+	check(ghost_started and is_instance_valid(boss.ghost) and boss.phase_ghosts.size() == 1, "Final phase summons one readable inverse ghost")
 	await frames(8)
 	await shot("bell_warden_phase_three_ghost")
 	if is_instance_valid(boss.ghost):
@@ -153,12 +160,32 @@ func _run() -> void:
 		game.player.revive(Vector2(100, 320))
 		check(await until_state(BellWarden.State.GHOST_ACTIVE), "Third phase releases the mirrored hunt after its warning")
 		await shot("bell_warden_phase_three_combo")
-		check(is_instance_valid(ghost_ref) and is_instance_valid(boss.phase_ghosts[0]), "Mirrored ghosts remain active through their crossing")
-		await frames(18)
-		await shot("bell_warden_phase_three_crossing")
-		check(is_instance_valid(ghost_ref) and ghost_ref.global_position.distance_to(ghost_ref.travel_origin) > 30.0, "Ghost traverses the arena while its danger is active")
-		await frames(95)
-		check(not is_instance_valid(ghost_ref), "Mirrored hunt completes its crossing lifecycle")
+		check(is_instance_valid(ghost_ref), "Inverse ghost remains visible during the exchange")
+		var boss_x_before_exchange := boss.global_position.x
+		ghost_ref.global_position.x = boss.global_position.x + 80.0
+		boss._enter(BellWarden.State.GHOST_ACTIVE)
+		await frames(2)
+		await shot("bell_warden_phase_three_exchange")
+		check(absf(boss.global_position.x - boss_x_before_exchange) > 20.0, "Boss exchanges position with the inverse ghost")
+		check(is_instance_valid(ghost_ref), "Inverse ghost remains as a deliberate scythe target")
+		boss.set_physics_process(false)
+		ghost_ref.global_position = boss.global_position + Vector2(boss.facing * 55.0, -24.0)
+		boss._enter(BellWarden.State.WINDUP)
+		boss._enter(BellWarden.State.STRIKE)
+		check(boss.state == BellWarden.State.STAGGER and boss.staggered_by_ghost, "Scythe striking the ghost dispels it and stuns the boss")
+		check(not boss.contact_box.active and not boss.attack_box.active, "Ghost backlash clears body and weapon damage during the punish window")
+		boss.set_physics_process(true)
+		await until_state(BellWarden.State.CHASE)
+		check(boss.timer > 0.0, "Ghost backlash grants a timed recovery before the next attack")
+		check(await until_state(BellWarden.State.DROP_WARNING, 720), "Final phase uses the locked falling bell shadow")
+		var has_drop := false
+		for pin: EchoMark in boss.phase_marks:
+			if is_instance_valid(pin) and pin.pattern == "drop":
+				has_drop = true
+		check(has_drop, "Falling bell shadow locks an actual ground position")
+		await frames(3)
+		await shot("bell_warden_drop_warning")
+		check(await until_state(BellWarden.State.DROP_ACTIVE), "Falling bell shadow resolves after its warning")
 	game.load_room("terminal_platform", "entry")
 	await frames(4)
 	var crossing := EchoMark.new()
@@ -172,8 +199,8 @@ func _run() -> void:
 	game.room.add_child(crossing)
 	var crossing_hp: int = game.player.health.current
 	await frames(40)
-	check(game.player.health.current == crossing_hp - 1, "Crossing ghost damages the player on the visible travel path")
+	check(game.player.health.current == crossing_hp, "Legacy moving ghost no longer applies an invisible travel hit")
 	await frames(25)
-	check(not is_instance_valid(crossing), "Crossing ghost releases its visual and collision after travel")
+	check(not is_instance_valid(crossing), "Legacy ghost releases its visual and collision after travel")
 	print("BELL_WARDEN_RESULT: %d checks, %d failures" % [checks, failures.size()])
 	get_tree().quit(0 if failures.is_empty() else 1)

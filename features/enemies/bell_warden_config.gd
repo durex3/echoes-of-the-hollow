@@ -26,6 +26,17 @@ extends Resource
 @export var echo_radius := 27.0
 @export var echo_damage := 1
 @export var echo_stagger := 0.42
+@export var resonance_lane_count := 3
+@export var resonance_lane_spacing := 112.0
+@export var resonance_warning := 0.9
+@export var resonance_active := 0.22
+@export var resonance_damage := 1
+@export var drop_warning := 0.85
+@export var drop_active := 0.24
+@export var drop_radius := 34.0
+@export var drop_damage := 2
+@export var drop_recovery := 1.2
+@export var stagger_seconds := 1.35
 @export var ghost_damage := 2
 @export var phase_two_threshold := 12
 @export var phase_three_threshold := 7

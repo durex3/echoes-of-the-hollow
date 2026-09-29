@@ -1,5 +1,13 @@
 # 本机验证记录
 
+## 2026-09-29：第三关 Boss 重做与 Mac 全量回归
+
+- 缚钟守望者二阶段采用三条错开节拍的终钟回响，三阶段采用逆相残像交换与幽魂反噬，断钟坠落锁定玩家旧位置；视觉危险段与 EchoMark 实际伤害生命周期同步，Boss 专项 39 项 0 失败。
+- Mac Godot 4.7.2 `./tools/check.sh --full` 通过：静态 0 错误、79 项资产校验；第三关默认/基线路线各 84 项 0 失败；主线集成 667 项 0 失败；第一/二关路线、秘库和跨进程存档/语言设置均通过。
+- 修正 `polish_suite` 仍访问已移除的 `vitality_pips` 旧字段，改为核对 GameUI 当前生命字段和生命条实际值。该修正只恢复测试对现行 HUD 的断言，不改变玩法或生命规则。
+- 自动结果不能替代第三关真人首通、视觉可读性和实体手柄验收。
+- `./tools/check.sh --visual` 的第三关 Boss 专项为 46 项 0 失败；随后既有 `current_visual` 集成段在前两章旧 Boss 检查处超时，未把该次图形门禁计为全通过。无头全量回归不受影响，日志保留在 `artifacts/current_visual.log`。
+
 ## 2026-09-29：缚钟守望者二、三阶段
 
 用户确认一阶段及碰撞范围可接受。本轮重做二阶段「追魂钟柱」与三阶段「逆相围猎」：前者逐次锁定玩家旧位置并错峰爆发，后者由左右幽魂错峰穿越锁定区域；设计借鉴 Nightmare King Grimm 的连续柱与 Sisters of Battle 的交叉协同。Windows Godot 4.7.2 独立 `bell_warden_suite` 无头33项0失败、图形39项0失败，覆盖三枚独立落点、错峰释放、移动幽魂真实命中与消失、护盾和原本的身体碰撞。实际查看 `bell_warden_echo_mark.png`、`bell_warden_phase_three_combo.png`、`bell_warden_phase_three_crossing.png`，移动核心已使用登记过的钟庭法术弹图集。`tools/check.ps1` 静态0错误、77份素材摘要、当前章节174项0失败。依用户要求未重跑 `-Full`；此前 Full-Visual 的 `tests/polish_suite.gd:16` 空对象错误仍待单独排查。自动化不能证明二、三阶段真人难度或手感已达目标。

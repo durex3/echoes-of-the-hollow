@@ -13,7 +13,7 @@ func run(h: Node, game: Node) -> void:
 	Session.set_language("zh_CN")
 	game.load_room("atrium", "checkpoint")
 	await h.frames(4)
-	h.check(ui.vitality_pips.current == player.health.current and ui.vitality_pips.maximum == player.health.maximum, "Vitality icons follow actual health events")
+	h.check(ui.health_current == player.health.current and ui.health_maximum == player.health.maximum and ui.vitality_bar.value == player.health.current and ui.vitality_bar.max_value == player.health.maximum, "Vitality HUD follows actual health events")
 	h.check(ui.dash_status == "Dash ready", "Grounded unlocked dash displays ready")
 	await h.press("jump", 12)
 	await h.press("dash", 3)

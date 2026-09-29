@@ -7,8 +7,8 @@ signal phase_changed(next_phase: int)
 signal cue_changed(message: String)
 signal impact(at: Vector2, killed: bool)
 
-enum State { DORMANT, INTRO, CHASE, WINDUP, STRIKE, ECHO_WARNING, ECHO_ACTIVE, RECOVER, DEAD, GHOST_WARNING, GHOST_ACTIVE, TRANSITION }
-enum Attack { SWEEP, DASH, ECHO }
+enum State { DORMANT, INTRO, CHASE, WINDUP, STRIKE, ECHO_WARNING, ECHO_ACTIVE, RECOVER, DEAD, GHOST_WARNING, GHOST_ACTIVE, TRANSITION, DROP_WARNING, DROP_ACTIVE, STAGGER }
+enum Attack { SWEEP, DASH, ECHO, RESONANCE, DROP }
 
 @export var config: BellWardenConfig
 @onready var health: HealthComponent = $Health
@@ -33,6 +33,8 @@ var phase_ghosts: Array[EchoMark] = []
 var walk_clock := 0.0
 var walk_frame := -1
 var action_elapsed := 0.0
+var resonance_marks: Array[EchoMark] = []
+var staggered_by_ghost := false
 
 func _ready() -> void:
 	health.maximum = config.maximum_health
@@ -98,8 +100,6 @@ func _physics_process(delta: float) -> void:
 			if timer <= 0.0 or (attack == Attack.DASH and (is_on_wall() or global_position.x <= config.arena_min_x or global_position.x >= config.arena_max_x)):
 				_enter(State.RECOVER)
 		State.ECHO_WARNING:
-			if phase_marks.size() < 3 and action_elapsed >= float(phase_marks.size()) * config.echo_stagger:
-				_spawn_mark()
 			if timer <= 0.0:
 				_enter(State.ECHO_ACTIVE)
 		State.ECHO_ACTIVE:
@@ -110,7 +110,16 @@ func _physics_process(delta: float) -> void:
 				_enter(State.GHOST_ACTIVE)
 		State.GHOST_ACTIVE:
 			if timer <= 0.0:
+				_enter(State.CHASE)
+		State.DROP_WARNING:
+			if timer <= 0.0:
+				_enter(State.DROP_ACTIVE)
+		State.DROP_ACTIVE:
+			if timer <= 0.0:
 				_enter(State.RECOVER)
+		State.STAGGER:
+			if timer <= 0.0:
+				_enter(State.CHASE)
 		State.RECOVER:
 			# Recovery is a real punish window, but the warden retreats so a player
 			# cannot hold attack inside its body and trade hits indefinitely.
@@ -135,21 +144,27 @@ func _physics_process(delta: float) -> void:
 	contact_box.active = state in [State.CHASE, State.STRIKE, State.ECHO_ACTIVE, State.GHOST_ACTIVE]
 	global_position.x = clampf(global_position.x, config.arena_min_x, config.arena_max_x)
 	_update_visual()
-	combat_effect.configure(int(state), int(attack), facing, phase, timer,
-		config.sweep_windup if attack == Attack.SWEEP else config.dash_windup,
-		config.sweep_active if attack == Attack.SWEEP else config.dash_active)
+	var effect_windup := config.resonance_warning + config.echo_stagger * 2.0 if state == State.ECHO_WARNING else config.drop_warning if state == State.DROP_WARNING else config.sweep_windup if attack == Attack.SWEEP else config.dash_windup
+	var effect_active := config.resonance_active + config.echo_stagger * 2.0 if state == State.ECHO_ACTIVE else config.drop_active if state == State.DROP_ACTIVE else config.sweep_active if attack == Attack.SWEEP else config.dash_active
+	combat_effect.configure(int(state), int(attack), facing, phase, timer, effect_windup, effect_active)
 
 func _start_attack() -> void:
-	if phase == 3 and attack_count > 0 and attack_count % 3 == 2 and not is_instance_valid(ghost):
-		_enter(State.GHOST_WARNING)
+	if phase == 3 and attack_count > 0 and attack_count % 4 == 2 and not is_instance_valid(ghost):
+		attack = Attack.ECHO
 		attack_count += 1
+		_enter(State.GHOST_WARNING)
 		return
-	attack = Attack.SWEEP if attack_count == 0 else Attack.ECHO if phase >= 2 and attack_count % 3 == 2 else Attack.DASH if last_attack == Attack.SWEEP else Attack.SWEEP
-	if int(attack) == last_attack and attack != Attack.ECHO:
+	if phase == 3 and attack_count > 0 and attack_count % 4 == 3:
+		attack = Attack.DROP
+		attack_count += 1
+		_enter(State.DROP_WARNING)
+		return
+	attack = Attack.SWEEP if attack_count == 0 else Attack.RESONANCE if phase >= 2 and attack_count % 3 == 2 else Attack.DASH if last_attack == Attack.SWEEP else Attack.SWEEP
+	if int(attack) == last_attack and attack not in [Attack.RESONANCE, Attack.DROP]:
 		attack = Attack.DASH if attack == Attack.SWEEP else Attack.SWEEP
 	last_attack = int(attack)
 	attack_count += 1
-	_enter(State.ECHO_WARNING if attack == Attack.ECHO else State.WINDUP)
+	_enter(State.ECHO_WARNING if attack == Attack.RESONANCE else State.WINDUP)
 
 func _enter(next: State) -> void:
 	state = next
@@ -182,67 +197,90 @@ func _enter(next: State) -> void:
 			attack_box.active = true
 			_clear_ghost_on_scythe()
 		State.ECHO_WARNING:
-			timer = config.echo_windup
-			cue_changed.emit("追魂钟柱")
+			timer = config.resonance_warning + config.echo_stagger * 2.0
+			cue_changed.emit("终钟回响 / 找安全节拍")
 			for old_mark: EchoMark in phase_marks:
 				if is_instance_valid(old_mark): old_mark.queue_free()
 			phase_marks.clear()
-			_spawn_mark()
+			_spawn_resonance()
 		State.ECHO_ACTIVE:
-			timer = config.echo_active + config.echo_stagger * 2.0
+			timer = config.resonance_active + config.echo_stagger * 2.0
 		State.GHOST_WARNING:
 			timer = config.ghost_warning
-			cue_changed.emit("逆相围猎")
+			cue_changed.emit("逆相残像")
 			_spawn_ghost()
 		State.GHOST_ACTIVE:
-			timer = config.ghost_travel_seconds + config.ghost_stagger
+			timer = 0.18
+			if is_instance_valid(ghost):
+				var old_x := global_position.x
+				global_position.x = clampf(ghost.global_position.x, config.arena_min_x + 20.0, config.arena_max_x - 20.0)
+				ghost.global_position.x = old_x
 		State.RECOVER:
-			timer = config.ghost_recovery if phase == 3 and attack_count % 3 == 0 else config.sweep_recovery if attack == Attack.SWEEP else config.dash_recovery if attack == Attack.DASH else config.echo_recovery
+			timer = config.ghost_recovery if phase == 3 and attack_count % 3 == 0 else config.sweep_recovery if attack == Attack.SWEEP else config.dash_recovery if attack == Attack.DASH else config.drop_recovery if attack == Attack.DROP else config.echo_recovery
 			contact_box.begin_swing()
 			cue_changed.emit("反击窗口")
+		State.DROP_WARNING:
+			timer = config.drop_warning
+			cue_changed.emit("断钟坠落 / 离开锁点")
+			_spawn_drop()
+		State.DROP_ACTIVE:
+			timer = config.drop_active
+		State.STAGGER:
+			timer = config.stagger_seconds
+			contact_box.end_swing()
+			cue_changed.emit("幽魂反噬 / 失衡")
 		State.DEAD:
 			attack_box.end_swing()
 			contact_box.end_swing()
 			_set_strip_frame(29)
 
-func _spawn_mark() -> void:
+func _spawn_resonance() -> void:
 	var center := _ground_target_position()
-	var next_mark := EchoMark.new()
-	next_mark.player = target
-	next_mark.delay_seconds = config.echo_windup
-	next_mark.active_seconds = config.echo_active
-	next_mark.radius = config.echo_radius
-	next_mark.damage = config.echo_damage
-	next_mark.crosshair_visual = true
-	next_mark.global_position = center
-	get_parent().add_child(next_mark)
-	phase_marks.append(next_mark)
-	mark = next_mark
+	var center_x := clampf(target.global_position.x, config.arena_min_x + 90.0, config.arena_max_x - 90.0)
+	var total := maxi(1, config.resonance_lane_count)
+	for index: int in range(total):
+		var lane := EchoMark.new()
+		lane.player = target
+		lane.pattern = "resonance"
+		lane.delay_seconds = config.resonance_warning
+		lane.phase_offset = float(index) * config.echo_stagger
+		lane.active_seconds = config.resonance_active
+		lane.radius = 48.0
+		lane.damage = config.resonance_damage
+		lane.global_position = Vector2(clampf(center_x + (float(index) - float(total - 1) * 0.5) * config.resonance_lane_spacing, config.arena_min_x + 48.0, config.arena_max_x - 48.0), center.y - 3.0)
+		get_parent().add_child(lane)
+		phase_marks.append(lane)
+	mark = phase_marks.back()
 	last_mark_position = center
+
+func _spawn_drop() -> void:
+	var drop := EchoMark.new()
+	drop.player = target
+	drop.pattern = "drop"
+	drop.delay_seconds = config.drop_warning
+	drop.active_seconds = config.drop_active
+	drop.radius = config.drop_radius
+	drop.damage = config.drop_damage
+	drop.global_position = _ground_target_position()
+	get_parent().add_child(drop)
+	phase_marks.append(drop)
 
 func _spawn_ghost() -> void:
 	for old_ghost: EchoMark in phase_ghosts:
 		if is_instance_valid(old_ghost): old_ghost.queue_free()
 	phase_ghosts.clear()
 	var center := _ground_target_position()
-	var last_spawned_ghost: EchoMark
-	for side: int in [-1, 1]:
-		var next_ghost := EchoMark.new()
-		last_spawned_ghost = next_ghost
-		next_ghost.player = target
-		next_ghost.delay_seconds = config.ghost_warning
-		next_ghost.phase_offset = config.ghost_stagger if side > 0 else 0.0
-		next_ghost.active_seconds = config.ghost_travel_seconds
-		next_ghost.radius = config.ghost_radius
-		next_ghost.damage = config.ghost_damage
-		next_ghost.ghost_visual = true
-		next_ghost.crosshair_visual = true
-		next_ghost.global_position = Vector2(clampf(center.x + side * config.ghost_spacing, config.arena_min_x, config.arena_max_x), center.y - 26.0)
-		next_ghost.travel_target = Vector2(clampf(center.x - side * config.ghost_spacing, config.arena_min_x, config.arena_max_x), center.y - 26.0)
-		next_ghost.travel_seconds = config.ghost_travel_seconds
-		get_parent().add_child(next_ghost)
-		phase_ghosts.append(next_ghost)
-	ghost = last_spawned_ghost
+	var next_ghost := EchoMark.new()
+	next_ghost.player = target
+	next_ghost.delay_seconds = config.ghost_warning
+	next_ghost.active_seconds = 2.8
+	next_ghost.radius = config.ghost_radius
+	next_ghost.damage = 1
+	next_ghost.ghost_visual = true
+	next_ghost.global_position = Vector2(clampf(center.x, config.arena_min_x + 20.0, config.arena_max_x - 20.0), center.y - 26.0)
+	get_parent().add_child(next_ghost)
+	phase_ghosts.append(next_ghost)
+	ghost = next_ghost
 
 func _ground_target_position() -> Vector2:
 	var target_x := clampf(target.global_position.x, config.arena_min_x, config.arena_max_x)
@@ -258,6 +296,8 @@ func _clear_ghost_on_scythe() -> void:
 	var toward := (ghost.global_position.x - global_position.x) * facing
 	if toward >= -12.0 and toward <= 112.0 and absf(ghost.global_position.y - global_position.y) <= 58.0:
 		ghost.dispel()
+		staggered_by_ghost = true
+		_enter(State.STAGGER)
 
 func _update_visual() -> void:
 	# The Bringer sheet is authored facing left; flip only when travelling right.
@@ -271,10 +311,12 @@ func _update_visual() -> void:
 	elif state == State.STRIKE:
 		var duration := config.sweep_active if attack == Attack.SWEEP else config.dash_active
 		_set_strip_frame(20 + mini(3, int(action_elapsed / duration * 4.0)))
-	elif state in [State.ECHO_WARNING, State.ECHO_ACTIVE, State.GHOST_WARNING, State.GHOST_ACTIVE]:
-		var duration := config.echo_windup if state == State.ECHO_WARNING else config.ghost_warning if state == State.GHOST_WARNING else config.echo_active if state == State.ECHO_ACTIVE else config.ghost_travel_seconds
+	elif state in [State.ECHO_WARNING, State.ECHO_ACTIVE, State.GHOST_WARNING, State.GHOST_ACTIVE, State.DROP_WARNING, State.DROP_ACTIVE, State.STAGGER]:
+		var duration := config.resonance_warning if state == State.ECHO_WARNING else config.ghost_warning if state == State.GHOST_WARNING else config.resonance_active if state == State.ECHO_ACTIVE else config.ghost_travel_seconds
 		var first := 40 if state in [State.ECHO_WARNING, State.GHOST_WARNING] else 44
 		_set_strip_frame(first + mini(3, int(action_elapsed / duration * 4.0)))
+		if state == State.STAGGER:
+			body_sprite.modulate = Color("fff2a6")
 	elif state == State.RECOVER and attack in [Attack.SWEEP, Attack.DASH]:
 		_set_strip_frame(24 + mini(1, int(action_elapsed / maxf(timer + action_elapsed, 0.01) * 2.0)))
 	elif state == State.TRANSITION:

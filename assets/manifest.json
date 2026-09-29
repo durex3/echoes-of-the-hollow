@@ -600,5 +600,21 @@
     "source_url": "https://ansimuz.itch.io/gothicvania-cemetery",
     "sha256": "73edf71a9041051094e36c6113ef378ab9162c6c2e9e8ad1dda9aebf9deba94c",
     "license_status": "Bundled public license; see resouce/gothicvania-cemetery-files/public-license.pdf."
+  },
+  {
+    "file": "assets/effects/bell_resonance_ring.png",
+    "source_pack": "Pixel RPG VFX Pack",
+    "source_relative_path": "resouce/fx_pack_01/aura_fire_0004/arcane/64/spritesheet.png",
+    "source_url": "https://pewas.itch.io/pixel-rpg-vfx-pack-free-animated-effects",
+    "sha256": "e9c798a93349b726da43fd67215f7b70f05c571f6ea1406765b37d44a750d13f",
+    "license_status": "Bundled license permits personal/commercial game use; AI-assisted graphics disclosed; no standalone redistribution."
+  },
+  {
+    "file": "assets/licenses/pixel_vfx_factory_license.txt",
+    "source_pack": "Pixel RPG VFX Pack",
+    "source_relative_path": "resouce/fx_pack_01/license.txt",
+    "source_url": "https://pewas.itch.io/pixel-rpg-vfx-pack-free-animated-effects",
+    "sha256": "496e9dc8545763ae45593629cf17b8dc09d8a120602fcccd991ff4fb5ad0a596",
+    "license_status": "Bundled license copy."
   }
 ]

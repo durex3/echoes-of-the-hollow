@@ -15,9 +15,11 @@
 
 **尚未完成：**第三关整章真人首通与难度曲线验收、视觉/路线可读性复核，以及发布许可和设备验收。不能仅凭自动通关宣称第三关难度高于第二关。旧档只有 `cistern_restored` 时必须保留水道奖励但仍生成未击败的炉心监守者；只有 `furnace_keeper_defeated` 才能跳过Boss。旧版把 `bell_court_restored` 当作Boss胜利的存档会在迁移时补出 `bell_warden_defeated`。
 
-## 下一项实际开发：全量回归与真人难度验收
+## 下一项实际开发：真人难度与视觉验收
 
-用户从 Mac 带回的第三关正式主线接线已完成第一版，不重建手工地图。当前先完成 `tools/check.ps1 -Full`，按首个失败修复，再根据[关卡递进规范](level_progression.md)验证真实路线和难度。
+2026-09-29 Mac `./tools/check.sh --full` 已通过；Boss 现为三段终钟回响、逆相残像交换/幽魂反噬和断钟坠落。下面“先完成全量检查”的旧计划已执行，后续重点为真人首通和视觉可读性；自动检查结果见[验证记录](verification.md)。
+
+用户从 Mac 带回的第三关正式主线接线已完成第一版，不重建手工地图。Mac 全量检查已通过；Windows 换机后运行 `tools/check.ps1 -Full`，再根据[关卡递进规范](level_progression.md)验证真实路线和难度。
 
 1. 运行全量检查，重点确认第三页地图、Boss击败存档、返回路线、跨进程读档，以及仅有 `cistern_restored` 的旧档门槛。
 2. 用主线真实输入体验从第二关Boss胜利到第三关入口、两支路顺序、可选生命路线、合鸣桥廊组合战和Boss终战；记录失败原因、迷路点、休整时长和奖励动机。
@@ -34,7 +36,7 @@
 | 1 | 两支路、承重和回桥 | 已完成第一版：两种先后顺序、真实返回捷径、门两端一致 | `level-design`、`godot-tilemap`、`godot-nodes-scenes`、`godot-resources` |
 | 2 | 静声藏室与钟庭之心 | 已完成第一版：可选壁跃/二段跳/冲刺路线，失败回安全下层；唯一 +1 上限与一次回血 | `platformer`、`level-design`、`save-systems` |
 | 3 | 合鸣桥廊 | 已完成第一版：两承重后开启；杖使与铃翼组合；后段安全祭坛 | `game-ai`、`level-design`、`game-feel` |
-| 4 | 终钟台与缚钟守望者 | 已接入三阶段：一阶段镰刀教学、二阶段逐次锁旧位钟柱、三阶段双幽魂错峰穿越；固定单屏与战前重试点。真人难度仍待验收 | `create-game-assets`、`godot-animation`、`godot-physics`、`game-ai`、`game-feel` |
+| 4 | 终钟台与缚钟守望者 | 已接入三阶段：镰刀教学、终钟回响、逆相残像交换与幽魂反噬、断钟坠落；固定单屏与战前重试点。真人难度仍待验收 | `create-game-assets`、`godot-animation`、`godot-physics`、`game-ai`、`game-feel` |
 | 5 | 正式主线集成 | 第一版已接入：入口门槛、第三页地图/HUD、能力/奖励/桥/Boss/结局保存；仍需全量回归和旧档核验 | `save-systems`、`godot-signals-groups`、`godot-ui-control`、`game-ui-ux` |
 | 6 | 整章回归与真人难度验收 | 自动路线与存档回归、两种支路顺序、可选路线、5HP无盾基线；真人首次理解、失败原因、迷路/折返与第二关对比 | `level-design`、`game-design-theory` |
 

@@ -3,6 +3,7 @@ extends Node2D
 
 const ARCANE_SLASH := preload("res://assets/effects/bell_arcane_slash.png")
 const ARCANE_IMPACT := preload("res://assets/effects/bell_arcane_impact.png")
+const ARCANE_EXPLOSION := preload("res://assets/effects/bell_arcane_explosion.png")
 
 ## Visuals follow the boss state; collision and damage stay on its hitboxes.
 var state := 0
@@ -37,3 +38,20 @@ func _draw() -> void:
 		if frame < 8:
 			var impact_rect := Rect2(38, -33, 38, 38) if facing > 0 else Rect2(-76, -33, 38, 38)
 			draw_texture_rect_region(ARCANE_IMPACT, impact_rect, Rect2(frame * 64, 0, 64, 64))
+	elif state == 5: # RESONANCE WARNING
+		var p := clampf(1.0 - timer / maxf(windup, 0.01), 0.0, 1.0)
+		for ring: int in range(3):
+			var radius := 18.0 + float(ring) * 13.0 + p * 12.0
+			draw_arc(Vector2(0, -50), radius, PI + 0.2, TAU - 0.2, 24, Color(1.0, 0.82, 0.35, 0.8 - ring * 0.16), 2.0)
+		draw_line(Vector2(-9, -68), Vector2(9, -68), Color("fff1a8"), 2.0)
+	elif state == 6: # RESONANCE ACTIVE
+		var frame := mini(15, int((1.0 - timer / maxf(active, 0.01)) * 16.0))
+		draw_texture_rect_region(ARCANE_EXPLOSION, Rect2(-42, -84, 84, 84), Rect2(frame * 64, 0, 64, 64))
+	elif state == 12: # FALLING BELL WARNING
+		var p := clampf(1.0 - timer / maxf(windup, 0.01), 0.0, 1.0)
+		draw_arc(Vector2(0, -46), 18.0 + p * 22.0, PI + 0.2, TAU - 0.2, 24, Color("e8a5ff"), 3.0)
+	elif state == 13: # FALLING BELL ACTIVE
+		draw_arc(Vector2(0, -46), 42.0, PI + 0.2, TAU - 0.2, 24, Color("ffb8f3"), 3.0)
+	elif state == 14: # STAGGER
+		for ring: int in range(3):
+			draw_arc(Vector2(0, -42), 24.0 + float(ring) * 12.0, 0.0, TAU, 24, Color(1.0, 0.9, 0.45, 0.8 - ring * 0.2), 3.0)

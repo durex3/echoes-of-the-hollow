@@ -9,3 +9,6 @@ sweep_damage = 1
 dash_damage = 1
 echo_damage = 2
 ghost_damage = 2
+resonance_damage = 1
+drop_damage = 2
+stagger_seconds = 1.35
