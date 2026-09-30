@@ -282,6 +282,8 @@ func show_menu(mode: String, can_continue := false) -> void:
 	var heading := "HOLLOW RESTORED" if mode == "finale" else ("ECHOES OF THE HOLLOW" if mode == "title" else ("ECHO RESTORED" if mode == "win" else "PAUSED"))
 	if mode == "chapter_two":
 		heading = "CISTERN RESTORED"
+	elif mode == "high_shrine":
+		heading = "HIGH SHRINE REMEMBERED"
 	elif mode == "challenge_select":
 		heading = "BOSS CHALLENGE"
 	elif mode == "challenge_complete":
@@ -292,6 +294,8 @@ func show_menu(mode: String, can_continue := false) -> void:
 	var subtitle := label("The warden rests. The grove remembers your journey." if mode == "finale" else "A small journey through the forgotten grove", 12, Color("b4c6c2"))
 	if mode == "chapter_two":
 		set_text(subtitle,"Steam vents are now safe throughout Chapter II")
+	elif mode == "high_shrine":
+		set_text(subtitle,"A memory of the grove. Three marks still open the eastern gate.")
 	elif mode == "challenge_select":
 		set_text(subtitle,"Choose a chapter boss")
 	elif mode == "challenge_complete":
@@ -321,7 +325,7 @@ func show_menu(mode: String, can_continue := false) -> void:
 		button("Choose boss", func() -> void: show_menu("challenge_select", menu_can_continue))
 		button("Main menu", func() -> void: title_requested.emit())
 	else:
-		button("Continue exploring" if mode in ["win","finale","chapter_two"] else "Resume", func() -> void: resume_requested.emit())
+		button("Continue exploring" if mode in ["win","finale","chapter_two","high_shrine"] else "Resume", func() -> void: resume_requested.emit())
 		if mode == "pause" and challenge_chapter != 0:
 			button("Main menu", func() -> void: title_requested.emit())
 	button("Settings", func() -> void:

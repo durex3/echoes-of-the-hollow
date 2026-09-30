@@ -246,6 +246,7 @@ func _run() -> void:
 	await frames(4)
 	await press("interact",2)
 	check(Session.completed, "High shrine completes the exploration loop")
+	check(game.ui.menu_mode == "high_shrine" and game.ui.menu.get_child(0).text == "HIGH SHRINE REMEMBERED", "Optional high shrine has its own memory title instead of the chapter ending")
 	await shot("05_complete")
 	game.resume()
 	# Save repository round trip, recovery, version guard, and write failure reporting.

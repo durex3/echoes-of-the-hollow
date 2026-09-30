@@ -86,6 +86,9 @@ func _physics_process(_delta: float) -> void:
 			message = TextCatalog.text(nearest.prompt) + " / " + TextCatalog.room_name(nearest.target_room)
 		else:
 			message = TextCatalog.text("E / TO ") + TextCatalog.room_name(nearest.target_room)
+		var locked := nearest.locked_message(Session.abilities, Session.flags)
+		if not locked.is_empty():
+			message += " / " + TextCatalog.text(locked)
 	if message != last_prompt:
 		last_prompt = message
 		prompt_changed.emit(message)

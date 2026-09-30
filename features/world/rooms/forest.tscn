@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://features/enemies/slime.gd" id="5_y6d5d"]
 [ext_resource type="SpriteFrames" path="res://features/world/checkpoint_frames.tres" id="6"]
 [ext_resource type="Script" path="res://features/world/convergence_door.gd" id="7_convergence"]
+[ext_resource type="Script" path="res://features/world/chapter_one_route_board.gd" id="8_route_board"]
 
 [sub_resource type="RectangleShape2D" id="Boundary"]
 size = Vector2(32, 640)
@@ -85,12 +86,18 @@ target_room = "ruins"
 stable_id = "east_door"
 prompt = "E  /  ENTER THE ARCHIVE"
 
+[node name="RouteBoard" type="Node2D" parent="Interactions"]
+position = Vector2(300, 480)
+script = ExtResource("8_route_board")
+kind = "sign"
+prompt = "The archive east teaches the sky echo. Return here after the climb."
+
 [node name="HighShrine" type="Node2D" parent="Interactions" unique_id=341097377]
 position = Vector2(400, 224)
 script = ExtResource("5")
 kind = "goal"
 stable_id = "high_shrine"
-prompt = "E  /  RESTORE THE HOLLOW"
+prompt = "E / REMEMBER THE HIGH SHRINE"
 
 [node name="sanctuary_return" type="Marker2D" parent="Spawns"]
 position = Vector2(475, 224)

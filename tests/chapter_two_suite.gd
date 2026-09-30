@@ -29,6 +29,13 @@ func run(h: Node, game: Node) -> void:
 	await h.press("interact",2)
 	h.check(Session.checkpoint_room == "ember_quay" and Session.commit() == OK, "New chapter shrine persists a valid checkpoint")
 	var gate: WorldInteraction = game.room.get_node("Interactions/CoreDoor")
+	var route_board := game.room.get_node("Interactions/RouteBoard") as WorldInteraction
+	var route_prompts := [
+		"Two valve routes are open. Choose either branch, then follow its return path.",
+		"Flow seal set. Enter the Cistern Archive and descend to the Lower Pump.",
+		"Pressure seal set. Enter the Valve Gallery and climb the Sluice Shaft.",
+		"Both valves are set. The gold door leads to the Furnace Core."
+	]
 	for mask: int in range(3):
 		Session.flags.erase("flow_seal")
 		Session.flags.erase("pressure_seal")
@@ -37,6 +44,13 @@ func run(h: Node, game: Node) -> void:
 		if mask & 2:
 			Session.set_flag("pressure_seal")
 		h.check(not gate.locked_message(Session.abilities,Session.flags).is_empty(), "Furnace requires both valve seals: combination %d" % mask)
+		await h.frames(2)
+		h.check(route_board.prompt == route_prompts[mask], "Quay route board responds to valve combination %d" % mask)
+	Session.set_flag("flow_seal")
+	Session.set_flag("pressure_seal")
+	await h.frames(2)
+	h.check(route_board.prompt == route_prompts[3], "Quay route board points to the furnace when both valves are set")
+	Session.flags.erase("flow_seal")
 	Session.flags.erase("pressure_seal")
 	var vent := game.room.get_node("Hazards").get_child(0) as SteamVent
 	player.revive(Vector2(440,480))

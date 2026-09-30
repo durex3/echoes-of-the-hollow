@@ -7,9 +7,6 @@
 [ext_resource type="PackedScene" path="res://features/enemies/rose_sentinel.tscn" id="5_s7gw8"]
 [ext_resource type="Script" path="res://features/enemies/rose_sentinel.gd" id="6_y5ei6"]
 [ext_resource type="Resource" path="res://features/enemies/rose_config.tres" id="7_6pui7"]
-[ext_resource type="PackedScene" path="res://features/enemies/winged_chest.tscn" id="8_nutqf"]
-[ext_resource type="Script" path="res://features/enemies/winged_chest.gd" id="9_c2p5d"]
-[ext_resource type="Resource" path="res://features/enemies/chest_config.tres" id="10_u5wtj"]
 [ext_resource type="Script" path="res://features/world/interaction.gd" id="11_ulqu0"]
 [ext_resource type="SpriteFrames" path="res://features/world/checkpoint_frames.tres" id="12_ww0dr"]
 [ext_resource type="Texture2D" path="res://assets/props/door_and_switch.png" id="12_y5ei6"]
@@ -1241,12 +1238,6 @@ position = Vector2(660, 480)
 collision_layer = 0
 script = ExtResource("6_y5ei6")
 config = ExtResource("7_6pui7")
-
-[node name="WingedChest" type="CharacterBody2D" parent="Enemies" unique_id=1835386501 groups=["enemies"] instance=ExtResource("8_nutqf")]
-position = Vector2(1060, 480)
-collision_layer = 0
-script = ExtResource("9_c2p5d")
-config = ExtResource("10_u5wtj")
 
 [node name="Interactions" type="Node2D" parent="." unique_id=1839794500]
 

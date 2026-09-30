@@ -378,7 +378,7 @@ func _on_interaction(point: WorldInteraction) -> void:
 			room.update_progress()
 			_save("The grove remembers. Seek the three marks.")
 			get_tree().paused = true
-			ui.show_menu("win")
+			ui.show_menu("high_shrine")
 
 func _save(message: String) -> void:
 	if Session.commit() == OK:

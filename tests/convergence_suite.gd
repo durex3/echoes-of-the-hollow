@@ -14,6 +14,7 @@ func run(h: Node, game: Node) -> void:
 		enemy.queue_free()
 	await h.frames(4)
 	var gate := game.room.get_node("Interactions/ConvergenceDoor") as WorldInteraction
+	var route_board := game.room.get_node("Interactions/RouteBoard") as WorldInteraction
 	var marks: Array[String] = ["training_cleared","scriptorium_cleared","belfry_cleared"]
 	for mask: int in range(7):
 		Session.flags.clear()
@@ -42,6 +43,7 @@ func run(h: Node, game: Node) -> void:
 	Session.set_flag("belfry_cleared")
 	h.check(game.ui.objective.text.contains("三印已齐"), "Last mark updates the main objective immediately")
 	await h.frames(3)
+	h.check(route_board.prompt == "Three marks glow. The eastern gate opens to the Echo Antechamber.", "Forest route board directs three-mark completion to the eastern gate")
 	await h.shot("41_three_mark_gate_open")
 	# Optional heart and old high-shrine completion are not additional gate conditions.
 	var completed := Session.completed

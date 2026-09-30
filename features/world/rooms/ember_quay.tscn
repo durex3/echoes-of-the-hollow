@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" path="res://features/world/steam_vent.tscn" id="7_jpr8r"]
 [ext_resource type="Script" path="res://features/world/steam_vent.gd" id="8_88lo6"]
 [ext_resource type="Resource" path="res://features/world/steam_config.tres" id="9_ajkhe"]
+[ext_resource type="Script" path="res://features/world/chapter_two_route_board.gd" id="10_route_board"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_88ont"]
 texture = ExtResource("2_28qw1")
@@ -1424,6 +1425,12 @@ position = Vector2(300, 480)
 script = ExtResource("5_of04d")
 kind = "sign"
 prompt = "Steam: amber warns, white burns. Cross on green."
+
+[node name="RouteBoard" type="Node2D" parent="Interactions"]
+position = Vector2(500, 480)
+script = ExtResource("10_route_board")
+kind = "sign"
+prompt = "Two valve routes are open. Choose either branch, then follow its return path."
 
 [node name="FlowDoor" type="Node2D" parent="Interactions" unique_id=247489567]
 position = Vector2(650, 480)
