@@ -4,6 +4,8 @@ extends RefCounted
 
 static func objective(abilities: Array[String], flags: Array[String], visited: Array[String]) -> String:
 	if "cistern_restored" in flags and "furnace_keeper_defeated" in flags and "bell_court_restored" not in flags:
+		if "windworn_steps" not in visited:
+			return "Cistern restored / Enter the Bell Court at the rightmost door"
 		if "wall_echo" not in abilities:
 			return "Learn the wall echo in Echo Cloister"
 		if "east_weight_restored" not in flags or "west_weight_restored" not in flags:
@@ -17,7 +19,7 @@ static func objective(abilities: Array[String], flags: Array[String], visited: A
 			return "Cistern restored / Face the Furnace Keeper"
 		return "Cistern restored / Both chapters open to explore"
 	if "furnace_keeper_defeated" in flags:
-		return "Keeper defeated / Enter the right-hand door"
+		return "Keeper defeated / Restore the cistern, then enter the right-hand door"
 	if "journey_restored" in flags:
 		if "ember_quay" not in visited:
 			return "Chapter II / Beyond the heart chamber"

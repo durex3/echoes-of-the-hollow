@@ -92,10 +92,10 @@ target_room = "hanging_gallery"
 prompt = "向西 · 悬铃回廊"
 
 [node name="Branches" type="Node2D" parent="Interactions" unique_id=485982169]
-position = Vector2(544, 256)
+position = Vector2(608, 256)
 script = ExtResource("4_hc07k")
 kind = "sign"
-prompt = "两座承钟支路与终钟台尚未开放；本次试玩先向西体验铃翼掠袭。"
+prompt = "东侧承钟机室与西侧悬铃回廊各有一座承重；两座复位后中央桥连向终钟台。"
 
 [node name="machine" type="Marker2D" parent="Spawns"]
 position = Vector2(704, 256)

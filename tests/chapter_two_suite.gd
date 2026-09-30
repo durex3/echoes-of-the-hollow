@@ -139,6 +139,13 @@ func run(h: Node, game: Node) -> void:
 	h.check(Session.restore() and "flow_seal" in Session.flags and "pressure_seal" in Session.flags and "cistern_restored" in Session.flags, "Both seals and the second ending survive restore")
 	game.load_room("ember_quay","checkpoint")
 	await h.frames(4)
+	var chapter_three_door := game.room.get_node("Interactions/ChapterThreeDoor") as WorldInteraction
+	player.revive(chapter_three_door.position)
+	await h.frames(3)
+	await h.press("interact",2)
+	h.check(game.room.room_id == "windworn_steps" and Session.checkpoint_room == "windworn_steps" and Session.checkpoint_spawn == "entry", "Chapter II right door enters Chapter III and moves the retry checkpoint across the chapter boundary")
+	game.load_room("ember_quay","checkpoint")
+	await h.frames(4)
 	vent = game.room.get_node("Hazards").get_child(0) as SteamVent
 	h.check(not vent.enabled, "Reloading a completed chapter keeps its steam safely disabled")
 	player.revive(Vector2(440,480))

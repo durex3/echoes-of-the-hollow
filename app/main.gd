@@ -245,7 +245,8 @@ func resume() -> void:
 	ui.hide_map()
 	get_tree().paused = false
 	if ui.menu_mode == "chapter_two" and room.room_id == "furnace_core":
-		load_room("ember_quay", "core_return")
+		var resume_spawn := "chapter_three_return" if "cistern_restored" in Session.flags and "furnace_keeper_defeated" in Session.flags else "core_return"
+		load_room("ember_quay", resume_spawn)
 	ui.show_hud()
 
 func close_map() -> void:
@@ -285,8 +286,11 @@ func _on_interaction(point: WorldInteraction) -> void:
 				Session.checkpoint_spawn = "checkpoint"
 				_save("Progress saved")
 			if point.target_room == "windworn_steps" and room.room_id == "ember_quay":
-				Session.checkpoint_room = "ember_quay"
-				Session.checkpoint_spawn = "checkpoint"
+				# The first third-chapter entry becomes the new safe retry point. Keeping
+				# the old quay checkpoint here sent deaths and reloads back across the
+				# chapter boundary even after the player had entered the Bell Court.
+				Session.checkpoint_room = "windworn_steps"
+				Session.checkpoint_spawn = "entry"
 				_save("Progress saved / Chapter III opened")
 			if point.target_room == "terminal_platform" and room.room_id == "confluence_bridge":
 				Session.checkpoint_room = "terminal_platform"
@@ -330,6 +334,9 @@ func _on_interaction(point: WorldInteraction) -> void:
 			if not room.is_cleared():
 				ui.notify("Defeat the hall guardians to release the seal")
 				return
+			if point.kind == "chapter_end" and room.room_id == "furnace_core":
+				Session.checkpoint_room = "ember_quay"
+				Session.checkpoint_spawn = "chapter_three_return"
 			Session.set_flag(point.stable_id)
 			player.health.restore_full()
 			room.update_progress()

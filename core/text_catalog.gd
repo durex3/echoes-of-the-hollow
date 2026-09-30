@@ -145,6 +145,8 @@ const ZH := {
 	"Keeper defeated / Enter the right-hand door": "监守者已倒下 / 进入右侧的门",
 	"All vitality restored. Enter the right-hand door to awaken the core.": "生命已恢复，进入右侧门唤醒炉心。",
 	"Cistern restored / Face the Furnace Keeper": "水道已修复 / 前往炉心击败监守者",
+	"Cistern restored / Enter the Bell Court at the rightmost door": "水道已复苏 / 前往余烬渡口右侧金门，进入钟庭",
+	"Keeper defeated / Restore the cistern, then enter the right-hand door": "监守者已倒下 / 先唤醒炉心，再从渡口右侧金门进入钟庭",
 	"Warden defeated / Enter the central door": "守门者已倒下 / 进入房间中央的门",
 	"BOSS": "首领",
 	"Cistern restored / Both chapters open to explore": "水道已复苏 / 两章均可自由探索",

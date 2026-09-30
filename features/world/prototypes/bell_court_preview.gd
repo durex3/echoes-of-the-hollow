@@ -116,6 +116,7 @@ func load_room(id: String, spawn: String) -> void:
 	player.velocity = Vector2.ZERO
 	room = (ROOMS[id] as PackedScene).instantiate() as GameRoom
 	room.enabled = false # Harness owns prompts/interactions; no campaign mutations.
+	room.rehearsal = true
 	$RoomHost.add_child(room)
 	if id not in visited:
 		visited.append(id)
@@ -154,6 +155,9 @@ func _enemy_defeated() -> void:
 func _refresh() -> void:
 	for child: Node in room.get_node("Interactions").get_children():
 		var point := child as WorldInteraction
+		if point.name == "PreviewEnd":
+			point.visible = room.room_id == "hanging_gallery" and room.is_cleared()
+			continue
 		if room.room_id == "terminal_platform" and point.name == "Return":
 			point.visible = room.is_cleared()
 			continue

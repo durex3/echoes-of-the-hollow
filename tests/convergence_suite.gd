@@ -175,6 +175,12 @@ func check_route_graph(h: Node, game: Node) -> void:
 	var quay_door := (rooms["ember_quay"].get_node("Interactions/ChapterThreeDoor") as WorldInteraction)
 	h.check(not quay_door.locked_message([], ["cistern_restored"]).is_empty(), "Legacy cistern-only save cannot enter Chapter III")
 	h.check(quay_door.locked_message([], ["cistern_restored", "furnace_keeper_defeated"]).is_empty(), "Chapter III entry opens only after actual Furnace Keeper victory")
+	var chapter_three_goal := JourneyProgress.objective([], ["cistern_restored", "furnace_keeper_defeated"], [])
+	h.check(chapter_three_goal.contains("Bell Court") and chapter_three_goal.contains("rightmost door"), "Completed Chapter II objective points directly to the Chapter III entrance")
+	var gallery_preview_end := (rooms["hanging_gallery"].get_node("Interactions/PreviewEnd") as WorldInteraction)
+	rooms["hanging_gallery"].rehearsal = false
+	rooms["hanging_gallery"].update_progress()
+	h.check(not gallery_preview_end.visible, "Preview endpoint cannot complete the formal Chapter III route")
 	var old_goal := JourneyProgress.objective([], ["cistern_restored"], [])
 	h.check(old_goal.contains("Furnace Keeper") and not old_goal.contains("Echo Cloister"), "Legacy objective still points to the unbeaten Chapter II boss")
 	for room: GameRoom in rooms.values():

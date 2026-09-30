@@ -90,6 +90,14 @@ func run() -> void:
 		if game.room.room_id != "ember_quay":
 			fail("Chapter ending did not return to Ember Quay")
 			break
+		if not await use("ChapterThreeDoor"):
+			break
+		if game.room.room_id != "windworn_steps" or Session.checkpoint_room != "windworn_steps" or Session.checkpoint_spawn != "entry" or not Session.restore():
+			fail("Completed Chapter II did not open and save the Chapter III entrance")
+			break
+		if not await use("QuayReturn") or game.room.room_id != "ember_quay":
+			fail("Chapter III entry has no working route back to Ember Quay")
+			break
 		if not await use("Shrine") or not await use("Return") or game.room.room_id != "heart_chamber":
 			fail("Completed chapter cannot return to Chapter I")
 			break

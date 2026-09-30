@@ -47,7 +47,7 @@ position = Vector2(176, 704)
 [node name="Shrine" type="Node2D" parent="Interactions" unique_id=1749620447]
 position = Vector2(176, 704)
 script = ExtResource("4_jidtb")
-prompt = "记录试玩重试点"
+prompt = "记录风蚀阶庭重试点"
 
 [node name="Shrine" type="AnimatedSprite2D" parent="Interactions/Shrine" unique_id=231190248]
 position = Vector2(0, -20)

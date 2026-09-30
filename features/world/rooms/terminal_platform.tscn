@@ -86,6 +86,7 @@ autoplay = "idle"
 position = Vector2(64, 320)
 script = ExtResource("4")
 kind = "exit"
+interaction_radius = 40.0
 target_room = "confluence_bridge"
 target_spawn = "altar"
 prompt = "向西 · 返回合鸣桥廊"

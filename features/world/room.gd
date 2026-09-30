@@ -120,8 +120,10 @@ func update_progress() -> void:
 		(get_node("ArenaGate") as FurnaceArenaGate).set_closed(not is_cleared())
 	var hazards := get_node_or_null("Hazards")
 	if hazards and "cistern_restored" in Session.flags:
-		for vent: SteamVent in hazards.get_children():
-			vent.deactivate()
+		for child: Node in hazards.get_children():
+			var vent := child as SteamVent
+			if vent:
+				vent.deactivate()
 	var return_gate := get_node_or_null("ReturnGate")
 	if return_gate and "wall_passage_open" in Session.flags:
 		(return_gate.get_node("Collision") as CollisionShape2D).set_deferred("disabled", true)
@@ -152,6 +154,12 @@ func update_progress() -> void:
 			point.visible = false
 			continue
 		point.visible = true
+		# Hanging Gallery keeps a preview-only endpoint in the shared authored
+		# scene. It must never complete the campaign when the same room is used
+		# by the main chapter flow.
+		if point.name == "PreviewEnd" and not rehearsal:
+			point.visible = false
+			continue
 		if point.kind == "exit" and point.name == "Return" and room_id in ["heart_chamber", "furnace_core"]:
 			point.visible = is_cleared()
 		elif point.kind == "exit" and room_id == "terminal_platform" and point.name == "Return":

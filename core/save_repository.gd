@@ -13,6 +13,8 @@ static func validate(data: Variant) -> bool:
 	if data.get("checkpoint_room") not in ROOMS:
 		return false
 	var allowed_spawns: Array = ["checkpoint", "rest"] if data.checkpoint_room in ["training", "scriptorium"] else ["checkpoint"]
+	if data.checkpoint_room == "ember_quay":
+		allowed_spawns = ["checkpoint", "chapter_three_return"]
 	if data.checkpoint_room in ["windworn_steps", "bell_guard_walk", "broken_bell_atrium", "echo_cloister", "hanging_gallery", "bell_weight_chamber", "quiet_reliquary", "confluence_bridge", "terminal_platform"]:
 		allowed_spawns = ["entry", "checkpoint", "altar", "upper", "return"]
 	if data.get("checkpoint_spawn") not in allowed_spawns:
