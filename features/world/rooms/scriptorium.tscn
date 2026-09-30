@@ -65,20 +65,20 @@ position = Vector2(1450, 480)
 
 [node name="ScribeSolo" type="CharacterBody2D" parent="Enemies" unique_id=1880075217 groups=["enemies"] instance=ExtResource("4_ywcra")]
 position = Vector2(610, 480)
-collision_layer = 4
+collision_layer = 0
 script = ExtResource("5_l1wd1")
 config = ExtResource("6_sh06b")
 
 [node name="ArmorMixed" type="CharacterBody2D" parent="Enemies" unique_id=255651468 groups=["enemies"] instance=ExtResource("7_sfqgo")]
 position = Vector2(1100, 480)
-collision_layer = 4
+collision_layer = 0
 script = ExtResource("8_6erqr")
 config = ExtResource("9_n7cck")
 patrol_distance = 45.0
 
 [node name="ScribeMixed" type="CharacterBody2D" parent="Enemies" unique_id=1771909108 groups=["enemies"] instance=ExtResource("4_ywcra")]
 position = Vector2(1370, 480)
-collision_layer = 4
+collision_layer = 0
 script = ExtResource("5_l1wd1")
 config = ExtResource("6_sh06b")
 

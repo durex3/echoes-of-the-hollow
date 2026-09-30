@@ -81,6 +81,7 @@ func _begin_phase(next: FurnaceKeeper.State) -> void:
 		FurnaceKeeper.State.TAKEOFF:
 			boss.clip("takeoff", boss.config.flight_height / boss.config.ascent_speed)
 			boss.cue_changed.emit("TAKEOFF / Watch the landing line")
+			boss._spawn_burst(boss.global_position + Vector2(0.0, -26.0), Color("f4d49a"), 30.0, 0.28, 2, 8)
 		FurnaceKeeper.State.APPROACH:
 			boss.timer = boss.config.approach_seconds
 			boss.clip("idle")
@@ -119,6 +120,7 @@ func _begin_phase(next: FurnaceKeeper.State) -> void:
 			boss.velocity.y = boss.config.slam_speed
 			boss.clip("eruption_cast")
 			boss.cue_changed.emit("SLAM / Jump above the flame walls")
+			Audio.play_sound("attack", 0.65, -5.0)
 		FurnaceKeeper.State.IMPACT:
 			boss.timer = boss.config.impact_seconds
 			boss.velocity = Vector2.ZERO

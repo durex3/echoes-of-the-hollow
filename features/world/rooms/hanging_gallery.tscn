@@ -115,13 +115,13 @@ prompt = "沿西回桥返回中庭"
 
 [node name="FirstSkimmer" type="CharacterBody2D" parent="Enemies" unique_id=39480682 groups=["enemies"] instance=ExtResource("6_8055m")]
 position = Vector2(752, 248)
-collision_layer = 4
+collision_layer = 0
 script = ExtResource("7_6ryx6")
 config = ExtResource("8_bp4j4")
 
 [node name="SecondSkimmer" type="CharacterBody2D" parent="Enemies" unique_id=1141649306 groups=["enemies"] instance=ExtResource("6_8055m")]
 position = Vector2(288, 248)
-collision_layer = 4
+collision_layer = 0
 script = ExtResource("7_6ryx6")
 config = ExtResource("8_bp4j4")
 

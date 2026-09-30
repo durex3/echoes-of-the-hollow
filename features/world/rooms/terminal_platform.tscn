@@ -54,7 +54,7 @@ position = Vector2(112, 236)
 [node name="Collision" type="CollisionShape2D" parent="WallJumpPlatforms/LeftLow"]
 shape = SubResource("low_platform")
 [node name="RightLow" type="StaticBody2D" parent="WallJumpPlatforms"]
-position = Vector2(464, 236)
+position = Vector2(384, 236)
 [node name="Collision" type="CollisionShape2D" parent="WallJumpPlatforms/RightLow"]
 shape = SubResource("low_platform")
 [node name="CenterHigh" type="StaticBody2D" parent="WallJumpPlatforms"]

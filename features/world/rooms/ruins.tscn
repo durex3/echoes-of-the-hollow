@@ -56,19 +56,19 @@ position = Vector2(1130, 480)
 
 [node name="Slime0" type="CharacterBody2D" parent="Enemies" unique_id=1195840547 groups=["enemies"] instance=ExtResource("4")]
 position = Vector2(440, 480)
-collision_layer = 4
+collision_layer = 0
 script = ExtResource("5_2th2l")
 patrol_distance = 65.0
 
 [node name="Slime1" type="CharacterBody2D" parent="Enemies" unique_id=930537679 groups=["enemies"] instance=ExtResource("4")]
 position = Vector2(650, 480)
-collision_layer = 4
+collision_layer = 0
 script = ExtResource("5_2th2l")
 patrol_distance = 65.0
 
 [node name="Slime2" type="CharacterBody2D" parent="Enemies" unique_id=1040840397 groups=["enemies"] instance=ExtResource("4")]
 position = Vector2(1100, 480)
-collision_layer = 4
+collision_layer = 0
 script = ExtResource("5_2th2l")
 patrol_distance = 65.0
 

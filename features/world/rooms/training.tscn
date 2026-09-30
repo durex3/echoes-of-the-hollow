@@ -68,21 +68,21 @@ position = Vector2(1050, 480)
 
 [node name="ArmorSolo" type="CharacterBody2D" parent="Enemies" unique_id=38093671 groups=["enemies"] instance=ExtResource("4_1svbw")]
 position = Vector2(490, 480)
-collision_layer = 4
+collision_layer = 0
 script = ExtResource("5_u6eo4")
 config = ExtResource("6_e2v2w")
 patrol_distance = 45.0
 
 [node name="ArmorMixed" type="CharacterBody2D" parent="Enemies" unique_id=724898748 groups=["enemies"] instance=ExtResource("4_1svbw")]
 position = Vector2(920, 480)
-collision_layer = 4
+collision_layer = 0
 script = ExtResource("5_u6eo4")
 config = ExtResource("6_e2v2w")
 patrol_distance = 45.0
 
 [node name="SlimeMixed" type="CharacterBody2D" parent="Enemies" unique_id=1714843233 groups=["enemies"] instance=ExtResource("7_haamd")]
 position = Vector2(1060, 480)
-collision_layer = 4
+collision_layer = 0
 script = ExtResource("8_lob0x")
 patrol_distance = 38.0
 

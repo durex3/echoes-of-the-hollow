@@ -35,6 +35,25 @@ for folder in ['app', 'core', 'features', 'tests']:
                     errors.append(f'Trailing whitespace: {relative}:{index}')
                 if line.startswith('    '):
                     errors.append(f'Use tabs for GDScript indentation: {relative}:{index}')
+
+# Enemy bodies collide with terrain only; contact and attacks scan the player Hurtbox.
+for path in (ROOT / 'features/enemies').glob('*.tscn'):
+    body = path.read_text(encoding='utf-8')
+    for node in re.split(r'(?=^\[node )', body, flags=re.MULTILINE):
+        header = node.split('\n', 1)[0]
+        if 'type="CharacterBody2D"' in header and 'groups=["enemies"]' in header:
+            if not re.search(r'^collision_layer = 0$', node, re.MULTILINE) or not re.search(r'^collision_mask = 1$', node, re.MULTILINE):
+                errors.append(f'Enemy body must scan terrain only: {path.relative_to(ROOT)}')
+        elif 'type="Area2D"' in header and 'Hurtbox' not in header:
+            if not re.search(r'^collision_layer = 0$', node, re.MULTILINE) or not re.search(r'^collision_mask = 8$', node, re.MULTILINE):
+                errors.append(f'Enemy damage area must scan player Hurtbox: {path.relative_to(ROOT)}')
+for path in (ROOT / 'features/world/rooms').glob('*.tscn'):
+    body = path.read_text(encoding='utf-8')
+    for node in re.split(r'(?=^\[node )', body, flags=re.MULTILINE):
+        header = node.split('\n', 1)[0]
+        if 'groups=["enemies"]' in header and 'instance=' in header:
+            if re.search(r'^collision_layer = (?!0$)\d+', node, re.MULTILINE) or re.search(r'^collision_mask = (?!1$)\d+', node, re.MULTILINE):
+                errors.append(f'Room overrides enemy terrain-only collision: {path.relative_to(ROOT)}')
 manifest = json.loads((ROOT / 'assets/manifest.json').read_text(encoding='utf-8'))
 for entry in manifest:
     path = ROOT / entry['file']

@@ -15,7 +15,7 @@ size = Vector2(75,50)
 [sub_resource type="RectangleShape2D" id="contact_shape"]
 size = Vector2(30,58)
 [node name="FurnaceKeeper" type="CharacterBody2D" groups=["enemies"]]
-collision_layer = 4
+collision_layer = 0
 collision_mask = 1
 script = ExtResource("1")
 config = ExtResource("2")

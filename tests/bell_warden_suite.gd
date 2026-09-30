@@ -105,6 +105,7 @@ func _run() -> void:
 	boss._start_attack()
 	check(boss.attack_states.size() == 4, "Chapter III has normal attacks and two independent specials")
 	check((boss.attack_states[BellWarden.Attack.DOUBLE_ECHO] as BossAttackState).cooldown != (boss.attack_states[BellWarden.Attack.LAYER_RESONANCE] as BossAttackState).cooldown, "Special attacks keep independent cooldowns")
+	await _check_special_contact_damage()
 	await _check_resonance_damage()
 	await _check_double_echo()
 	await _check_idle_corner()
@@ -130,6 +131,29 @@ func _check_boss_decisions() -> void:
 	check(bell.choose_attack(180.0, false, 2, true, true, true, true, true) == BellWarden.Attack.DOUBLE_ECHO, "Grounded player after ordinary attacks enables double echo")
 	check(bell.choose_attack(180.0, false, 2, true, true, true, true, false) != BellWarden.Attack.DOUBLE_ECHO, "Airborne player is not recorded as a landing")
 	check(bell.choose_attack(180.0, false, 1, true, true, false, true, true) == BellWarden.Attack.LAYER_RESONANCE, "Resonance has its own selection path")
+
+func _check_special_contact_damage() -> void:
+	boss.set_physics_process(false)
+	boss.state_machine.finish()
+	game.player.set_physics_process(false)
+	for special: BellWarden.Attack in [BellWarden.Attack.DOUBLE_ECHO, BellWarden.Attack.LAYER_RESONANCE]:
+		boss.attack = special
+		boss.contact_box.begin_swing()
+		game.player.revive(boss.global_position)
+		game.player.health.restore_full()
+		game.player.health.invulnerability_left = 0.0
+		boss.state = BellWarden.State.WINDUP
+		boss._physics_process(1.0 / 60.0)
+		check(not boss.contact_box.active, "Special windup leaves body contact inactive")
+		boss.state = BellWarden.State.STRIKE
+		boss._physics_process(1.0 / 60.0)
+		check(boss.contact_box.active, "Special active phase enables body contact")
+		var hp: int = game.player.health.current
+		await frames(2)
+		check(game.player.health.current == hp - 1, "%s active phase keeps contact damage while the body remains pass-through" % ("Double echo" if special == BellWarden.Attack.DOUBLE_ECHO else "Layer resonance"))
+		boss.contact_box.end_swing()
+	boss.set_physics_process(true)
+	game.player.set_physics_process(true)
 
 func _check_resonance_damage() -> void:
 	boss.set_physics_process(false)
@@ -198,6 +222,18 @@ func _check_double_echo() -> void:
 	echo._update_echo(boss)
 	check(absf(boss.global_position.x - 330.0) < 3.0 and boss.state == BellWarden.State.RECOVER, "Swap lands at the fixed ghost and enters recovery")
 	boss.state_machine.finish()
+	boss.global_position = Vector2(432.0, 320.0)
+	game.player.revive(Vector2(210.0, 320.0))
+	boss.state_machine.change(echo)
+	boss.action_elapsed = 0.15
+	echo._update_echo(boss)
+	boss.action_elapsed = 0.65
+	echo._update_echo(boss)
+	check(echo.recorded.size() == 2 and echo.recorded[0].distance_to(echo.recorded[1]) >= 27.0, "A stationary player still produces a separate adjacent echo landing")
+	boss.timer = 0.0
+	echo._update_echo(boss)
+	check(echo.hazards.size() == 2 and absf(echo.hazards[0].global_position.x - echo.hazards[1].global_position.x) >= 27.0, "Stationary double echo releases two visible clones")
+	boss.state_machine.finish()
 	game.player.revive(Vector2(210.0, 320.0))
 	game.player.set_physics_process(false)
 	var ghost := BellWardenEchoClone.new()
@@ -239,7 +275,7 @@ func _check_double_echo() -> void:
 	echo._update_echo(boss)
 	boss.timer = 0.0
 	echo._update_echo(boss)
-	check(echo.hazards.size() == 1, "Repeated landing collapses to one ghost instead of stacking hits")
+	check(echo.hazards.size() == 2, "Repeated landing creates an adjacent second ghost without stacking hits on one mark")
 	boss.state_machine.finish()
 
 func _check_idle_corner() -> void:

@@ -82,7 +82,7 @@ boss_name = "HOLLOW WARDEN"
 
 [node name="Warden" type="CharacterBody2D" parent="Enemies" unique_id=273080359 groups=["enemies"] instance=ExtResource("5_63gu3")]
 position = Vector2(448, 480)
-collision_layer = 4
+collision_layer = 0
 script = ExtResource("6_rx887")
 config = ExtResource("7_kfdnq")
 

@@ -7,6 +7,7 @@ signal summon_finished
 signal cast_finished
 signal impact(at: Vector2, defeated: bool)
 const SWORD := preload("res://features/combat/royal_sword.tscn")
+const BURST := preload("res://features/enemies/boss_visual_burst.gd")
 const ROUNDS := [[0,1],[5,6],[2,4],[3]]
 enum Phase { SUMMON, LOCK, RELEASE, WAIT_FLIGHT, GAP, FINISHED }
 @export var config: SwordCourtConfig
@@ -78,6 +79,7 @@ func _lock_next() -> void:
 	for index: int in ROUNDS[round_index]:
 		if is_instance_valid(swords[index]):
 			swords[index].lock_on(locked_target,config.royal_lock_seconds if round_index == 3 else config.lock_seconds)
+	_spawn_burst(locked_target, Color("f6d27d") if round_index < 3 else Color("fff1b0"), 28.0 if round_index < 3 else 38.0, 0.26, 2, 8)
 	volley_locked.emit(round_index)
 
 func _fire_next() -> void:
@@ -86,6 +88,12 @@ func _fire_next() -> void:
 		swords[index].launch(volley_hits)
 	launched += 1
 	Audio.play_sound("attack",0.7 if round_index == 3 else 1.1,-6.0)
+
+func _spawn_burst(at: Vector2, tint: Color, radius: float, duration: float, rings: int, rays: int) -> void:
+	var burst := BURST.new() as BossVisualBurst
+	burst.configure(tint, radius, duration, rings, rays)
+	get_parent().add_child(burst)
+	burst.global_position = at
 
 func retire() -> void:
 	phase = Phase.FINISHED

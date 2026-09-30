@@ -12,7 +12,7 @@ size = Vector2(28, 44)
 [sub_resource type="RectangleShape2D" id="hurt"]
 size = Vector2(28, 44)
 [node name="BellInvoker" type="CharacterBody2D" groups=["enemies"]]
-collision_layer = 4
+collision_layer = 0
 collision_mask = 1
 script = ExtResource("1")
 config = ExtResource("3")

@@ -1281,7 +1281,7 @@ position = Vector2(180, 480)
 
 [node name="WingedChest" type="CharacterBody2D" parent="Enemies" unique_id=1202595909 groups=["enemies"] instance=ExtResource("5_siahr")]
 position = Vector2(990, 352)
-collision_layer = 4
+collision_layer = 0
 script = ExtResource("6_ho8lh")
 
 [node name="Interactions" type="Node2D" parent="." unique_id=1839794500]

@@ -15,7 +15,7 @@ size = Vector2(26, 42)
 size = Vector2(20, 40)
 
 [node name="DoomScribe" type="CharacterBody2D" groups=["enemies"]]
-collision_layer = 4
+collision_layer = 0
 collision_mask = 1
 script = ExtResource("1")
 config = ExtResource("5")

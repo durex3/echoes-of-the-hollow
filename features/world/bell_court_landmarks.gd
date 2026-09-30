@@ -49,6 +49,7 @@ func _draw() -> void:
 		for y: int in [272,496]:
 			draw_texture_rect_region(STONE,Rect2(672,y,192,12),Rect2(512,192,128,12),Color(0.8,0.85,0.9,0.38))
 	elif theme == "gallery":
+		boss_platforms()
 		for index: int in range(4):
 			var x := 80.0+index*304
 			var y := 108.0+(index%2)*27
@@ -152,6 +153,15 @@ func cloud(at: Vector2, opacity: float) -> void:
 	draw_rect(Rect2(at+Vector2(24,-6),Vector2(76,6)),tint)
 	draw_rect(Rect2(at+Vector2(45,-11),Vector2(38,5)),tint)
 	draw_rect(Rect2(at+Vector2(-22,6),Vector2(176,4)),Color(tint,opacity*0.17))
+
+func boss_platforms() -> void:
+	# Visual ledges match TerminalPlatform's authored collision shapes:
+	# two 96x16 low platforms and one 128x16 center platform.
+	for ledge: Rect2 in [Rect2(64,228,96,16), Rect2(336,228,96,16), Rect2(224,168,128,16)]:
+		draw_rect(ledge, Color("344953"))
+		draw_texture_rect_region(STONE, Rect2(ledge.position, Vector2(ledge.size.x, 16.0)), Rect2(512,192,128,16), Color(0.82,0.88,0.88,0.9))
+		draw_line(ledge.position, ledge.position + Vector2(ledge.size.x, 0.0), Color("c5c4a0"), 2.0)
+		draw_line(ledge.position + Vector2(0.0, 15.0), ledge.position + Vector2(ledge.size.x, 15.0), Color("4c6570"), 2.0)
 
 func broken_column(foot: Vector2, height: float) -> void:
 	var rect := Rect2(foot-Vector2(16,height),Vector2(32,height))

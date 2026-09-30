@@ -67,14 +67,14 @@ prompt = "前方杖使会放出钟波，跳过后近身；地面出现咒印时�
 
 [node name="FirstInvoker" type="CharacterBody2D" parent="Enemies" unique_id=946479042 groups=["enemies"] instance=ExtResource("5_tvs32")]
 position = Vector2(448, 704)
-collision_layer = 4
+collision_layer = 0
 script = ExtResource("6_56mg3")
 config = ExtResource("7_pcn2o")
 
 [node name="SecondInvoker" type="CharacterBody2D" parent="Enemies" unique_id=877938345 groups=["enemies"] instance=ExtResource("5_tvs32")]
 position = Vector2(1088, 704)
 opening_spell = 1
-collision_layer = 4
+collision_layer = 0
 script = ExtResource("6_56mg3")
 config = ExtResource("7_pcn2o")
 

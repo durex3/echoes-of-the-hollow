@@ -205,13 +205,13 @@ position = Vector2(1180, 608)
 
 [node name="RoseSentinel" type="CharacterBody2D" parent="Enemies" unique_id=1517974852 groups=["enemies"] instance=ExtResource("5_qv8di")]
 position = Vector2(720, 480)
-collision_layer = 4
+collision_layer = 0
 script = ExtResource("6_dvyk2")
 config = ExtResource("7_0o1js")
 
 [node name="WingedChest" type="CharacterBody2D" parent="Enemies" unique_id=866216601 groups=["enemies"] instance=ExtResource("8_3jx1s")]
 position = Vector2(1090, 608)
-collision_layer = 4
+collision_layer = 0
 script = ExtResource("9_thux6")
 config = ExtResource("10_q606g")
 

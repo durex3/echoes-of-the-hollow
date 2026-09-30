@@ -16,6 +16,7 @@ enum Attack { SWEEP, DASH, DOUBLE_ECHO, LAYER_RESONANCE }
 @onready var contact_box: Hitbox = $ContactBox
 @onready var combat_effect: BellWardenEffect = $CombatEffect
 const DecisionScript = preload("res://features/enemies/bell_warden_decision.gd")
+const BURST := preload("res://features/enemies/boss_visual_burst.gd")
 var decision: RefCounted = DecisionScript.new()
 @onready var state_machine: BossStateMachine = $BossStateMachine
 var attack_states := {}
@@ -81,7 +82,9 @@ func _physics_process(delta: float) -> void:
 		State.STAGGER:
 			if timer <= 0.0: _enter(State.CHASE)
 	move_and_slide()
-	contact_box.active = state in [State.CHASE, State.WINDUP, State.STRIKE] and (state == State.CHASE or attack in [Attack.SWEEP, Attack.DASH])
+	# Special hazards replace the body as a solid obstacle, but their active
+	# phase still carries the ordinary contact damage channel.
+	contact_box.active = state == State.CHASE or (state == State.STRIKE and attack in [Attack.SWEEP, Attack.DASH, Attack.DOUBLE_ECHO, Attack.LAYER_RESONANCE])
 	contact_box.damage = 1
 	global_position.x = clampf(global_position.x, config.arena_min_x, config.arena_max_x)
 	_update_visual()
@@ -116,6 +119,8 @@ func _enter(next: State) -> void:
 		State.INTRO:
 			timer = config.intro_seconds
 			cue_changed.emit("缚钟守望者苏醒")
+			_spawn_burst(global_position + Vector2(0.0, -38.0), Color("f4d49a"), 42.0, 0.42, 3, 10)
+			Audio.play_sound("ability_acquire", 0.65, -6.0)
 		State.CHASE:
 			timer = maxf(timer, config.attack_gap_seconds)
 			contact_box.begin_swing()
@@ -143,7 +148,13 @@ func _active() -> float:
 func _update_visual() -> void:
 	body_sprite.flip_h = facing > 0.0
 	body_sprite.position.x = facing * 40.0
-	body_sprite.modulate = Color(2.6, 2.6, 2.6) if flash_left > 0.0 and not Session.reduce_flashes else Color.WHITE
+	if flash_left > 0.0 and not Session.reduce_flashes:
+		body_sprite.modulate = Color(2.6, 2.6, 2.6)
+	elif attack in [Attack.DOUBLE_ECHO, Attack.LAYER_RESONANCE] and state in [State.WINDUP, State.STRIKE]:
+		var pulse := 0.0 if Session.reduce_flashes else 0.14 * sin(action_elapsed * 8.0)
+		body_sprite.modulate = Color(1.42 + pulse, 1.12 + pulse * 0.3, 1.58 + pulse)
+	else:
+		body_sprite.modulate = Color.WHITE
 	if attack in [Attack.DOUBLE_ECHO, Attack.LAYER_RESONANCE] and state in [State.WINDUP, State.STRIKE]:
 		_set_strip_frame(40 + mini(5, int(action_elapsed * 8.0)))
 	elif state == State.WINDUP:
@@ -161,6 +172,13 @@ func _set_frame(index: int, row: int = 0) -> void:
 
 func _set_strip_frame(index: int) -> void:
 	_set_frame(index % 8, index / 8)
+
+func _spawn_burst(at: Vector2, tint: Color, radius: float, duration: float, rings: int, rays: int) -> void:
+	var burst := BURST.new() as BossVisualBurst
+	burst.configure(tint, radius, duration, rings, rays)
+	get_parent().add_child(burst)
+	burst.global_position = at
+
 
 func _on_damage(_amount: int, _at: Vector2) -> void:
 	flash_left = 0.1

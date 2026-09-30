@@ -1,5 +1,9 @@
 # 架构与编码规范
 
+## 当前敌人碰撞约定（2026-09-30）
+
+参照 `ColeW96/metroidvania-forge-tutorial`，三章全部敌人（含Boss）的CharacterBody2D使用`collision_layer = 0`、`collision_mask = 1`，只处理地形运动，不与玩家身体互相阻挡或推挤。玩家本体维持layer 2/mask 1；敌人Hurtbox维持layer 16，接触与攻击Area2D使用layer 0/mask 8扫描玩家Hurtbox。伤害仍经Hitbox/Hurtbox/Health和已有同次攻击去重处理；房间实例不得覆盖敌人身体碰撞层。`tools/static_check.py`检查这些场景配置，真实穿越、接触伤害及地形碰撞由集成测试覆盖。下文历史章节提及旧身体阻挡或“碰撞不变”时，以本节为准。
+
 ## 当前 Boss 规范（2026-09-29）
 
 三关统一按教程仓库的房间编排器、决策器和独立状态职责实现，具体契约见 [Boss 工程规范](boss-design-standard.md)。现有招式的动作与判定交给各自攻击状态脚本；状态机和每招节点原生保存在 Boss 场景中，ID、名称及冷却可在编辑器配置。三个 Boss 房原生持有编排器，接管目标注入、血条、命中转发、炉心喷口停用及胜利通知；Main 统一接信号并保留奖励、唯一标记和存档核验。第三关现有横扫、突进、双重回响和楼层共振，不按血量分阶段；以下二、三阶段说明仅为历史记录。

@@ -3,6 +3,7 @@ extends Node2D
 
 const SHEET := preload("res://assets/characters/bell_warden_sheet.png")
 const SLASH := preload("res://assets/effects/bell_arcane_slash.png")
+const BURST := preload("res://features/enemies/boss_visual_burst.gd")
 
 var player: Player
 var facing := -1.0
@@ -32,6 +33,12 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	age += delta
 	attack_started = age >= delay_seconds
+	if age < delay_seconds and age + delta >= delay_seconds:
+		var burst := BURST.new() as BossVisualBurst
+		burst.configure(Color("b9d9ff"), 34.0, 0.22, 2, 8)
+		get_parent().add_child(burst)
+		burst.global_position = global_position + Vector2(0.0, -28.0)
+		Audio.play_sound("ability_acquire", 1.15, -11.0)
 	if attack_started and age <= delay_seconds + active_seconds and not hit and is_instance_valid(player) and player.state != Player.State.DEAD:
 		var hurt := player.get_node("Hurtbox") as Hurtbox
 		var center := hurt.hit_position() - global_position

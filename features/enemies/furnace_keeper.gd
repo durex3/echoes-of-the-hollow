@@ -6,6 +6,7 @@ signal withdrawn
 signal cue_changed(message: String)
 signal impact(at: Vector2, killed: bool)
 const FLAME := preload("res://features/combat/furnace_flame.tscn")
+const BURST := preload("res://features/enemies/boss_visual_burst.gd")
 enum State { DORMANT, INTRO, WARNING, CAST, RECOVER, DEAD, TAKEOFF, LANDING, IMPACT, APPROACH }
 enum Attack { DASH, HOP, SLAM, MELEE, COMBO }
 @export var config: FurnaceConfig
@@ -115,6 +116,7 @@ func _enter(next: State) -> void:
 
 func _slam_impact() -> void:
 	var center := position.x
+	_spawn_burst(Vector2(center, position.y - 22.0), Color("ffb35c"), 54.0, 0.42, 3, 12)
 	var burst := spawn_flame(Vector2(center,position.y),false,true,true)
 	burst.damage_override = config.slam_damage
 	# A shield or hit resolves the whole release once, including its two walls.
@@ -134,6 +136,13 @@ func _slam_impact() -> void:
 		flames.add_child(flame)
 		flame.global_position = Vector2(center+direction*35,position.y)
 	Audio.play_sound("attack",0.8,-3)
+
+func _spawn_burst(at: Vector2, tint: Color, radius: float, duration: float, rings: int, rays: int) -> void:
+	var burst := BURST.new() as BossVisualBurst
+	burst.configure(tint, radius, duration, rings, rays)
+	get_parent().add_child(burst)
+	burst.global_position = at
+
 
 func spawn_flame(at: Vector2, is_wave: bool, is_tall := false, instant := false) -> FurnaceFlame:
 	var flame := FLAME.instantiate() as FurnaceFlame

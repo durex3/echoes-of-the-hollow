@@ -1238,13 +1238,13 @@ position = Vector2(180, 480)
 
 [node name="RoseSentinel" type="CharacterBody2D" parent="Enemies" unique_id=250519094 groups=["enemies"] instance=ExtResource("5_s7gw8")]
 position = Vector2(660, 480)
-collision_layer = 4
+collision_layer = 0
 script = ExtResource("6_y5ei6")
 config = ExtResource("7_6pui7")
 
 [node name="WingedChest" type="CharacterBody2D" parent="Enemies" unique_id=1835386501 groups=["enemies"] instance=ExtResource("8_nutqf")]
 position = Vector2(1060, 480)
-collision_layer = 4
+collision_layer = 0
 script = ExtResource("9_c2p5d")
 config = ExtResource("10_u5wtj")
 
